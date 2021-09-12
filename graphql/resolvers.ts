@@ -1,13 +1,9 @@
-import * as Models from './types'
-import * as Queries from './queries'
-import * as Mutations from './mutations'
+import * as types from './types'
+import * as queries from './queries'
+import * as mutations from './mutations'
 
 export const resolvers = {
-  ...Models,
-  Query: {
-    ...Queries,
-  },
-  Mutation: {
-    ...Mutations,
-  },
+  types,
+  queries,
+  mutations,
 };

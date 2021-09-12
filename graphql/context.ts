@@ -1,15 +1,34 @@
 import { PrismaClient } from '@prisma/client';
 import { prisma } from '../lib/prisma';
 import type { RequestObjectHandler } from '../utils/types';
+import { Auth, AuthInfo } from './auth';
 
 export type Context = {
-  // accessToken: string;
+  authInfo?: AuthInfo;
   prisma: PrismaClient;
+  isLoggedIn: boolean;
 };
 
-export const createContext: RequestObjectHandler<Context> = async ({ req, res }) => {
+const auth = new Auth();
+
+export const createContext: RequestObjectHandler<Context> = async ({ req }) => {
+  let authInfo: AuthInfo | undefined;
+  const token = req.cookies?.uptimeMonitorToken;
+
+  if (token) {
+    try {
+      authInfo = await auth.verify(token);
+    } catch (e) {
+      // TODO: use systematic logger
+      console.warn('Authentication failed', e);
+    }
+  }
+
   return {
-    // accessToken,
+    authInfo,
     prisma,
+    get isLoggedIn() {
+      return Boolean(authInfo);
+    },
   };
 };
