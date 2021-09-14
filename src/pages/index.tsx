@@ -1,6 +1,5 @@
-import { useGetUserByIdQuery } from '../../graphql/client/generated'
-import { CreateUserSchema } from '../graphql/types/UserSchema';
-import styles from '../styles/Home.module.css'
+import { useGetUserByIdQuery } from '../../graphql/client/generated';
+import styles from '../styles/Home.module.css';
 
 export default function Home() {
   const userQuery = useGetUserByIdQuery({
@@ -11,7 +10,13 @@ export default function Home() {
 
   return (
     <div className={styles.container}>
-      Hello, {userQuery.data?.user?.name} joined at {userQuery.data?.user?.createdAt}
+      Hello,
+      {' '}
+      {userQuery.data?.user?.name}
+      {' '}
+      joined at
+      {' '}
+      {userQuery.data?.user?.createdAt}
     </div>
-  )
+  );
 }

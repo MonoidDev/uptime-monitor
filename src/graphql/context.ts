@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+
 import { prisma } from '../lib/prisma';
 import type { RequestObjectHandler } from '../utils/types';
 import { Auth, AuthInfo } from './auth';
@@ -14,7 +15,7 @@ const auth = new Auth();
 export const createContext: RequestObjectHandler<Context> = async ({ req }) => {
   let authInfo: AuthInfo | undefined;
   const token = req.cookies?.uptimeMonitorToken
-    ?? req.headers.authorization?.replace(/^Bearer\ /, '');
+    ?? req.headers.authorization?.replace(/^Bearer /, '');
 
   if (token) {
     try {

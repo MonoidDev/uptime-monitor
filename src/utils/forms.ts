@@ -1,5 +1,6 @@
-import { createStrings } from "./local";
 import * as h from 'tyrann-io';
+
+import { createStrings } from './local';
 
 export const formStrings = createStrings({
   en: {
@@ -25,5 +26,5 @@ export const newPasswordField = (label: string) => {
     .withLabel(label)
     .min(8, formStrings.tooShort(label, 8))
     .max(64, formStrings.tooLong(label, 64));
-    // TODO: Password verification
+  // TODO: Password verification
 };

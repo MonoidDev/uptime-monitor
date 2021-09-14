@@ -1,15 +1,14 @@
-import { plugin } from "nexus";
-import { PluginBuilderLens, printedGenTyping, printedGenTypingImport } from 'nexus/dist/core';
+import { UserInputError } from 'apollo-server-errors';
 import * as t from 'io-ts';
-import { isRight } from 'fp-ts/Either';
-import { inspect } from "util";
-import { UserInputError } from "apollo-server-errors";
-import { createValidate } from "../src/utils/createValidate";
+import { plugin } from 'nexus';
+import { printedGenTyping, printedGenTypingImport } from 'nexus/dist/core';
+
+import { createValidate } from '../src/utils/createValidate';
 
 const NexusValidateInputImport = printedGenTypingImport({
   module: __filename.replace(/\.ts$/, ''),
   bindings: ['NexusValidateInputSchemas'],
-})
+});
 
 export type NexusValidateInputSchemas = {
   [key in string]: t.Type<any>;
@@ -17,16 +16,16 @@ export type NexusValidateInputSchemas = {
 
 export type NexusNestedError = {
   [key in string]: string | NexusNestedError;
-}
+};
 
 export type NexusValidateError = {
   [arg in string]: NexusNestedError;
-}
+};
 
 const fieldDefTypes = printedGenTyping({
   optional: true,
   name: 'validate',
-  description: `Validation Arguments with io-ts`,
+  description: 'Validation Arguments with io-ts',
   type: 'NexusValidateInputSchemas',
   imports: [NexusValidateInputImport],
 });
@@ -36,8 +35,10 @@ export const nexusValidateInput = () => {
     name: 'NexusValidateInput',
     fieldDefTypes,
     onCreateFieldResolver(config) {
-      return function (source, args, context, info, next) {
-        const schemas = config.fieldConfig.extensions?.nexus?.config.validate as NexusValidateInputSchemas | undefined;
+      return function resolver(source, args, context, info, next) {
+        const schemas = config.fieldConfig
+          .extensions?.nexus?.config.validate as NexusValidateInputSchemas | undefined;
+
         const errors: NexusValidateError = {};
 
         if (schemas) {
@@ -61,4 +62,3 @@ export const nexusValidateInput = () => {
     },
   });
 };
- 

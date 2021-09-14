@@ -1,8 +1,8 @@
+import { UserInputError } from 'apollo-server-errors';
 import { mutationField, nonNull, stringArg } from 'nexus';
 
-import { CreateUser, userHelper } from '../types';
 import { Auth } from '../auth';
-import { UserInputError } from 'apollo-server-errors';
+import { CreateUser, userHelper } from '../types';
 import { CreateUserSchema } from '../types/UserSchema';
 
 export const login = mutationField('login', {

@@ -1,7 +1,9 @@
-import type { User } from "@prisma/client";
-import { readFileSync } from "fs";
+import { readFileSync } from 'fs';
+
+import type { User } from '@prisma/client';
 import { sign, verify, Jwt } from 'jsonwebtoken';
-import { Context } from "./context";
+
+import { Context } from './context';
 
 export interface AuthInfo extends Exclude<Jwt, undefined> {
   id: number;
@@ -10,10 +12,8 @@ export interface AuthInfo extends Exclude<Jwt, undefined> {
 
 export class Auth {
   privateKey: Buffer = readFileSync('./config/private-key.pem');
-  publicKey: Buffer = readFileSync('./config/public-key.pem');;
 
-  constructor() {
-  }
+  publicKey: Buffer = readFileSync('./config/public-key.pem');
 
   async sign(user: User) {
     return new Promise<string>((resolve, reject) => {
@@ -53,15 +53,15 @@ export class Auth {
             resolve(result! as AuthInfo);
           }
         },
-      )
-    })
+      );
+    });
   }
 }
 
 export type Authorize = (ctx: Context) => Promise<boolean> | boolean;
 
 export const createAuthorize = (authorize: Authorize) => {
-  return (_: any, __: any, ctx: Context) => authorize(ctx)
+  return (_: any, __: any, ctx: Context) => authorize(ctx);
 };
 
 export const loginRequired = createAuthorize((ctx) => ctx.isLoggedIn);

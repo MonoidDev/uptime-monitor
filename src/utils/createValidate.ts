@@ -1,7 +1,6 @@
-import * as t from 'io-ts';
-
 import { fold } from 'fp-ts/Either';
 import { pipe } from 'fp-ts/function';
+import * as t from 'io-ts';
 
 export const createValidate = (type: t.Type<any>) => (values: any) => {
   const v = type.decode(values);

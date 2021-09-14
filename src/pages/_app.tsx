@@ -1,10 +1,11 @@
 import '../styles/globals.css';
+import { useMemo } from 'react';
+
 import {
   ApolloClient,
   InMemoryCache,
   ApolloProvider,
 } from '@apollo/client';
-import { useMemo } from 'react';
 
 function MyApp({ Component, pageProps }: any) {
   const client = useMemo(() => new ApolloClient({
@@ -19,4 +20,4 @@ function MyApp({ Component, pageProps }: any) {
   );
 }
 
-export default MyApp
+export default MyApp;

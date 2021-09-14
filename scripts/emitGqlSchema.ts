@@ -1,7 +1,7 @@
-import { createSchema } from "../src/graphql/schema";
+import { createSchema } from '../src/graphql/schema';
 
 createSchema({
   emit: true,
 });
 
-console.log('GQL schema emitted.');
+console.info('GQL schema emitted.');

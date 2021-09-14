@@ -1,7 +1,6 @@
 import { queryField, nonNull, intArg } from 'nexus';
-import { resolve } from 'path/posix';
+
 import { loginRequired } from '../auth';
-import { userHelper } from '../types';
 
 export const user = queryField('user', {
   type: 'User',
@@ -25,5 +24,5 @@ export const me = queryField('me', {
         id: ctx.authInfo?.id!,
       },
     });
-  }
+  },
 });

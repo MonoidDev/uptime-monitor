@@ -1,4 +1,4 @@
-import * as User from './User'
+import * as User from './User';
 
 export {
   User,
