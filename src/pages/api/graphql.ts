@@ -10,8 +10,8 @@ const apolloServer = new ApolloServer({
   schema: createSchema({
     emit: false,
   }),
-  debug: process.env.NODE_ENV === 'development',
-  introspection: process.env.NODE_ENV === 'development',
+  debug: true,
+  introspection: true,
 });
 
 const startServer = apolloServer.start();
