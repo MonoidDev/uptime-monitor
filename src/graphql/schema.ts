@@ -1,5 +1,7 @@
 import { makeSchema, fieldAuthorizePlugin } from "nexus";
+import { nexusPrisma } from 'nexus-plugin-prisma'
 import { join } from "path";
+import { nexusValidateInput } from "../../scripts/NexusValidateInput";
 import * as types from "./resolvers";
 
 export interface CreateSchemaOptions {
@@ -17,16 +19,27 @@ export const createSchema = (options: CreateSchemaOptions = {}) => {
     outputs: {
       typegen: join(
         process.cwd(),
-        "node_modules", "@types", "nexus-typegen", "index.d.ts",
+        "graphql", "server", "generated", "index.d.ts",
       ),
       schema: join(process.cwd(), "graphql", "schema.graphql"),
     },
     contextType: {
       export: "Context",
-      module: join(process.cwd(), "graphql", "context.ts"),
+      module: join(process.cwd(), "src", "graphql", "context.ts"),
+    },
+    sourceTypes: {
+      modules: [
+        {
+          module: eval("require.resolve('.prisma/client/index.d.ts')"),
+          // Escape webpack from handling it
+          alias: "prisma",
+        },
+      ],
     },
     plugins: [
       fieldAuthorizePlugin(),
+      nexusPrisma({ experimentalCRUD: true }),
+      nexusValidateInput(),
     ],
   });
 };

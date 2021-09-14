@@ -2,13 +2,27 @@
 ### Do not make changes to this file directly
 
 
+input CreateUser {
+  email: String!
+  inputPassword: String!
+}
+
+scalar DateTime
+
+type Mutation {
+  createUser(user: CreateUser): User
+  login(email: String!, password: String!): User
+}
+
 type Query {
+  me: User
   user(id: Int!): User
 }
 
 type User {
-  createdAt: Float
-  email: String
-  id: Int
-  name: String
+  createdAt: DateTime!
+  email: String!
+  id: Int!
+  name: String!
+  token: String
 }

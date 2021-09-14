@@ -1,4 +1,5 @@
-import { useGetUserByIdQuery } from '../graphql/client/generated'
+import { useGetUserByIdQuery } from '../../graphql/client/generated'
+import { CreateUserSchema } from '../graphql/types/UserSchema';
 import styles from '../styles/Home.module.css'
 
 export default function Home() {
@@ -6,7 +7,7 @@ export default function Home() {
     variables: {
       id: 2,
     },
-  })
+  });
 
   return (
     <div className={styles.container}>

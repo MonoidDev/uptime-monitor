@@ -23,7 +23,7 @@ export default (async (req, res) => {
   );
   res.setHeader(
     'Access-Control-Allow-Headers',
-    'Origin, X-Requested-With, Content-Type, Accept'
+    'Origin, X-Requested-With, Content-Type, Accept, Auth, Authorization'
   );
   if (req.method === 'OPTIONS') {
     res.end();

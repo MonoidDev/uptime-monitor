@@ -1,6 +1,7 @@
-import { User } from ".prisma/client";
+import type { User } from "@prisma/client";
 import { readFileSync } from "fs";
 import { sign, verify, Jwt } from 'jsonwebtoken';
+import { Context } from "./context";
 
 export interface AuthInfo extends Exclude<Jwt, undefined> {
   id: number;
@@ -56,3 +57,11 @@ export class Auth {
     })
   }
 }
+
+export type Authorize = (ctx: Context) => Promise<boolean> | boolean;
+
+export const createAuthorize = (authorize: Authorize) => {
+  return (_: any, __: any, ctx: Context) => authorize(ctx)
+};
+
+export const loginRequired = createAuthorize((ctx) => ctx.isLoggedIn);

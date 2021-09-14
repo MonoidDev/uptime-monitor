@@ -1,4 +1,4 @@
-import { createSchema } from "../graphql/schema";
+import { createSchema } from "../src/graphql/schema";
 
 createSchema({
   emit: true,
