@@ -9,7 +9,7 @@
     "dev:watch-gql": "ts-node-dev --transpile-only --no-notify --respawn scripts/emitGqlSchema.ts",
     "dev:watch-cg": "graphql-codegen --watch --config codegen.yml",
     "build": "yarn build:config && yarn build:gql && yarn build:cg && next build",
-    "build:gql": "ts-node scripts/emitGqlSchema.ts",
+    "build:gql": "ts-node --transpile-only scripts/emitGqlSchema.ts",
     "build:config": "esbuild next.config.ts --bundle --outfile=next.config.js --platform=node",
     "build:cg": "graphql-codegen --config codegen.yml",
     "start": "next start",
