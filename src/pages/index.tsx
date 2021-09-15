@@ -1,5 +1,9 @@
+import React from 'react';
+
+import { DatePicker } from 'antd';
+
 import { useGetUserByIdQuery } from '../../graphql/client/generated';
-import styles from '../styles/Home.module.css';
+import { Layout } from '../components/Layout';
 
 export default function Home() {
   const userQuery = useGetUserByIdQuery({
@@ -9,7 +13,7 @@ export default function Home() {
   });
 
   return (
-    <div className={styles.container}>
+    <Layout>
       Hello,
       {' '}
       {userQuery.data?.user?.name}
@@ -17,6 +21,8 @@ export default function Home() {
       joined at
       {' '}
       {userQuery.data?.user?.createdAt}
-    </div>
+
+      <DatePicker />
+    </Layout>
   );
 }

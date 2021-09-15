@@ -3,5 +3,8 @@
   "favorites.resources": [
     "node_modules/@types/nexus-typegen/index.d.ts",
     "graphql/server/generated/index.d.ts"
-  ]
+  ],
+  "tailwindCSS.includeLanguages": {
+    "plaintext": "javascript"
+  }
 }

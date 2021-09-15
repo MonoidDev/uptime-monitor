@@ -32,7 +32,7 @@ const fieldDefTypes = printedGenTyping({
 
 export const nexusValidateInput = () => {
   return plugin({
-    name: 'NexusValidateInput',
+    name: 'nexusValidateInput',
     fieldDefTypes,
     onCreateFieldResolver(config) {
       return function resolver(source, args, context, info, next) {

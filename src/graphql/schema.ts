@@ -3,7 +3,7 @@ import { join } from 'path';
 import { makeSchema, fieldAuthorizePlugin } from 'nexus';
 import { nexusPrisma } from 'nexus-plugin-prisma';
 
-import { nexusValidateInput } from '../../scripts/NexusValidateInput';
+import { nexusValidateInput } from '../../scripts/nexusValidateInput';
 import * as types from './resolvers';
 
 export interface CreateSchemaOptions {

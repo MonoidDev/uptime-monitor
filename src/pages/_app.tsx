@@ -1,3 +1,4 @@
+import 'antd/dist/antd.less';
 import '../styles/globals.css';
 import { useMemo } from 'react';
 
@@ -6,6 +7,7 @@ import {
   InMemoryCache,
   ApolloProvider,
 } from '@apollo/client';
+import Head from 'next/head';
 
 function MyApp({ Component, pageProps }: any) {
   const client = useMemo(() => new ApolloClient({
@@ -14,9 +16,14 @@ function MyApp({ Component, pageProps }: any) {
   }), []);
 
   return (
-    <ApolloProvider client={client}>
-      <Component {...pageProps} />
-    </ApolloProvider>
+    <>
+      <Head>
+        <meta name="viewport" content="initial-scale=1.0, width=device-width" />
+      </Head>
+      <ApolloProvider client={client}>
+        <Component {...pageProps} />
+      </ApolloProvider>
+    </>
   );
 }
 
