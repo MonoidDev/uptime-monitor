@@ -11,7 +11,7 @@
     "dev:watch-cg": "graphql-codegen --watch --config codegen.yml",
     "build": "yarn build:config && yarn build:url && yarn build:gql && yarn build:cg && next build",
     "build:url": "ts-node scripts/emitNextUrls.ts",
-    "build:gql": "ts-node scripts/emitGqlSchema.ts",
+    "build:gql": "ts-node --transpile-only scripts/emitGqlSchema.ts",
     "build:config": "esbuild next.config.ts --outfile=next.config.js --format=cjs",
     "build:cg": "graphql-codegen --config codegen.yml",
     "start": "next start",
