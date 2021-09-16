@@ -4,7 +4,9 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 
 ## Requirements
 
-`node >= 14.0.0` `typescript >= 4.3` `yarn`
+- `node >= 14.0.0`
+- `typescript >= 4.3` 
+- `yarn`
 
 ## Getting Started
 
