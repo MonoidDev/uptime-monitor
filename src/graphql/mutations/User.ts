@@ -1,22 +1,21 @@
 import { UserInputError } from 'apollo-server-errors';
-import { mutationField, nonNull, stringArg } from 'nexus';
+import { mutationField, nonNull } from 'nexus';
 
 import { Auth } from '../auth';
-import { CreateUser, userHelper } from '../types';
+import { CreateUser, Login, userHelper } from '../types';
 import { CreateUserSchema } from '../types/UserSchema';
 
 export const login = mutationField('login', {
   type: 'User',
   args: {
-    email: nonNull(stringArg()),
-    password: nonNull(stringArg()),
+    auth: nonNull(Login),
   },
-  async resolve(_, { email, password }, ctx) {
+  async resolve(_, { auth: { email, inputPassword } }, ctx) {
     const user = await ctx.prisma.user.findUnique({
       where: { email },
     });
 
-    if (user && userHelper(user).verifyPassword(password)) {
+    if (user && userHelper(user).verifyPassword(inputPassword)) {
       return {
         ...user,
         token: await new Auth().sign(user),
@@ -30,7 +29,7 @@ export const login = mutationField('login', {
 export const createUser = mutationField('createUser', {
   type: 'User',
   args: {
-    user: CreateUser,
+    user: nonNull(CreateUser),
   },
   validate: {
     user: CreateUserSchema,

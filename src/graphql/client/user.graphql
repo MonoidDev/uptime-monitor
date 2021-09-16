@@ -6,3 +6,9 @@ query GetUserById($id: Int!) {
     createdAt
   }
 }
+
+mutation Login($auth: Login!) {
+  login(auth: $auth) {
+    token
+  }
+}

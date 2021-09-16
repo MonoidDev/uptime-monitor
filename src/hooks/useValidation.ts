@@ -4,17 +4,19 @@ import { Form } from 'antd';
 import * as t from 'io-ts';
 import * as h from 'tyrann-io';
 
-import { createValidate } from './createValidate';
+import { createValidate } from '../utils/createValidate';
 
 export type Validators = { [key in string]: h.Validator<any> };
 
-export interface ValidationOptions<T> {
-  type: t.InterfaceType<T>;
-  initialValues: t.TypeOf<t.InterfaceType<T>>;
-  onSubmit?: (values: T) => Promise<void>;
+export interface ValidationOptions<P, A> {
+  type: t.InterfaceType<P, A>;
+  initialValues: t.TypeOf<t.InterfaceType<P, A>>;
+  onSubmit?: (values: t.TypeOf<t.InterfaceType<P, A>>) => Promise<void>;
 }
 
-export const useValidation = <T extends Validators>(options: ValidationOptions<T>) => {
+export const useValidation = <T extends Validators, A = any>(
+  options: ValidationOptions<T, A>,
+) => {
   const {
     type,
     initialValues,
@@ -43,10 +45,10 @@ export const useValidation = <T extends Validators>(options: ValidationOptions<T
       onValuesChange(_: any, _values: any) {
         setValues(_values);
       },
-      async onFinish(_values: T) {
+      async onFinish(_values: t.TypeOf<t.InterfaceType<P, A>>) {
         setSubmitted(true);
         setValues(_values);
-        if (Object.keys(_values).length === 0) {
+        if (Object.keys(errors).length === 0) {
           await onSubmit?.(_values);
         }
       },

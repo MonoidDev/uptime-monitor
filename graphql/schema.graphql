@@ -15,8 +15,8 @@ input Login {
 }
 
 type Mutation {
-  createUser(user: CreateUser): User
-  login(email: String!, password: String!): User
+  createUser(user: CreateUser!): User
+  login(auth: Login!): User
 }
 
 type Query {

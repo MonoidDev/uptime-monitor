@@ -4,20 +4,34 @@ import {
   Form, Input, Button, Typography, Row, Col,
 } from 'antd';
 
+import { useLoginMutation } from '../../../graphql/client/generated';
 import { Layout } from '../../components/Layout';
 import { LoginSchema } from '../../graphql/types/UserSchema';
-import { useValidation } from '../../utils/useValidation';
+import { useAuth } from '../../hooks/useAuth';
+import { useValidation } from '../../hooks/useValidation';
 
 export default function Page() {
+  const [login] = useLoginMutation();
+
+  const { dispatch } = useAuth();
+
   const validation = useValidation({
     type: LoginSchema,
     initialValues: {
-      email: '',
-      inputPassword: '',
+      email: 'django@gmail.com',
+      inputPassword: '123123123',
     },
-    onSubmit: async (values) => {
-      // eslint-disable-next-line no-console
-      console.log(values);
+    onSubmit: async (auth) => {
+      const result = await login({
+        variables: {
+          auth,
+        },
+      });
+
+      dispatch({
+        type: 'login',
+        token: result.data!.login!.token!,
+      });
     },
   });
 
