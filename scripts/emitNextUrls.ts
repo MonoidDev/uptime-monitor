@@ -19,7 +19,7 @@ export interface EmitNextUrlsConfig {
 export const main = async (config: EmitNextUrlsConfig = {}) => {
   const {
     dir = '.',
-    output = '.next/next-urls.ts',
+    output = '.next-urls.ts',
     watch = false,
   } = config;
 
