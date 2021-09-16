@@ -4,6 +4,9 @@ import HomeFilled from '@ant-design/icons/HomeFilled';
 import MonitorOutlined from '@ant-design/icons/MonitorOutlined';
 import UserOutlined from '@ant-design/icons/UserOutlined';
 import { Layout as AntdLayout, Menu } from 'antd';
+import classNames from 'classnames';
+
+import styles from './Layout.module.css';
 
 const { Header, Sider, Content } = AntdLayout;
 
@@ -66,7 +69,7 @@ export const Layout: React.FC<LayoutProps> = (props) => {
   };
 
   return (
-    <AntdLayout className="h-screen">
+    <AntdLayout className={classNames('h-screen', styles.layout)}>
       <Header className="text-white text-2xl flex items-center">
         Uptime Monitor
       </Header>

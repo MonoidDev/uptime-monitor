@@ -1,7 +1,0 @@
-.ant-menu-sub.ant-menu-inline {
-  @apply bg-[#38514C] text-white;
-}
-
-.ant-menu-submenu-arrow {
-  @apply text-current;
-}

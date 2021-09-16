@@ -13,6 +13,15 @@ module.exports = {
         ],
       },
     ],
+    "selector-pseudo-class-no-unknown": [
+      true,
+      {
+        ignorePseudoClasses: [
+          'local',
+          'global',
+        ],
+      }
+    ],
     "declaration-block-trailing-semicolon": null,
     "no-descending-specificity": null,
   },

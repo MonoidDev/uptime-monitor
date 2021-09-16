@@ -1,0 +1,49 @@
+diff --git a/node_modules/rc-overflow/lib/Overflow.js b/node_modules/rc-overflow/lib/Overflow.js
+index 0fce60c..ab6e859 100644
+--- a/node_modules/rc-overflow/lib/Overflow.js
++++ b/node_modules/rc-overflow/lib/Overflow.js
+@@ -29,6 +29,8 @@ var _useBatchFrameState = require("./hooks/useBatchFrameState");
+ 
+ var _RawItem = _interopRequireDefault(require("./RawItem"));
+ 
++var _useIsomorphicLayoutEffect = _interopRequireDefault(require('./hooks/useIsomorphicLayoutEffect'));
++
+ var OverflowContext = /*#__PURE__*/React.createContext(null);
+ exports.OverflowContext = OverflowContext;
+ var RESPONSIVE = 'responsive';
+@@ -202,7 +204,7 @@ function Overflow(props, ref) {
+     return itemWidths.get(getKey(mergedData[index], index));
+   }
+ 
+-  React.useLayoutEffect(function () {
++  (0, _useIsomorphicLayoutEffect.default)(function () {
+     if (mergedContainerWidth && mergedRestWidth && mergedData) {
+       var totalWidth = suffixWidth;
+       var len = mergedData.length;
+diff --git a/node_modules/rc-overflow/lib/hooks/useIsomorphicLayoutEffect.js b/node_modules/rc-overflow/lib/hooks/useIsomorphicLayoutEffect.js
+new file mode 100644
+index 0000000..a008991
+--- /dev/null
++++ b/node_modules/rc-overflow/lib/hooks/useIsomorphicLayoutEffect.js
+@@ -0,0 +1,20 @@
++/* eslint-disable react-hooks/rules-of-hooks, react-hooks/exhaustive-deps */
++var _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
++
++var React = _interopRequireWildcard(require("react"));
++
++Object.defineProperty(exports, "__esModule", {
++  value: true
++});
++
++var useIsomorphicLayoutEffect = function useIsomorphicLayoutEffect(
++  effect, deps,
++) {
++  // NOTE: check for client
++  // ref: https://github.com/react-component/select/blob/423f860b8582e8d105ce67d189da096db36c0ba6/src/utils/commonUtil.ts#L111
++  return typeof window === 'undefined' || process.env.NODE_ENV === 'test'
++    ? React.useEffect(effect, deps)
++    : React.useLayoutEffect(effect, deps);
++}
++
++exports.default = useIsomorphicLayoutEffect;
+\ No newline at end of file
