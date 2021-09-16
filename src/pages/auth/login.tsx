@@ -16,6 +16,7 @@ export default function Page() {
       inputPassword: '',
     },
     onSubmit: async (values) => {
+      // eslint-disable-next-line no-console
       console.log(values);
     },
   });
