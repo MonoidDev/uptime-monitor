@@ -7,6 +7,15 @@ query GetUserById($id: Int!) {
   }
 }
 
+query Me {
+  me {
+    id
+    name
+    email
+    createdAt
+  }
+}
+
 mutation Login($auth: Login!) {
   login(auth: $auth) {
     token

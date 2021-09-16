@@ -26,7 +26,7 @@ const WithApollo: React.FC = ({ children }) => {
     client.setLink(createHttpLink({
       uri: endpoint,
       headers: auth.state.token ? {
-        Authentication: `Bearer ${auth.state.token}`,
+        Authorization: `Bearer ${auth.state.token}`,
       } : {},
     }));
   }, [auth.state.token]);

@@ -25,3 +25,5 @@ export const defineSchema = <
     _typeName: TypeName,
     schema: Schema,
   ) => schema;
+
+export * from '../../.next/next-urls';

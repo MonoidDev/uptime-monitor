@@ -3,15 +3,18 @@ import React from 'react';
 import {
   Form, Input, Button, Typography, Row, Col,
 } from 'antd';
+import { useRouter } from 'next/router';
 
 import { useLoginMutation } from '../../../graphql/client/generated';
 import { Layout } from '../../components/Layout';
 import { LoginSchema } from '../../graphql/types/UserSchema';
 import { useAuth } from '../../hooks/useAuth';
 import { useValidation } from '../../hooks/useValidation';
+import { url } from '../../utils/types';
 
 export default function Page() {
   const [login] = useLoginMutation();
+  const router = useRouter();
 
   const { dispatch } = useAuth();
 
@@ -32,6 +35,8 @@ export default function Page() {
         type: 'login',
         token: result.data!.login!.token!,
       });
+
+      router.replace(url('/'));
     },
   });
 
