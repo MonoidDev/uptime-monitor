@@ -21,6 +21,7 @@
     "dev:db-push": "yarn dev:env prisma db push"
   },
   "dependencies": {
+    "@ant-design/icons": "^4.6.4",
     "@apollo/client": "^3.4.7",
     "@prisma/client": "2.28.0",
     "antd": "^4.16.13",
@@ -46,8 +47,7 @@
     "react-dom": "17.0.2",
     "react-localization": "^1.0.17",
     "tailwindcss": "^2.2.15",
-    "@ant-design/icons": "^4.6.4",
-    "tyrann-io": "^0.7.8"
+    "tyrann-io": "^0.8.0"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "2.0.1",
@@ -79,6 +79,8 @@
     "husky": "^7.0.2",
     "prettier": "^2.4.0",
     "prisma": "2.28.0",
+    "stylelint": "^13.13.1",
+    "stylelint-config-standard": "^22.0.0",
     "ts-node": "10.1.0",
     "ts-node-dev": "^1.1.8",
     "typescript": "^4.4.3"
@@ -90,5 +92,8 @@
   },
   "engines": {
     "node": ">=14.17.5"
+  },
+  "resolutions": {
+    "postcss": "8.3.6"
   }
 }

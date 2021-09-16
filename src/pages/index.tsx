@@ -5,7 +5,7 @@ import { DatePicker } from 'antd';
 import { useGetUserByIdQuery } from '../../graphql/client/generated';
 import { Layout } from '../components/Layout';
 
-export default function Home() {
+export default function Page() {
   const userQuery = useGetUserByIdQuery({
     variables: {
       id: 2,

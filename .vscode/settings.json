@@ -4,6 +4,9 @@
     "node_modules/@types/nexus-typegen/index.d.ts",
     "graphql/server/generated/index.d.ts"
   ],
+  "css.validate": false,
+  "less.validate": false,
+  "scss.validate": false,
   "tailwindCSS.includeLanguages": {
     "plaintext": "javascript"
   }

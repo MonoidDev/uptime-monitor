@@ -24,6 +24,14 @@ export const CreateUser = inputObjectType({
   },
 });
 
+export const Login = inputObjectType({
+  name: 'Login',
+  definition(t) {
+    t.nonNull.string('email');
+    t.nonNull.string('inputPassword');
+  },
+});
+
 export const userHelper = (user?: UserType) => {
   return {
     hashPassword(password: string) {

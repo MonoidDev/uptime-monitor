@@ -9,6 +9,11 @@ input CreateUser {
 
 scalar DateTime
 
+input Login {
+  email: String!
+  inputPassword: String!
+}
+
 type Mutation {
   createUser(user: CreateUser): User
   login(email: String!, password: String!): User

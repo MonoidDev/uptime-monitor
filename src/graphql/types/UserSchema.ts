@@ -1,12 +1,20 @@
 import * as t from 'io-ts';
 
-import { newEmailField, newPasswordField } from '../../utils/forms';
+import { emailField, newPasswordField, requiredStringField } from '../../utils/fields';
 import { defineSchema } from '../../utils/types';
 
 export const CreateUserSchema = defineSchema(
   'CreateUser',
   t.interface({
-    email: newEmailField('Email'),
+    email: emailField('Email'),
     inputPassword: newPasswordField('Password'),
+  }),
+);
+
+export const LoginSchema = defineSchema(
+  'Login',
+  t.interface({
+    email: emailField('Email'),
+    inputPassword: requiredStringField('Password'),
   }),
 );

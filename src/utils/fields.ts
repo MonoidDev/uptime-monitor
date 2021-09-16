@@ -13,7 +13,7 @@ export const formStrings = createStrings({
 
 export const emailRegex = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
 
-export const newEmailField = (label: string) => {
+export const emailField = (label: string) => {
   return h.string()
     .withLabel(label)
     .min(1, formStrings.notEmpty(label))
@@ -27,4 +27,10 @@ export const newPasswordField = (label: string) => {
     .min(8, formStrings.tooShort(label, 8))
     .max(64, formStrings.tooLong(label, 64));
   // TODO: Password verification
+};
+
+export const requiredStringField = (label: string) => {
+  return h.string()
+    .withLabel(label)
+    .min(1, formStrings.notEmpty(label));
 };
