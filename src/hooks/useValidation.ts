@@ -45,7 +45,7 @@ export const useValidation = <T extends Validators, A = any>(
       onValuesChange(_: any, _values: any) {
         setValues(_values);
       },
-      async onFinish(_values: t.TypeOf<t.InterfaceType<P, A>>) {
+      async onFinish(_values: t.TypeOf<t.InterfaceType<T, A>>) {
         setSubmitted(true);
         setValues(_values);
         if (Object.keys(errors).length === 0) {
