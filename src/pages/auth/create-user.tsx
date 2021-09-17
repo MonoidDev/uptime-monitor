@@ -5,39 +5,31 @@ import {
 } from 'antd';
 import { useRouter } from 'next/router';
 
-import { useLoginMutation } from '../../../graphql/client/generated';
+import { useCreateUserMutation } from '../../../graphql/client/generated';
 import { Layout } from '../../components/Layout';
-import { LoginSchema } from '../../graphql/types/UserSchema';
-import { useAuth } from '../../hooks/useAuth';
+import { CreateUserSchema } from '../../graphql/types/UserSchema';
 import { useValidation } from '../../hooks/useValidation';
 import { url } from '../../utils/types';
 
 export default function Page() {
-  const [login, { error }] = useLoginMutation();
+  const [createUser, { error }] = useCreateUserMutation();
   const router = useRouter();
 
-  const { dispatch } = useAuth();
-
   const validation = useValidation({
-    type: LoginSchema,
+    type: CreateUserSchema,
     error,
     initialValues: {
       email: 'django@gmail.com',
       inputPassword: '123123123',
     },
-    onSubmit: async (auth) => {
-      const result = await login({
+    onSubmit: async (user) => {
+      await createUser({
         variables: {
-          auth,
+          user,
         },
       });
 
-      dispatch({
-        type: 'login',
-        token: result.data!.login!.token!,
-      });
-
-      router.replace(url('/'));
+      router.replace(url('/auth/login'));
     },
   });
 
@@ -63,7 +55,7 @@ export default function Page() {
         <Row>
           <Col span={8} />
           <Typography.Title className="!text-primary-dark">
-            Login
+            Create User
           </Typography.Title>
         </Row>
 
@@ -85,7 +77,7 @@ export default function Page() {
           }}
         >
           <Button type="primary" htmlType="submit" shape="round">
-            Login
+            Register
           </Button>
         </Form.Item>
       </Form>

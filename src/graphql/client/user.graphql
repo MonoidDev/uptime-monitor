@@ -21,3 +21,9 @@ mutation Login($auth: Login!) {
     token
   }
 }
+
+mutation CreateUser($user: CreateUser!) {
+  createUser(user: $user) {
+    id
+  }
+}
