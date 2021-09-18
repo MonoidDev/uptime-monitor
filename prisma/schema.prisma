@@ -32,7 +32,6 @@ model Trace {
   traceType TraceType
   websiteId Int
   website Website @relation(fields: [websiteId], references: [id])
-  authorId Int
   status TraceStatus @default(OK)
   duration Int
   requestHeaders String?
