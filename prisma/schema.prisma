@@ -16,3 +16,39 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
 }
+
+model Website {
+  id    Int     @id @default(autoincrement())
+  name  String
+  url   String
+  pingInterval Int
+  traces Trace[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
+model Trace {
+  id    Int     @id @default(autoincrement())
+  traceType TraceType
+  websiteId Int
+  website Website @relation(fields: [websiteId], references: [id])
+  authorId Int
+  status TraceStatus @default(OK)
+  duration Int
+  requestHeaders String?
+  responseHeaders String?
+  responseData String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
+enum TraceType {
+  PING
+}
+
+enum TraceStatus {
+  OK
+  TIMEOUT
+  HTTP_ERROR
+  SSL_ERROR
+}
