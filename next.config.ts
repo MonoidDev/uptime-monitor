@@ -1,3 +1,4 @@
+/* eslint-disable import/no-extraneous-dependencies */
 // @ts-ignore
 import withLess from 'next-with-less';
 import type { NextConfig } from 'next/dist/server/config-shared';

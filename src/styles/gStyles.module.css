@@ -1,0 +1,3 @@
+.paper {
+  @apply bg-white drop-shadow-md rounded-md p-6;
+}

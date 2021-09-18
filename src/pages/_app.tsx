@@ -8,7 +8,11 @@ import {
   ApolloProvider,
   createHttpLink,
 } from '@apollo/client';
+import {
+  SearchConfigProvider,
+} from '@monoid-dev/use-search';
 import Head from 'next/head';
+import { useRouter as useNextRouter } from 'next/router';
 
 import { AuthProvider, useAuth } from '../hooks/useAuth';
 
@@ -38,17 +42,39 @@ const WithApollo: React.FC = ({ children }) => {
   );
 };
 
+const useRouter = () => {
+  const router = useNextRouter();
+
+  return {
+    get pathname() {
+      return router.pathname;
+    },
+    get search() {
+      return router.asPath.split('?')[1] ?? '';
+    },
+    navigate(link: string) {
+      router.push(link);
+    },
+  };
+};
+
 function MyApp({ Component, pageProps }: any) {
   return (
     <>
       <Head>
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
       </Head>
-      <AuthProvider>
-        <WithApollo>
-          <Component {...pageProps} />
-        </WithApollo>
-      </AuthProvider>
+      <SearchConfigProvider
+        config={{
+          useRouter,
+        }}
+      >
+        <AuthProvider>
+          <WithApollo>
+            <Component {...pageProps} />
+          </WithApollo>
+        </AuthProvider>
+      </SearchConfigProvider>
     </>
   );
 }
