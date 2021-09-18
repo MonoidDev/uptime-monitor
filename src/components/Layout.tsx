@@ -126,7 +126,7 @@ export const Layout: React.FC<LayoutProps> = (props) => {
   return (
     <AntdLayout className={classNames('h-screen', styles.layout)}>
       {renderHeader()}
-      <AntdLayout>
+      <AntdLayout hasSider={showSider}>
         {showSider && renderSider()}
         <AntdLayout>
           {breadcrumb && renderBreadcrumb()}
