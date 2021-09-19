@@ -1,0 +1,19 @@
+query GetWebsiteById($id: Int!) {
+  website(id: $id) {
+    id
+    name
+    url
+    pingInterval
+    userId
+  }
+}
+
+mutation CreateWebsite($website: CreateWebsite!) {
+  createWebsite(website: $website) {
+    id
+    name
+    url
+    pingInterval
+    userId
+  }
+}

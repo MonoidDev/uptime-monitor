@@ -7,6 +7,12 @@ input CreateUser {
   inputPassword: String!
 }
 
+input CreateWebsite {
+  name: String!
+  pingInterval: Int!
+  url: String!
+}
+
 scalar DateTime
 
 input Login {
@@ -16,12 +22,14 @@ input Login {
 
 type Mutation {
   createUser(user: CreateUser!): User
+  createWebsite(website: CreateWebsite!): Website
   login(auth: Login!): User
 }
 
 type Query {
   me: User
   user(id: Int!): User
+  website(id: Int!): Website
 }
 
 type User {
@@ -30,4 +38,12 @@ type User {
   id: Int!
   name: String!
   token: String
+}
+
+type Website {
+  id: Int!
+  name: String!
+  pingInterval: Int!
+  url: String!
+  userId: Int!
 }

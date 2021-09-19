@@ -2,6 +2,7 @@ import { PrismaClient } from '@prisma/client';
 
 import { prisma } from '../lib/prisma';
 import { UserService } from '../services/UserService';
+import { WebsiteSerice } from '../services/WebsiteService';
 import type { RequestObjectHandler } from '../utils/types';
 import { Auth, AuthInfo } from './auth';
 
@@ -10,6 +11,7 @@ export type Context = {
   prisma: PrismaClient;
   isLoggedIn: boolean;
   userService: UserService;
+  websiteSerice: WebsiteSerice;
 };
 
 const auth = new Auth();
@@ -35,6 +37,7 @@ export const createContext: RequestObjectHandler<Context> = async ({ req }) => {
       return Boolean(authInfo);
     },
     userService: new UserService(getContext),
+    websiteSerice: new WebsiteSerice(getContext),
   };
 
   function getContext() {
