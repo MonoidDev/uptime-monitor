@@ -13,6 +13,7 @@ model User {
   email String @unique
   isAdmin Boolean @default(false)
   password String
+  websites Website[]
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
 }
@@ -22,6 +23,8 @@ model Website {
   name  String
   url   String
   pingInterval Int
+  userId Int
+  user User @relation(fields: [userId], references: [id])
   traces Trace[]
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
