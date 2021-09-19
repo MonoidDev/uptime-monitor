@@ -34,3 +34,7 @@ export const requiredStringField = (label: string) => {
     .withLabel(label)
     .min(1, formStrings.notEmpty(label));
 };
+
+export const requiredNumberField = (label: string) => {
+  return h.number().withLabel(label);
+};

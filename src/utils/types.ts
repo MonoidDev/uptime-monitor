@@ -20,7 +20,7 @@ export type InputObjectNames = keyof NexusGenInputs;
 
 export const defineSchema = <
   TypeName extends InputObjectNames,
-  Schema extends t.Type<NexusGenInputs[InputObjectNames]>,
+  Schema = t.Type<NexusGenInputs[TypeName]>,
 >(
     _typeName: TypeName,
     schema: Schema,
