@@ -8,8 +8,9 @@ import {
   Avatar, Breadcrumb, Layout as AntdLayout, Menu,
 } from 'antd';
 import classNames from 'classnames';
+import Link from 'next/link';
 
-import { Urls } from '../../.next-urls';
+import { url, Urls } from '../../.next-urls';
 import { useMeQuery } from '../../graphql/client/generated';
 import { useAuth } from '../hooks/useAuth';
 import styles from './Layout.module.css';
@@ -61,7 +62,11 @@ export const Layout: React.FC<LayoutProps> = (props) => {
             title="Monitoring"
           >
             <Menu.Item>
-              Websites
+              <Link href={url('/monitoring/websites')}>
+                <a>
+                  Websites
+                </a>
+              </Link>
             </Menu.Item>
             <Menu.Item>
               Traces

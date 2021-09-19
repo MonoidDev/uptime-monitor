@@ -27,3 +27,4 @@ mutation CreateUser($user: CreateUser!) {
     id
   }
 }
+

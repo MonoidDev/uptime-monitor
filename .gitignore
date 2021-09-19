@@ -32,5 +32,6 @@ yarn-error.log*
 # vercel
 .vercel
 next.config.js
+tailwind.config.js
 
 generated/

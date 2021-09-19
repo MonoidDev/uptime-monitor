@@ -5,3 +5,7 @@
 .layout :global(.ant-menu-submenu-arrow) {
   @apply text-current;
 }
+
+.layout :global(.ant-menu-item) a {
+  @apply text-white hover:text-primary;
+}
