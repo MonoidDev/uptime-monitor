@@ -18,7 +18,9 @@
     "lint": "eslint . --ext .ts,.tsx",
     "gen-type": "yarn prisma generate",
     "dev:env": "dotenv -e .env.development --",
-    "dev:db-push": "yarn dev:env prisma db push"
+    "dev:db-push": "yarn dev:env prisma db push",
+    "prod:env": "dotenv -e .env.production --",
+    "prod:db-push": "yarn prod:env prisma db push"
   },
   "dependencies": {
     "@ant-design/icons": "^4.6.4",
