@@ -2,7 +2,7 @@ import { UserInputError } from 'apollo-server-errors';
 import { mutationField, nonNull } from 'nexus';
 
 import { Auth } from '../auth';
-import { CreateUser, Login, userHelper } from '../types';
+import { CreateUser, Login } from '../types';
 import { CreateUserSchema } from '../types/UserSchema';
 
 export const login = mutationField('login', {
@@ -15,7 +15,7 @@ export const login = mutationField('login', {
       where: { email },
     });
 
-    if (user && userHelper(user).verifyPassword(inputPassword)) {
+    if (user && ctx.userService.verifyPassword(user, inputPassword)) {
       return {
         ...user,
         token: await new Auth().sign(user),
@@ -35,7 +35,7 @@ export const createUser = mutationField('createUser', {
     user: CreateUserSchema,
   },
   async resolve(_, { user }, ctx) {
-    if ((await ctx.prisma.user.findMany({ where: { email: user?.email } })).length) {
+    if (await ctx.userService.findUserByEmail(user.email)) {
       throw new UserInputError('Invalid args', {
         errors: {
           email: `${user?.email} is already registered`,
@@ -43,14 +43,7 @@ export const createUser = mutationField('createUser', {
       });
     }
 
-    const newUser = await ctx.prisma.user.create({
-      data: {
-        name: user!.email.split('@')[0],
-        email: user!.email,
-        password: userHelper().hashPassword(user!.inputPassword),
-      },
-    });
-
+    const newUser = await ctx.userService.createUser(user);
     return newUser;
   },
 });

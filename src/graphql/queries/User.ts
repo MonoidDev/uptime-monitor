@@ -9,9 +9,7 @@ export const user = queryField('user', {
   },
   authorize: loginRequired,
   async resolve(_, { id }, ctx) {
-    return ctx.prisma.user.findUnique({
-      where: { id },
-    });
+    return ctx.userService.findUserById(id);
   },
 });
 
@@ -19,10 +17,6 @@ export const me = queryField('me', {
   type: 'User',
   authorize: loginRequired,
   async resolve(_, __, ctx) {
-    return ctx.prisma.user.findUnique({
-      where: {
-        id: ctx.authInfo?.id!,
-      },
-    });
+    return ctx.userService.findUserById(ctx.authInfo!.id);
   },
 });

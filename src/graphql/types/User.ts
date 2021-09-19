@@ -1,8 +1,3 @@
-import {
-  createHash,
-} from 'crypto';
-
-import type { User as UserType } from '@prisma/client';
 import { objectType, inputObjectType } from 'nexus';
 
 export const User = objectType({
@@ -31,16 +26,3 @@ export const Login = inputObjectType({
     t.nonNull.string('inputPassword');
   },
 });
-
-export const userHelper = (user?: UserType) => {
-  return {
-    hashPassword(password: string) {
-      return createHash('sha256')
-        .update(password)
-        .digest('base64');
-    },
-    verifyPassword(password: string) {
-      return user?.password === this.hashPassword(password);
-    },
-  };
-};
