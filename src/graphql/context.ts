@@ -1,6 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 
 import { prisma } from '../lib/prisma';
+import { TraceSerice } from '../services/TraceService';
 import { UserService } from '../services/UserService';
 import { WebsiteSerice } from '../services/WebsiteService';
 import type { RequestObjectHandler } from '../utils/types';
@@ -12,6 +13,7 @@ export type Context = {
   isLoggedIn: boolean;
   userService: UserService;
   websiteSerice: WebsiteSerice;
+  traceSerice: TraceSerice;
 };
 
 const auth = new Auth();
@@ -38,6 +40,7 @@ export const createContext: RequestObjectHandler<Context> = async ({ req }) => {
     },
     userService: new UserService(getContext),
     websiteSerice: new WebsiteSerice(getContext),
+    traceSerice: new TraceSerice(getContext),
   };
 
   function getContext() {

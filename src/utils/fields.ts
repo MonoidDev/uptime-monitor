@@ -1,3 +1,4 @@
+import * as t from 'io-ts';
 import * as h from 'tyrann-io';
 
 import { createStrings } from './local';
@@ -38,3 +39,12 @@ export const requiredStringField = (label: string) => {
 export const requiredNumberField = (label: string) => {
   return h.number().withLabel(label);
 };
+
+export const traceTypeField = t.literal('PING');
+
+export const traceStatusField = t.union([
+  t.literal('OK'),
+  t.literal('TIMEOUT'),
+  t.literal('HTTP_ERROR'),
+  t.literal('SSL_ERROR'),
+]);

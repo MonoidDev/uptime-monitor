@@ -1,0 +1,13 @@
+
+mutation CreateTrace($trace: CreateTrace!) {
+  createTrace(trace: $trace) {
+    id
+    traceType
+    websiteId
+    duration
+    status
+    requestHeaders
+    responseHeaders
+    responseData
+  }
+}

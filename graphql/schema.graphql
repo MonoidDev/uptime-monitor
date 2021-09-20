@@ -2,6 +2,16 @@
 ### Do not make changes to this file directly
 
 
+input CreateTrace {
+  duration: Int!
+  requestHeaders: String!
+  responseData: String!
+  responseHeaders: String!
+  status: TraceStatusChoices!
+  traceType: TraceTypeChoices!
+  websiteId: Int!
+}
+
 input CreateUser {
   email: String!
   inputPassword: String!
@@ -21,6 +31,7 @@ input Login {
 }
 
 type Mutation {
+  createTrace(trace: CreateTrace!): Trace
   createUser(user: CreateUser!): User
   createWebsite(website: CreateWebsite!): Website
   login(auth: Login!): User
@@ -30,6 +41,39 @@ type Query {
   me: User
   user(id: Int!): User
   website(id: Int!): Website
+}
+
+type Trace {
+  duration: Int!
+  id: Int!
+  requestHeaders: String
+  responseData: String
+  responseHeaders: String
+  status: TraceStatus!
+  traceType: TraceType!
+  websiteId: Int!
+}
+
+enum TraceStatus {
+  HTTP_ERROR
+  OK
+  SSL_ERROR
+  TIMEOUT
+}
+
+enum TraceStatusChoices {
+  HTTP_ERROR
+  OK
+  SSL_ERROR
+  TIMEOUT
+}
+
+enum TraceType {
+  PING
+}
+
+enum TraceTypeChoices {
+  PING
 }
 
 type User {
