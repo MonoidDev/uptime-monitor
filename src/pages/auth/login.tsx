@@ -3,6 +3,7 @@ import React from 'react';
 import {
   Form, Input, Button, Typography, Row, Col, Alert,
 } from 'antd';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
 
 import { useLoginMutation } from '../../../graphql/client/generated';
@@ -87,6 +88,11 @@ export default function Page() {
           <Button type="primary" htmlType="submit" shape="round">
             Login
           </Button>
+          <Link href={url('/auth/create-user')}>
+            <a className="px-6 text-primary-dark">
+              Register Now
+            </a>
+          </Link>
         </Form.Item>
       </Form>
     </Layout>
