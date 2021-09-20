@@ -47,6 +47,7 @@ export const main = async (config: EmitNextUrlsConfig = {}) => {
 
     const code = `
       export type Urls = ${urls.map((x) => JSON.stringify(x)).join('|')};
+      export const urls = ${JSON.stringify(urls)};
       export const url = (x: Urls) => x;
     `;
 
