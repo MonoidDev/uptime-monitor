@@ -1,10 +1,12 @@
 import { mutationField, nonNull } from 'nexus';
 
+import { loginRequired } from '../auth';
 import { CreateWebsite } from '../types';
 import { CreateWebsiteSchema } from '../types/WebsiteSchema';
 
 export const createWebsite = mutationField('createWebsite', {
   type: 'Website',
+  authorize: loginRequired,
   args: {
     website: nonNull(CreateWebsite),
   },

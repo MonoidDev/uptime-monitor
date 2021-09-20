@@ -1,10 +1,12 @@
 import { mutationField, nonNull } from 'nexus';
 
+import { loginRequired } from '../auth';
 import { CreateTrace } from '../types';
 import { CreateTraceSchema } from '../types/TraceSchema';
 
 export const createTrace = mutationField('createTrace', {
   type: 'Trace',
+  authorize: loginRequired,
   args: {
     trace: nonNull(CreateTrace),
   },

@@ -4,6 +4,14 @@ import { CreateTraceSchema } from '../graphql/types/TraceSchema';
 import { BaseService } from './BaseService';
 
 export class TraceSerice extends BaseService {
+  async findTraceById(id: number) {
+    return this.ctx.prisma.trace.findUnique({
+      where: {
+        id,
+      },
+    });
+  }
+
   createTrace(trace: t.TypeOf<typeof CreateTraceSchema>) {
     return this.ctx.prisma.trace.create({
       data: {

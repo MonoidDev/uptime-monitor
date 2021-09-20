@@ -1,4 +1,17 @@
 
+query GetTraceById($id: Int!) {
+  trace(id: $id) {
+    id
+    traceType
+    websiteId
+    duration
+    status
+    requestHeaders
+    responseHeaders
+    responseData
+  }
+}
+
 mutation CreateTrace($trace: CreateTrace!) {
   createTrace(trace: $trace) {
     id
