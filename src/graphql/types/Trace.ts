@@ -5,6 +5,7 @@ export const Trace = objectType({
   definition(t) {
     t.model.id();
     t.model.traceType();
+    t.model.website();
     t.model.websiteId();
     t.model.duration();
     t.model.status();

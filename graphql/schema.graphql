@@ -52,6 +52,7 @@ type Trace {
   responseHeaders: String
   status: TraceStatus!
   traceType: TraceType!
+  website: Website!
   websiteId: Int!
 }
 

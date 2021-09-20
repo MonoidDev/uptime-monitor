@@ -9,6 +9,9 @@ export class TraceSerice extends BaseService {
       where: {
         id,
       },
+      include: {
+        website: true,
+      },
     });
   }
 

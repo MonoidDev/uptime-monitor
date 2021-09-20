@@ -3,7 +3,12 @@ query GetTraceById($id: Int!) {
   trace(id: $id) {
     id
     traceType
-    websiteId
+    website {
+      id
+      name
+      url
+      pingInterval
+    }
     duration
     status
     requestHeaders
