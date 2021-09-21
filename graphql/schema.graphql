@@ -38,6 +38,7 @@ type Mutation {
 }
 
 type Query {
+  allUsers: [User]
   me: User
   trace(id: Int!): Trace
   user(id: Int!): User
