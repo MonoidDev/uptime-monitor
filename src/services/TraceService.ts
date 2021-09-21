@@ -15,11 +15,14 @@ export class TraceSerice extends BaseService {
     });
   }
 
-  async findTraces() {
+  async findTraces(page: number) {
+    const offset = (page - 1) * 10;
     return this.ctx.prisma.trace.findMany({
       orderBy: {
         createdAt: 'desc',
       },
+      skip: offset,
+      take: 10,
     });
   }
 

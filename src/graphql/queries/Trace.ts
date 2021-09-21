@@ -17,8 +17,11 @@ export const trace = queryField('trace', {
 
 export const traces = queryField('traces', {
   type: list('Trace'),
+  args: {
+    page: nonNull(intArg()),
+  },
   authorize: loginRequired,
-  async resolve(_, __, ctx) {
-    return ctx.traceSerice.findTraces();
+  async resolve(_, { page }, ctx) {
+    return ctx.traceSerice.findTraces(page);
   },
 });

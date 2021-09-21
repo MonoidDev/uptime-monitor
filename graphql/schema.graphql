@@ -40,7 +40,7 @@ type Mutation {
 type Query {
   me: User
   trace(id: Int!): Trace
-  traces: [Trace]
+  traces(page: Int!): [Trace]
   user(id: Int!): User
   website(id: Int!): Website
 }
