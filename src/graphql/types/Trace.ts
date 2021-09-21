@@ -12,6 +12,7 @@ export const Trace = objectType({
     t.model.requestHeaders();
     t.model.responseHeaders();
     t.model.responseData();
+    t.model.createdAt();
   },
 });
 

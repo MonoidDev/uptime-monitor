@@ -15,6 +15,14 @@ export class TraceSerice extends BaseService {
     });
   }
 
+  async findTraces() {
+    return this.ctx.prisma.trace.findMany({
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+  }
+
   createTrace(trace: t.TypeOf<typeof CreateTraceSchema>) {
     return this.ctx.prisma.trace.create({
       data: {

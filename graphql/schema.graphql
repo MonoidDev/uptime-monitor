@@ -40,11 +40,13 @@ type Mutation {
 type Query {
   me: User
   trace(id: Int!): Trace
+  traces: [Trace]
   user(id: Int!): User
   website(id: Int!): Website
 }
 
 type Trace {
+  createdAt: DateTime!
   duration: Int!
   id: Int!
   requestHeaders: String
