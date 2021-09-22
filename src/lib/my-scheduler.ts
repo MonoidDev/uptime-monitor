@@ -47,11 +47,22 @@ class Scheduler {
 
   private async scan() {
     const now = new Date();
-    const websites = await cronService.findEnabledWebsites(null);
     const futures = new Array<Promise<void>>();
-    websites.forEach((website) => {
-      futures.push(this.processWebsite(website, now));
-    });
+    let lastId: number | null = null;
+    // eslint-disable-next-line no-constant-condition
+    while (true) {
+      const websites: Website[] = await cronService.findEnabledWebsites(lastId);
+      if (websites.length === 0) {
+        break;
+      }
+      // eslint-disable-next-line @typescript-eslint/no-loop-func
+      websites.forEach((website) => {
+        futures.push(this.processWebsite(website, now));
+        if ((lastId === null) || (lastId as number > website.id)) {
+          lastId = website.id;
+        }
+      });
+    }
     await Promise.all(futures);
   }
 
