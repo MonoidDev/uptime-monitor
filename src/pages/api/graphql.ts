@@ -1,8 +1,10 @@
 import { ApolloServer } from 'apollo-server-micro';
+import ApolloServerOperationRegistry from 'apollo-server-plugin-operation-registry';
 import { PageConfig } from 'next';
 
 import { createContext } from '../../graphql/context';
 import { createSchema } from '../../graphql/schema';
+import MyScheduler from '../../lib/my-scheduler';
 import { RequestHandler } from '../../utils/types';
 
 const apolloServer = new ApolloServer({
@@ -12,6 +14,20 @@ const apolloServer = new ApolloServer({
   }),
   debug: true,
   introspection: true,
+  plugins: [
+    ApolloServerOperationRegistry(),
+    {
+      async serverWillStart() {
+        console.log('hi');
+        MyScheduler.enable();
+        return {
+          async serverWillStop() {
+            MyScheduler.disable();
+          },
+        };
+      },
+    },
+  ],
 });
 
 const startServer = apolloServer.start();
@@ -39,7 +55,7 @@ export default (async (req, res) => {
   return undefined;
 }) as RequestHandler;
 
-// // Apollo Server Micro takes care of body parsing
+// Apollo Server Micro takes care of body parsing
 export const config: PageConfig = {
   api: {
     bodyParser: false,
