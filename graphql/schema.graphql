@@ -44,6 +44,7 @@ type Query {
   traces(page: Int!): [Trace]
   user(id: Int!): User
   website(id: Int!): Website
+  websites(page: Int!): [Website]
 }
 
 type Trace {
