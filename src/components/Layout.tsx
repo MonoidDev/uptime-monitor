@@ -8,7 +8,7 @@ import {
   Avatar, Breadcrumb, Layout as AntdLayout, Menu,
 } from 'antd';
 import classNames from 'classnames';
-import Link from 'next/link';
+import { useRouter } from 'next/router';
 
 import { url, Urls } from '../../.next-urls';
 import { useMeQuery } from '../../graphql/client/generated';
@@ -40,6 +40,8 @@ export const Layout: React.FC<LayoutProps> = (props) => {
     skip: !auth.state.token,
   });
 
+  const router = useRouter();
+
   const renderSider = () => {
     return (
       <Sider width={200}>
@@ -61,17 +63,22 @@ export const Layout: React.FC<LayoutProps> = (props) => {
             icon={<MonitorOutlined />}
             title="Monitoring"
           >
-            <Menu.Item>
-              <Link href={url('/monitoring/websites')}>
-                <a>
-                  Websites
-                </a>
-              </Link>
+            <Menu.Item
+              key="1"
+              onClick={() => { router.push(url('/monitoring/websites')); }}
+            >
+              Websites
             </Menu.Item>
-            <Menu.Item>
+            <Menu.Item
+              key="2"
+              onClick={() => { router.push(url('/monitoring/traces')); }}
+            >
               Traces
             </Menu.Item>
-            <Menu.Item>
+            <Menu.Item
+              key="3"
+              onClick={() => { router.push(url('/monitoring/events')); }}
+            >
               Events
             </Menu.Item>
           </Menu.SubMenu>
@@ -80,10 +87,14 @@ export const Layout: React.FC<LayoutProps> = (props) => {
             icon={<UserOutlined />}
             title="Users"
           >
-            <Menu.Item>
+            <Menu.Item
+              key="4"
+            >
               All Users
             </Menu.Item>
-            <Menu.Item>
+            <Menu.Item
+              key="5"
+            >
               Add User
             </Menu.Item>
           </Menu.SubMenu>
