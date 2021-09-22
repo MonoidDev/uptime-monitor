@@ -2,14 +2,18 @@ export type Urls =
   | "/auth/create-user"
   | "/auth/login"
   | "/"
+  | "/monitoring/events"
   | "/monitoring"
+  | "/monitoring/traces"
   | "/monitoring/websites"
   | "/urls";
 export const urls = [
   "/auth/create-user",
   "/auth/login",
   "/",
+  "/monitoring/events",
   "/monitoring",
+  "/monitoring/traces",
   "/monitoring/websites",
   "/urls",
 ];

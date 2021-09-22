@@ -1,5 +1,3 @@
-import React from 'react';
-
 import { Layout } from '../../components/Layout';
 
 export default function Page() {
@@ -11,8 +9,8 @@ export default function Page() {
           href: '/monitoring/websites',
         },
         {
-          title: 'Websites',
-          href: '/monitoring/websites',
+          title: 'Trace',
+          href: '/monitoring/traces',
         },
       ]}
     />
