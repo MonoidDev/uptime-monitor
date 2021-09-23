@@ -6,7 +6,6 @@ import {
   Table,
   Button,
   Form,
-  Input,
   DatePicker,
 } from 'antd';
 import * as t from 'io-ts';
