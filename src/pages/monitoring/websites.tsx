@@ -130,19 +130,29 @@ export default function Page() {
       ]}
     >
       {renderTitle()}
-      <div className="flex justify-between items-center">
-        {renderSearch()}
-        <Button
-          type="primary"
-          shape="round"
-          onClick={() => {
-            router.push(`${url('/monitoring/websiteDetails')}`);
+      <div className="bg-white p-8 shadow-md">
+        <div className="flex justify-between items-center">
+          {renderSearch()}
+          <Button
+            type="primary"
+            shape="round"
+            onClick={() => {
+              router.push(`${url('/monitoring/websiteDetails')}`);
+            }}
+          >
+            Add
+          </Button>
+        </div>
+        <Table
+          bordered={false}
+          className="py-8"
+          dataSource={exampleData}
+          columns={columns}
+          pagination={{
+            className: 'flex justify-end pt-10',
           }}
-        >
-          Add
-        </Button>
+        />
       </div>
-      <Table dataSource={exampleData} columns={columns} />
     </Layout>
   );
 }
