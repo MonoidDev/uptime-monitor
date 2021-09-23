@@ -1,13 +1,27 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 
-// import useSearch from '@monoid-dev/use-search';
-import { Typography, Table, Button } from 'antd';
+import useSearch from '@monoid-dev/use-search';
+import {
+  Typography,
+  Table,
+  Button,
+  Form,
+  Input,
+} from 'antd';
+import * as t from 'io-ts';
 import { useRouter } from 'next/router';
+import * as h from 'tyrann-io';
 
 import { url } from '../../../.next-urls';
 import { Layout } from '../../components/Layout';
 
 export default function Page() {
+  const { search, updateSearch } = useSearch(
+    useMemo(() => t.type({
+      keyword: h.omittable(t.string),
+    }), []),
+  );
+
   const router = useRouter();
   const renderTitle = () => {
     return (
@@ -16,6 +30,36 @@ export default function Page() {
           Websites
         </Typography.Title>
       </div>
+    );
+  };
+
+  const renderSearch = () => {
+    const onFinish = async (values: any) => {
+      updateSearch({
+        ...values,
+      });
+    };
+    return (
+      <>
+        <Form
+          layout="inline"
+          name="websiteSearch"
+          initialValues={search}
+          onFinish={onFinish}
+        >
+          <Form.Item name="keyword">
+            <Input placeholder="Keyword" />
+          </Form.Item>
+          <Form.Item>
+            <Button
+              type="primary"
+              shape="round"
+            >
+              Search
+            </Button>
+          </Form.Item>
+        </Form>
+      </>
     );
   };
 
@@ -63,7 +107,7 @@ export default function Page() {
           type="primary"
           shape="round"
           onClick={() => {
-            router.push(`${url('/monitoring/websiteDetails')}?id=${record.id}&action=modify`);
+            router.push(`${url('/monitoring/websiteDetails')}?id=${record.id}`);
           }}
         >
           Modify
@@ -86,6 +130,18 @@ export default function Page() {
       ]}
     >
       {renderTitle()}
+      <div className="flex justify-between items-center">
+        {renderSearch()}
+        <Button
+          type="primary"
+          shape="round"
+          onClick={() => {
+            router.push(`${url('/monitoring/websiteDetails')}`);
+          }}
+        >
+          Add
+        </Button>
+      </div>
       <Table dataSource={exampleData} columns={columns} />
     </Layout>
   );
