@@ -1,6 +1,163 @@
+import React, { useMemo } from 'react';
+
+import useSearch from '@monoid-dev/use-search';
+import {
+  Typography,
+  Table,
+  Button,
+  Form,
+  Input,
+  DatePicker,
+} from 'antd';
+import * as t from 'io-ts';
+import { useRouter } from 'next/router';
+import * as h from 'tyrann-io';
+
+import { url } from '../../../.next-urls';
 import { Layout } from '../../components/Layout';
 
+interface Website {
+  id: number,
+  name: string,
+  url: string,
+  pingInterval: number,
+}
+
+interface TraceItem {
+  key: string;
+  id: number;
+  type: string;
+  website: Website;
+  time: string;
+  status: string | null | undefined;
+  duration: number;
+}
+
 export default function Page() {
+  const { search, updateSearch } = useSearch(
+    useMemo(() => t.type({
+      timeBefore: h.omittable(t.string),
+      timeAfter: h.omittable(t.string),
+    }), []),
+  );
+
+  const router = useRouter();
+
+  const columns = [
+    {
+      title: 'Type',
+      dataIndex: 'type',
+      key: 'type',
+    },
+    {
+      title: 'Website',
+      dataIndex: 'website',
+      key: 'website',
+      render: (website: Website) => (
+        <a className="underline" href={website.url}>
+          {website.name}
+        </a>
+      ),
+    },
+    {
+      title: 'Status',
+      dataIndex: 'status',
+      key: 'status',
+      render: (status: string) => {
+        let color = '';
+        switch (status) {
+          case 'OK':
+            color = 'text-green-400';
+            break;
+          case 'TIMEOUT':
+            color = 'text-yellow-400';
+            break;
+          case 'HTTP_ERROR':
+            color = 'text-red-600';
+            break;
+          case 'SSL_ERROR':
+            color = 'text-red-600';
+            break;
+          default:
+            color = 'text-black';
+        }
+        return (
+          <div className={color}>
+            {status}
+          </div>
+        );
+      },
+    },
+    {
+      title: 'Duration',
+      dataIndex: 'duration',
+      key: 'duration',
+      render: (duration: number) => (
+        <span>
+          {`${duration}ms`}
+        </span>
+      ),
+    },
+    {
+      title: 'Action',
+      key: 'action',
+      render: (_: any, record: TraceItem) => (
+        <Button
+          type="primary"
+          shape="round"
+          onClick={() => {
+            router.push(`${url('/monitoring/traceDetails')}?id=${record.id}`);
+          }}
+        >
+          Details
+        </Button>
+      ),
+    },
+  ];
+  const renderTitle = () => {
+    return (
+      <div className="flex justify-between items-center">
+        <Typography.Title className="!text-primary-dark">
+          Traces
+        </Typography.Title>
+      </div>
+    );
+  };
+
+  const renderSearch = () => {
+    const onFinish = async (values: any) => {
+      updateSearch({
+        ...values,
+      });
+    };
+    return (
+      <>
+        <Form
+          layout="inline"
+          name="websiteSearch"
+          initialValues={search}
+          onFinish={onFinish}
+        >
+          <Form.Item name="timeAfter">
+            <DatePicker showTime placeholder="Start Time" />
+          </Form.Item>
+          <span className="pr-2 pt-2"> to </span>
+          <Form.Item name="timeBefore">
+            <DatePicker showTime placeholder="End Time" />
+          </Form.Item>
+          <Form.Item>
+            <Button
+              type="primary"
+              shape="round"
+            >
+              Search
+            </Button>
+          </Form.Item>
+        </Form>
+      </>
+    );
+  };
+
   return (
     <Layout
       breadcrumb={[
@@ -13,6 +170,37 @@ export default function Page() {
           href: '/monitoring/traces',
         },
       ]}
-    />
+    >
+      {renderTitle()}
+      <div className="bg-white p-8 shadow-md">
+        {renderSearch()}
+        <Table
+          bordered={false}
+          className="py-8"
+          dataSource={exampleData}
+          columns={columns}
+          pagination={{
+            className: 'flex justify-end pt-10',
+          }}
+        />
+      </div>
+    </Layout>
   );
 }
+
+const exampleData = [
+  {
+    key: '1',
+    id: 1,
+    type: 'PING',
+    website: {
+      id: 1,
+      url: 'https://www.google.com',
+      name: 'Google Home',
+      pingInterval: 100,
+    },
+    time: '2021-09-11 11:30:01',
+    status: 'TIMEOUT',
+    duration: 999,
+  },
+];

@@ -73,7 +73,7 @@ export default function Page() {
       title: 'Url',
       dataIndex: 'url',
       key: 'url',
-      render: (text: string) => <a>{text}</a>,
+      render: (text: string) => <a href={text}>{text}</a>,
     },
     {
       title: 'Status',
@@ -102,7 +102,7 @@ export default function Page() {
     {
       title: 'Action',
       key: 'action',
-      render: (_: any, record: Item) => (
+      render: (_: any, record: WebsiteItem) => (
         <Button
           type="primary"
           shape="round"
@@ -157,7 +157,7 @@ export default function Page() {
   );
 }
 
-interface Item {
+interface WebsiteItem {
   key: string;
   id: number;
   name: string;
