@@ -9,8 +9,8 @@ export default function Page() {
           href: '/monitoring/websites',
         },
         {
-          title: 'Events',
-          href: '/monitoring/events',
+          title: 'Websites',
+          href: '/monitoring/websites',
         },
       ]}
     />
