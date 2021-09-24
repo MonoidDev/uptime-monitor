@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 
 import useSearch from '@monoid-dev/use-search';
 import {
@@ -7,12 +7,11 @@ import {
   Button,
   Form,
   DatePicker,
+  Modal,
 } from 'antd';
 import * as t from 'io-ts';
-import { useRouter } from 'next/router';
 import * as h from 'tyrann-io';
 
-import { url } from '../../../.next-urls';
 import { Layout } from '../../components/Layout';
 
 interface Website {
@@ -40,7 +39,8 @@ export default function Page() {
     }), []),
   );
 
-  const router = useRouter();
+  const [modalVisible, setModalVisible] = useState<boolean>(false);
+  const [traceData, setTraceData] = useState<TraceItem | {}>({});
 
   const columns = [
     {
@@ -85,15 +85,19 @@ export default function Page() {
         <Button
           type="primary"
           shape="round"
-          onClick={() => {
-            router.push(`${url('/monitoring/traceDetails')}?id=${record.id}`);
-          }}
+          onClick={() => showDetails(record.id)}
         >
           Details
         </Button>
       ),
     },
   ];
+
+  const showDetails = (id:number) => {
+    setTraceData(exampleData[0]);
+    setModalVisible(true);
+  };
+
   const renderTitle = () => {
     return (
       <div className="flex justify-between items-center">
@@ -163,6 +167,51 @@ export default function Page() {
             className: 'flex justify-end pt-10',
           }}
         />
+        <Modal
+          title={`Trace #${'id' in traceData ? traceData.id : ''}`}
+          visible={modalVisible}
+          onOk={() => setModalVisible(false)}
+          onCancel={() => setModalVisible(false)}
+        >
+          <p className="flex justify-between py-1.5">
+            <div> Type </div>
+            <div className="bg-gray-200 pl-2 py-0.5 w-3/4 rounded-md">
+              {'type' in traceData ? traceData.type : ''}
+            </div>
+          </p>
+          <p className="flex justify-between py-1.5">
+            <div> Website </div>
+            <div className="pl-2 py-0.5 w-3/4 rounded-md">
+              {'website' in traceData
+                ? (
+                  <a
+                    className="underline"
+                    href={traceData.website.url}
+                  >
+                    {traceData.website.name}
+                  </a>
+                ) : ''}
+            </div>
+          </p>
+          <p className="flex justify-between py-1.5">
+            <div> Time </div>
+            <div className="bg-gray-200 pl-2 py-0.5 w-3/4 rounded-md">
+              {'time' in traceData ? traceData.time : ''}
+            </div>
+          </p>
+          <p className="flex justify-between py-1.5">
+            <div> Status </div>
+            <div className="bg-gray-200 pl-2 py-0.5 w-3/4 rounded-md">
+              {'status' in traceData ? traceData.status : ''}
+            </div>
+          </p>
+          <p className="flex justify-between py-1.5">
+            <div> Duration </div>
+            <div className="bg-gray-200 pl-2 py-0.5 w-3/4 rounded-md">
+              {'duration' in traceData ? traceData.duration : ''}
+            </div>
+          </p>
+        </Modal>
       </div>
     </Layout>
   );
