@@ -62,30 +62,11 @@ export default function Page() {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
-      render: (status: string) => {
-        let color = '';
-        switch (status) {
-          case 'OK':
-            color = 'text-green-400';
-            break;
-          case 'TIMEOUT':
-            color = 'text-yellow-400';
-            break;
-          case 'HTTP_ERROR':
-            color = 'text-red-600';
-            break;
-          case 'SSL_ERROR':
-            color = 'text-red-600';
-            break;
-          default:
-            color = 'text-black';
-        }
-        return (
-          <div className={color}>
-            {status}
-          </div>
-        );
-      },
+      render: (status: string) => (
+        <div className={colorMap[status]}>
+          {status}
+        </div>
+      ),
     },
     {
       title: 'Duration',
@@ -165,7 +146,7 @@ export default function Page() {
           href: '/monitoring/websites',
         },
         {
-          title: 'Trace',
+          title: 'Traces',
           href: '/monitoring/traces',
         },
       ]}
@@ -186,6 +167,13 @@ export default function Page() {
     </Layout>
   );
 }
+
+const colorMap: { [key:string]: string } = {
+  OK: 'text-green-400',
+  TIMEOUT: 'text-yellow-400',
+  HTTP_ERROR: 'text-red-600',
+  SSL_ERROR: 'text-red-600',
+};
 
 const exampleData = [
   {
