@@ -59,7 +59,9 @@ export class CronService {
     });
   }
 
+  /* eslint-disable @typescript-eslint/no-unused-vars */
   async addEvent(website: Website, event: object) {
     // TODO
   }
+  /* eslint-enable @typescript-eslint/no-unused-vars */
 }

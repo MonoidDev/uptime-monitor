@@ -1,4 +1,5 @@
 import MyMonitor from './my-monitor';
+
 const sche = require('node-schedule');
 
 class MyScheduler {
@@ -23,7 +24,7 @@ class MyScheduler {
     this.runningJob = sche.scheduleJob('* * * * * *', async () => {
       try {
         const instance = new MyMonitor();
-        return instance.run();
+        await instance.run();
       } catch (error) {
         console.error(error);
       }

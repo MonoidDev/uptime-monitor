@@ -35,7 +35,7 @@ class MyMonitor {
       });
     }
     console.log(`[MyMonitor] scheduled websites: ${futures.length} / ${nWebsites}`);
-    return Promise.all(futures);
+    return Promise.all(futures).then(() => {});
   }
 
   private checkInterval(website: Website, lastTrace: Trace | null, now: Date) : Boolean {
@@ -56,9 +56,15 @@ class MyMonitor {
     }
   }
 
-  private checkEvent(website: Website, lastTrace: Trace | null, currentTrace: Trace | null) : Boolean {
+  /* eslint-disable @typescript-eslint/no-unused-vars */
+  private checkEvent(
+    website: Website,
+    lastTrace: Trace | null,
+    currentTrace: Trace | null,
+  ) : Boolean {
     return true;
   }
+  /* eslint-enable @typescript-eslint/no-unused-vars */
 }
 
 export default MyMonitor;
