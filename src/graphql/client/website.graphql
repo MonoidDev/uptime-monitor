@@ -8,7 +8,7 @@ query GetWebsiteById($id: Int!) {
   }
 }
 
-mutation CreateWebsite($website: CreateWebsite!) {
+mutation CreateWebsite($website: CreateUpdateWebsite!) {
   createWebsite(website: $website) {
     id
     name

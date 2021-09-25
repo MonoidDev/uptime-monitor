@@ -18,10 +18,10 @@ export const trace = queryField('trace', {
 export const traces = queryField('traces', {
   type: list('Trace'),
   args: {
-    page: nonNull(intArg()),
+    afterId: nonNull(intArg()),
   },
   authorize: loginRequired,
-  async resolve(_, { page }, ctx) {
-    return ctx.traceSerice.findTraces(page);
+  async resolve(_, { afterId }, ctx) {
+    return ctx.traceSerice.findTraces(afterId);
   },
 });
