@@ -3,7 +3,6 @@ import React from 'react';
 import HomeFilled from '@ant-design/icons/HomeFilled';
 import HomeOutlined from '@ant-design/icons/HomeOutlined';
 import MonitorOutlined from '@ant-design/icons/MonitorOutlined';
-import UserOutlined from '@ant-design/icons/UserOutlined';
 import {
   Avatar, Breadcrumb, Layout as AntdLayout, Menu,
 } from 'antd';
@@ -42,60 +41,48 @@ export const Layout: React.FC<LayoutProps> = (props) => {
 
   const router = useRouter();
 
+  // Get the deepest 'directory' that includes current route.
+  const currentRoot = `/${router.pathname.split('/')[1] ?? ''}`;
+
   const renderSider = () => {
     return (
       <Sider width={200}>
         <Menu
           mode="inline"
           className="bg-primary-dark text-white"
-          defaultSelectedKeys={['1']}
-          defaultOpenKeys={['sub1']}
+          defaultSelectedKeys={[router.pathname]}
+          defaultOpenKeys={[currentRoot]}
           style={{ height: '100%', borderRight: 0 }}
         >
           <Menu.Item
-            key="sub1"
+            key="/"
             icon={<HomeFilled />}
+            onClick={() => router.push(url('/'))}
           >
             Dashboard
           </Menu.Item>
           <Menu.SubMenu
-            key="sub2"
+            key="/monitoring"
             icon={<MonitorOutlined />}
             title="Monitoring"
           >
             <Menu.Item
-              key="1"
-              onClick={() => { router.push(url('/monitoring/websites')); }}
+              key={url('/monitoring/websites')}
+              onClick={() => router.push(url('/monitoring/websites'))}
             >
               Websites
             </Menu.Item>
             <Menu.Item
-              key="2"
-              onClick={() => { router.push(url('/monitoring/traces')); }}
+              key={url('/monitoring/traces')}
+              onClick={() => router.push(url('/monitoring/traces'))}
             >
               Traces
             </Menu.Item>
             <Menu.Item
-              key="3"
+              key={url('/monitoring/events')}
               onClick={() => { router.push(url('/monitoring/events')); }}
             >
               Events
-            </Menu.Item>
-          </Menu.SubMenu>
-          <Menu.SubMenu
-            key="sub3"
-            icon={<UserOutlined />}
-            title="Users"
-          >
-            <Menu.Item
-              key="4"
-            >
-              All Users
-            </Menu.Item>
-            <Menu.Item
-              key="5"
-            >
-              Add User
             </Menu.Item>
           </Menu.SubMenu>
         </Menu>
@@ -146,7 +133,7 @@ export const Layout: React.FC<LayoutProps> = (props) => {
         {showSider && renderSider()}
         <AntdLayout>
           {breadcrumb && renderBreadcrumb()}
-          <Content className="p-6 bg-gray-100">
+          <Content className="p-6 bg-gray-100 overflow-y-scroll">
             {children}
           </Content>
         </AntdLayout>

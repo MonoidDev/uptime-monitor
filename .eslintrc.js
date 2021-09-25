@@ -25,6 +25,9 @@ module.exports = {
     "no-restricted-syntax": "off",
     "import/no-cycle": "off",
     "class-methods-use-this": "off",
+    "linebreak-style": "off",
+    "quote-props": "off",
+    "no-console": "off",
     "import/order": [
       "error",
       {

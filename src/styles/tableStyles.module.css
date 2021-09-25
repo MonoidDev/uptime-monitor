@@ -1,0 +1,28 @@
+.simpleTable {
+  @apply container text-sm;
+}
+
+.simpleTable th,
+.simpleTable td {
+  @apply leading-8;
+}
+
+.simpleTable th {
+  @apply text-left text-gray-400 font-normal;
+}
+
+.simpleTable thead {
+  @apply border-b border-gray-300;
+}
+
+.simpleTable a {
+  @apply text-primary underline;
+}
+
+.simpleTable .error {
+  @apply text-red-600;
+}
+
+.simpleTable .warning {
+  @apply text-yellow-400;
+}

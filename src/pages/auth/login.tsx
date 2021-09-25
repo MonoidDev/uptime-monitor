@@ -88,7 +88,7 @@ export default function Page() {
           <Button type="primary" htmlType="submit" shape="round">
             Login
           </Button>
-          <Link href={url('/auth/create-user')}>
+          <Link href={url('/auth/createUser')}>
             <a className="px-6 text-primary-dark">
               Register Now
             </a>
