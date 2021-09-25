@@ -34,3 +34,15 @@ export const updateWebsite = mutationField('updateWebsite', {
     return updatedWebsite;
   },
 });
+
+export const deleteWebsite = mutationField('deleteWebsite', {
+  type: 'Website',
+  authorize: loginRequired,
+  args: {
+    websiteId: nonNull(intArg()),
+  },
+  async resolve(_, { websiteId }, ctx) {
+    const deletedWebsite = await ctx.websiteSerice.deleteWebsite(websiteId);
+    return deletedWebsite;
+  },
+});

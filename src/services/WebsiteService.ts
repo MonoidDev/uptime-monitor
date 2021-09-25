@@ -52,4 +52,12 @@ export class WebsiteSerice extends BaseService {
       },
     });
   }
+
+  deleteWebsite(websiteId: number) {
+    return this.ctx.prisma.website.delete({
+      where: {
+        id: websiteId,
+      },
+    });
+  }
 }
