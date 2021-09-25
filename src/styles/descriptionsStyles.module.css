@@ -1,0 +1,7 @@
+.descriptions :global(.ant-descriptions-item-label) {
+  @apply text-gray-500;
+}
+
+.descriptions :global(.ant-descriptions-item-content) {
+  @apply text-gray-500;
+}

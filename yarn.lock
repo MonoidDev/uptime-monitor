@@ -3052,6 +3052,11 @@ cookie@0.4.0:
   resolved "https://registry.yarnpkg.com/cookie/-/cookie-0.4.0.tgz#beb437e7022b3b6d49019d088665303ebe9c14ba"
   integrity sha512-+Hp8fLp57wnUSt0tY0tHEXh4voZRDnoIrZPqlo3DPiI4y9lwg/jqx+1Om94/W6ZaPDOUbnjOt/99w66zk+l1Xg==
 
+cookie@^0.4.1:
+  version "0.4.1"
+  resolved "https://registry.yarnpkg.com/cookie/-/cookie-0.4.1.tgz#afd713fe26ebd21ba95ceb61f9a8116e50a537d1"
+  integrity sha512-ZwrFkGJxUR3EIoXtO+yVE69Eb7KlixbaeAWfBQB9vVsNn/o+Yw69gBWSSDK825hQNdN+wF8zELf3dFNl/kxkUA==
+
 copy-anything@^2.0.1:
   version "2.0.3"
   resolved "https://registry.yarnpkg.com/copy-anything/-/copy-anything-2.0.3.tgz#842407ba02466b0df844819bbe3baebbe5d45d87"
@@ -6438,6 +6443,13 @@ next-transpile-modules@^8.0.0:
   dependencies:
     enhanced-resolve "^5.7.0"
     escalade "^3.1.1"
+
+next-universal-cookie@^3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/next-universal-cookie/-/next-universal-cookie-3.0.1.tgz#79787d9cdf8bd68dc5b3573c598fd88ca454620a"
+  integrity sha512-oDRFYxd6ffmHZAcY/u0Hzt9MXfijOwIGjs3oZq4JpW7uXDJwWoHHKSmlDMuKBWaRXVbD5BtwxYX/qDXLkDJQxw==
+  dependencies:
+    cookie "^0.4.1"
 
 next-with-less@^1.0.1:
   version "1.0.1"

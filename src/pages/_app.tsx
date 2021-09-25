@@ -59,6 +59,15 @@ const useRouter = () => {
 };
 
 function MyApp({ Component, pageProps }: any) {
+  const initialToken = useMemo(
+    () => (
+      typeof window !== 'undefined'
+        ? localStorage.getItem('uptimeMonitorToken')
+        : null
+    ),
+    [],
+  );
+
   return (
     <>
       <Head>
@@ -69,7 +78,7 @@ function MyApp({ Component, pageProps }: any) {
           useRouter,
         }}
       >
-        <AuthProvider>
+        <AuthProvider initialToken={initialToken}>
           <WithApollo>
             <Component {...pageProps} />
           </WithApollo>

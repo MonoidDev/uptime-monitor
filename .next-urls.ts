@@ -6,6 +6,7 @@ export type Urls =
   | "/monitoring"
   | "/monitoring/traces"
   | "/monitoring/websiteDetails"
+  | "/monitoring/websiteStatus/[id]"
   | "/monitoring/websites"
   | "/urls";
 export const urls = [
@@ -16,6 +17,7 @@ export const urls = [
   "/monitoring",
   "/monitoring/traces",
   "/monitoring/websiteDetails",
+  "/monitoring/websiteStatus/[id]",
   "/monitoring/websites",
   "/urls",
 ];

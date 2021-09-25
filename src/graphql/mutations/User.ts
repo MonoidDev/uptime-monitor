@@ -16,9 +16,11 @@ export const login = mutationField('login', {
     });
 
     if (user && ctx.userService.verifyPassword(user, inputPassword)) {
+      const token = await new Auth().sign(user);
+
       return {
         ...user,
-        token: await new Auth().sign(user),
+        token,
       };
     }
 

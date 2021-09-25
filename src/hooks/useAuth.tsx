@@ -5,6 +5,7 @@ import React, {
 import { useRouter } from 'next/router';
 
 import { url } from '../../.next-urls';
+import { urlNeedsAuth } from '../utils/urls';
 
 export interface AuthState {
   token: string | null;
@@ -45,9 +46,15 @@ const reducer = (prev: AuthState, action: AuthAction) => {
   }
 };
 
-export const AuthProvider: React.FC = ({ children }) => {
+export interface AuthProviderProps {
+  initialToken: string | null;
+}
+
+export const AuthProvider: React.FC<AuthProviderProps> = (props) => {
+  const { children, initialToken } = props;
+
   const [state, dispatch] = useReducer(reducer, {
-    token: null,
+    token: initialToken,
   });
 
   const value = useMemo(() => ({
@@ -58,13 +65,8 @@ export const AuthProvider: React.FC = ({ children }) => {
   const router = useRouter();
 
   useEffect(() => {
-    const token = localStorage.getItem('uptimeMonitorToken');
-    if (token) {
-      dispatch({
-        type: 'login',
-        token,
-      });
-    } else {
+    const token = null;
+    if (token && urlNeedsAuth(router.pathname)) {
       router.replace(url('/auth/login'));
     }
   }, []);
