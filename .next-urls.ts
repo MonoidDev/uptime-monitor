@@ -1,5 +1,5 @@
 export type Urls =
-  | "/auth/create-user"
+  | "/auth/createUser"
   | "/auth/login"
   | "/"
   | "/monitoring/events"
@@ -10,7 +10,7 @@ export type Urls =
   | "/monitoring/websites"
   | "/urls";
 export const urls = [
-  "/auth/create-user",
+  "/auth/createUser",
   "/auth/login",
   "/",
   "/monitoring/events",

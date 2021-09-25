@@ -1,3 +1,29 @@
 .paper {
-  @apply bg-white drop-shadow-md rounded-md p-6;
+  @apply bg-white shadow-lg rounded-md p-6;
+}
+
+.tag {
+  min-width: 40px;
+
+  @apply inline-block text-white text-center text-xs rounded-sm leading-5;
+}
+
+.tag.log {
+  @apply bg-gray-300;
+}
+
+.tag.info {
+  @apply bg-blue-600;
+}
+
+.tag.warning {
+  @apply bg-yellow-400;
+}
+
+.tag.error {
+  @apply bg-red-500;
+}
+
+.tag.fatal {
+  @apply bg-black;
 }

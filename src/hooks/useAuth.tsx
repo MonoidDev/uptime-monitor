@@ -2,6 +2,10 @@ import React, {
   useContext, useEffect, useMemo, useReducer,
 } from 'react';
 
+import { useRouter } from 'next/router';
+
+import { url } from '../../.next-urls';
+
 export interface AuthState {
   token: string | null;
 }
@@ -51,6 +55,8 @@ export const AuthProvider: React.FC = ({ children }) => {
     dispatch,
   }), [state, dispatch]);
 
+  const router = useRouter();
+
   useEffect(() => {
     const token = localStorage.getItem('uptimeMonitorToken');
     if (token) {
@@ -58,6 +64,8 @@ export const AuthProvider: React.FC = ({ children }) => {
         type: 'login',
         token,
       });
+    } else {
+      router.replace(url('/auth/login'));
     }
   }, []);
 
