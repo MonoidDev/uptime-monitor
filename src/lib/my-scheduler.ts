@@ -1,6 +1,6 @@
-import MyMonitor from './my-monitor';
+import * as schedule from 'node-schedule';
 
-const sche = require('node-schedule');
+import MyMonitor from './my-monitor';
 
 class MyScheduler {
   private static instance: MyScheduler;
@@ -12,7 +12,7 @@ class MyScheduler {
 
   private enabled: Boolean;
 
-  private runningJob: any;
+  private runningJob?: schedule.Job;
 
   private constructor() {
     this.enabled = false;
@@ -21,7 +21,7 @@ class MyScheduler {
   public enable(): Boolean {
     if (this.enabled) return false;
 
-    this.runningJob = sche.scheduleJob('* * * * * *', async () => {
+    this.runningJob = schedule.scheduleJob('* * * * * *', async () => {
       try {
         const instance = new MyMonitor();
         await instance.run();
@@ -38,7 +38,7 @@ class MyScheduler {
   public disable(): Boolean {
     if (!this.enabled) return true;
 
-    this.runningJob.cancel();
+    this.runningJob?.cancel();
     this.enabled = false;
     console.log('[MyScheduler] disabled');
     return true;

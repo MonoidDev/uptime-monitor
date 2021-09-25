@@ -1,5 +1,5 @@
 import AbortController from 'abort-controller';
-import fetch, { AbortError, Headers } from 'node-fetch';
+import fetch, { Headers } from 'node-fetch';
 
 /* eslint-disable @typescript-eslint/lines-between-class-members */
 class PingResult {
@@ -37,10 +37,13 @@ async function doPing(url: string): Promise<PingResult> {
   const startAt = new Date();
 
   const controller = new AbortController();
+  let timeout = false;
   const hTimeout = setTimeout(() => {
     controller.abort();
+    timeout = true;
   }, 5000);
 
+  console.log(`[doPing] pinging ${url}`);
   try {
     const response = await fetch(url, {
       signal: controller.signal,
@@ -51,12 +54,12 @@ async function doPing(url: string): Promise<PingResult> {
     result.statusCode = response.status;
     result.resHeaders = headersToStrings(response.headers);
     result.resBody = await response.text();
-  } catch (error: any) {
-    if (error instanceof AbortError) {
+  } catch (error: unknown) {
+    if (timeout) {
       result.timeout = true;
     } else {
       result.statusCode = -1;
-      result.resBody = error.message;
+      result.resBody = (error as Error).message;
     }
   } finally {
     clearTimeout(hTimeout);
@@ -64,6 +67,8 @@ async function doPing(url: string): Promise<PingResult> {
 
   const endAt = new Date();
   result.latency = endAt.getTime() - startAt.getTime();
+
+  console.log(`[doPing] pinged ${url} in ${result.latency}ms.`);
 
   return result;
 }
