@@ -7,7 +7,7 @@ const cronService = new CronService();
 class MyMonitor {
   public async run() {
     // console.log(`[MyMonitor] start at ${new Date().toISOString()}`);
-    // return this.scanWebsites();
+    return this.scanWebsites();
   }
 
   public async scanWebsites() {
