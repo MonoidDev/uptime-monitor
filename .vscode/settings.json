@@ -9,5 +9,6 @@
   "scss.validate": false,
   "tailwindCSS.includeLanguages": {
     "plaintext": "javascript"
-  }
+  },
+  "editor.tabSize": 2
 }
