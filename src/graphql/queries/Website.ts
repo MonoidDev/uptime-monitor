@@ -1,5 +1,5 @@
 import {
-  queryField, nonNull, intArg, list,
+  queryField, nonNull, intArg,
 } from 'nexus';
 
 import { loginRequired } from '../auth';
@@ -16,12 +16,17 @@ export const website = queryField('website', {
 });
 
 export const websites = queryField('websites', {
-  type: list('Website'),
+  type: 'PaginatedWebsite',
   args: {
-    afterId: nonNull(intArg()),
+    page: nonNull(intArg()),
   },
   authorize: loginRequired,
-  async resolve(_, { afterId }, ctx) {
-    return ctx.websiteSerice.findWebsites(afterId);
+  async resolve(_, { page }, ctx) {
+    const count = await ctx.websiteSerice.total();
+    const results = await ctx.websiteSerice.findWebsites(page);
+    return {
+      count,
+      results,
+    };
   },
 });

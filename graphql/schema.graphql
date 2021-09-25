@@ -40,6 +40,11 @@ type Mutation {
   updateWebsite(website: CreateUpdateWebsite!, websiteId: Int!): Website
 }
 
+type PaginatedWebsite {
+  count: Int
+  results: [Website]
+}
+
 type Query {
   allUsers: [User]
   me: User
@@ -47,7 +52,7 @@ type Query {
   traces(afterId: Int!): [Trace]
   user(id: Int!): User
   website(id: Int!): Website
-  websites(afterId: Int!): [Website]
+  websites(page: Int!): PaginatedWebsite
 }
 
 type Trace {

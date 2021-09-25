@@ -12,20 +12,23 @@ export class WebsiteSerice extends BaseService {
     });
   }
 
-  async findWebsites(afterId: number) {
+  async findWebsites(page: number) {
+    const skip = (page - 1) * 10;
     const userId = this.ctx.authInfo!.id;
     return this.ctx.prisma.website.findMany({
+      skip,
+      take: 10,
       where: {
         userId,
-        id: {
-          lt: afterId,
-        },
       },
       orderBy: {
         createdAt: 'desc',
       },
-      take: 10,
     });
+  }
+
+  async total() {
+    return this.ctx.prisma.website.count();
   }
 
   createWebsite(website: t.TypeOf<typeof CreateUpdateWebsiteSchema>) {

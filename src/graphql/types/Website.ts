@@ -12,6 +12,16 @@ export const Website = objectType({
   },
 });
 
+export const PaginatedWebsite = objectType({
+  name: 'PaginatedWebsite',
+  definition(t) {
+    t.int('count');
+    t.list.field('results', {
+      type: Website,
+    });
+  },
+});
+
 export const CreateUpdateWebsite = inputObjectType({
   name: 'CreateUpdateWebsite',
   definition(t) {
