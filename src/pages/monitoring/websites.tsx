@@ -80,20 +80,20 @@ export default function Page() {
       dataIndex: 'status',
       key: 'status',
       render: (statusArray: (string | null | undefined)[]) => (
-        <div className="inline-flex space-x-1">
+        <div className="flex justify-start space-x-1">
           {statusArray.map((status) => {
             if (!status) {
               return (
-                <div className="flex-1 w-1 h-4 bg-gray-500" />
+                <div className="w-1.5 h-4 bg-gray-500" />
               );
             }
             if (status === 'OK') {
               return (
-                <div className="flex-1 w-1 h-4 bg-green-400" />
+                <div className="w-1.5 h-4 bg-green-400" />
               );
             }
             return (
-              <div className="flex-1 w-1 h-4 bg-red-600" />
+              <div className="w-1.5 h-4 bg-red-600" />
             );
           })}
         </div>
