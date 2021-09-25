@@ -7,6 +7,7 @@ export const Website = objectType({
     t.model.name();
     t.model.url();
     t.model.pingInterval();
+    t.model.enabled();
     t.model.userId();
   },
 });
@@ -17,5 +18,6 @@ export const CreateUpdateWebsite = inputObjectType({
     t.nonNull.string('name');
     t.nonNull.string('url');
     t.nonNull.int('pingInterval');
+    t.nonNull.boolean('enabled');
   },
 });

@@ -1,6 +1,6 @@
 import * as t from 'io-ts';
 
-import { requiredStringField, requiredNumberField } from '../../utils/fields';
+import { requiredStringField, requiredNumberField, booleanField } from '../../utils/fields';
 import { defineSchema } from '../../utils/types';
 
 export const CreateUpdateWebsiteSchema = defineSchema(
@@ -9,5 +9,6 @@ export const CreateUpdateWebsiteSchema = defineSchema(
     name: requiredStringField('Name'),
     url: requiredStringField('Url'),
     pingInterval: requiredNumberField('PingInterval'),
+    enabled: booleanField('Enabled'),
   }),
 );

@@ -13,6 +13,7 @@ input CreateTrace {
 }
 
 input CreateUpdateWebsite {
+  enabled: Boolean!
   name: String!
   pingInterval: Int!
   url: String!
@@ -93,6 +94,7 @@ type User {
 }
 
 type Website {
+  enabled: Boolean!
   id: Int!
   name: String!
   pingInterval: Int!

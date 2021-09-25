@@ -32,10 +32,11 @@ export class WebsiteSerice extends BaseService {
     const userId = this.ctx.authInfo!.id;
     return this.ctx.prisma.website.create({
       data: {
+        userId,
         name: website!.name,
         url: website!.url,
         pingInterval: website!.pingInterval,
-        userId,
+        enabled: website!.enabled,
       },
     });
   }
@@ -49,6 +50,7 @@ export class WebsiteSerice extends BaseService {
         name: website!.name,
         url: website!.url,
         pingInterval: website!.pingInterval,
+        enabled: website!.enabled,
       },
     });
   }
