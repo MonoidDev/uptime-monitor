@@ -13,6 +13,7 @@ import * as t from 'io-ts';
 import * as h from 'tyrann-io';
 
 import { Layout } from '../../components/Layout';
+import { TraceDataCell } from '../../components/TraceDataCell';
 
 interface Website {
   id: number,
@@ -93,6 +94,7 @@ export default function Page() {
     },
   ];
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const showDetails = (id:number) => {
     setTraceData(exampleData[0]);
     setModalVisible(true);
@@ -173,44 +175,29 @@ export default function Page() {
           onOk={() => setModalVisible(false)}
           onCancel={() => setModalVisible(false)}
         >
-          <p className="flex justify-between py-1.5">
-            <div> Type </div>
-            <div className="bg-gray-200 pl-2 py-0.5 w-3/4 rounded-md">
-              {'type' in traceData ? traceData.type : ''}
-            </div>
-          </p>
-          <p className="flex justify-between py-1.5">
-            <div> Website </div>
-            <div className="pl-2 py-0.5 w-3/4 rounded-md">
-              {'website' in traceData
-                ? (
-                  <a
-                    className="underline"
-                    href={traceData.website.url}
-                  >
-                    {traceData.website.name}
-                  </a>
-                ) : ''}
-            </div>
-          </p>
-          <p className="flex justify-between py-1.5">
-            <div> Time </div>
-            <div className="bg-gray-200 pl-2 py-0.5 w-3/4 rounded-md">
-              {'time' in traceData ? traceData.time : ''}
-            </div>
-          </p>
-          <p className="flex justify-between py-1.5">
-            <div> Status </div>
-            <div className="bg-gray-200 pl-2 py-0.5 w-3/4 rounded-md">
-              {'status' in traceData ? traceData.status : ''}
-            </div>
-          </p>
-          <p className="flex justify-between py-1.5">
-            <div> Duration </div>
-            <div className="bg-gray-200 pl-2 py-0.5 w-3/4 rounded-md">
-              {'duration' in traceData ? traceData.duration : ''}
-            </div>
-          </p>
+          <TraceDataCell label="Type">
+            {'type' in traceData ? traceData.type : ''}
+          </TraceDataCell>
+          <TraceDataCell label="Website">
+            {'website' in traceData
+              ? (
+                <a
+                  className="underline"
+                  href={traceData.website.url}
+                >
+                  {traceData.website.name}
+                </a>
+              ) : ''}
+          </TraceDataCell>
+          <TraceDataCell label="Time">
+            {'time' in traceData ? traceData.time : ''}
+          </TraceDataCell>
+          <TraceDataCell label="Status">
+            {'status' in traceData ? traceData.status : ''}
+          </TraceDataCell>
+          <TraceDataCell label="Duration">
+            {'duration' in traceData ? traceData.duration : ''}
+          </TraceDataCell>
         </Modal>
       </div>
     </Layout>

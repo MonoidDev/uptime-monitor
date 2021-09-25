@@ -10,10 +10,8 @@ import {
   Tag,
 } from 'antd';
 import * as t from 'io-ts';
-import { useRouter } from 'next/router';
 import * as h from 'tyrann-io';
 
-import { url } from '../../../.next-urls';
 import { Layout } from '../../components/Layout';
 
 interface Website {
@@ -41,8 +39,6 @@ export default function Page() {
       timeAfter: h.omittable(t.string),
     }), []),
   );
-
-  const router = useRouter();
 
   const columns = [
     {
