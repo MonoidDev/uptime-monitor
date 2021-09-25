@@ -1,6 +1,6 @@
 import * as t from 'io-ts';
 
-import { CreateWebsiteSchema } from '../graphql/types/WebsiteSchema';
+import { CreateUpdateWebsiteSchema } from '../graphql/types/WebsiteSchema';
 import { BaseService } from './BaseService';
 
 export class WebsiteSerice extends BaseService {
@@ -28,13 +28,27 @@ export class WebsiteSerice extends BaseService {
     });
   }
 
-  createWebsite(userId: number, website: t.TypeOf<typeof CreateWebsiteSchema>) {
+  createWebsite(website: t.TypeOf<typeof CreateUpdateWebsiteSchema>) {
+    const userId = this.ctx.authInfo!.id;
     return this.ctx.prisma.website.create({
       data: {
         name: website!.name,
         url: website!.url,
         pingInterval: website!.pingInterval,
         userId,
+      },
+    });
+  }
+
+  updateWebsite(websiteId: number, website: t.TypeOf<typeof CreateUpdateWebsiteSchema>) {
+    return this.ctx.prisma.website.update({
+      where: {
+        id: websiteId,
+      },
+      data: {
+        name: website!.name,
+        url: website!.url,
+        pingInterval: website!.pingInterval,
       },
     });
   }

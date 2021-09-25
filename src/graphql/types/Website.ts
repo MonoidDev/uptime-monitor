@@ -11,8 +11,8 @@ export const Website = objectType({
   },
 });
 
-export const CreateWebsite = inputObjectType({
-  name: 'CreateWebsite',
+export const CreateUpdateWebsite = inputObjectType({
+  name: 'CreateUpdateWebsite',
   definition(t) {
     t.nonNull.string('name');
     t.nonNull.string('url');
