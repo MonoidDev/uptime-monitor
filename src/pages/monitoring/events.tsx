@@ -88,11 +88,10 @@ export default function Page() {
         <Button
           type="primary"
           shape="round"
-          onClick={() => {
-            router.push(`${url('/monitoring/traceDetails')}?id=${record.trace}`);
-          }}
         >
-          Details
+          Trace:
+          {' '}
+          {record.trace}
         </Button>
       ),
     },
@@ -102,7 +101,7 @@ export default function Page() {
     return (
       <div className="flex justify-between items-center">
         <Typography.Title className="!text-primary-dark">
-          Traces
+          Events
         </Typography.Title>
       </div>
     );
