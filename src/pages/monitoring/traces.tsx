@@ -93,7 +93,7 @@ export default function Page() {
     },
   ];
 
-  const showDetails = (id:number) => {
+  const showDetails = (_id: number) => {
     setTraceData(exampleData[0]);
     setModalVisible(true);
   };
