@@ -41,10 +41,10 @@ type Query {
   allUsers: [User]
   me: User
   trace(id: Int!): Trace
-  traces(page: Int!): [Trace]
+  traces(afterId: Int!): [Trace]
   user(id: Int!): User
   website(id: Int!): Website
-  websites(page: Int!): [Website]
+  websites(afterId: Int!): [Website]
 }
 
 type Trace {

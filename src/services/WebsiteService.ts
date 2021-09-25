@@ -12,17 +12,18 @@ export class WebsiteSerice extends BaseService {
     });
   }
 
-  async findWebsites(page: number) {
+  async findWebsites(afterId: number) {
     const userId = this.ctx.authInfo!.id;
-    const offset = (page - 1) * 10;
     return this.ctx.prisma.website.findMany({
       where: {
         userId,
+        id: {
+          lt: afterId,
+        },
       },
       orderBy: {
         createdAt: 'desc',
       },
-      skip: offset,
       take: 10,
     });
   }

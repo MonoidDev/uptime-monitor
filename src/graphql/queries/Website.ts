@@ -18,10 +18,10 @@ export const website = queryField('website', {
 export const websites = queryField('websites', {
   type: list('Website'),
   args: {
-    page: nonNull(intArg()),
+    afterId: nonNull(intArg()),
   },
   authorize: loginRequired,
-  async resolve(_, { page }, ctx) {
-    return ctx.websiteSerice.findWebsites(page);
+  async resolve(_, { afterId }, ctx) {
+    return ctx.websiteSerice.findWebsites(afterId);
   },
 });
