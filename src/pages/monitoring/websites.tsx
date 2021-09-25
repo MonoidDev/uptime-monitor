@@ -8,6 +8,7 @@ import {
   Form,
   Input,
 } from 'antd';
+import { useGetWebsitesQuery } from 'app/../graphql/client/generated';
 import * as t from 'io-ts';
 import { useRouter } from 'next/router';
 import * as h from 'tyrann-io';
@@ -19,10 +20,32 @@ export default function Page() {
   const { search, updateSearch } = useSearch(
     useMemo(() => t.type({
       keyword: h.omittable(t.string),
+      page: h.omittable(h.number().castString()),
     }), []),
   );
 
   const router = useRouter();
+
+  const websites = useGetWebsitesQuery({
+    variables: {
+      websitesPage: (search?.page ?? 0) + 1,
+    },
+  });
+
+  const websitesData = websites.data?.websites;
+
+  const websiteItems = websitesData?.results?.map((website) => ({
+    id: website!.id,
+    name: website!.name,
+    url: website!.url,
+    pingInterval: website!.pingInterval,
+    enabled: website!.enabled,
+    userId: website!.userId,
+    status: [null, null, null, 'OK', 'OK', 'OK', 'OK', 'TIMEOUT', 'TIMEOUT', 'TIMEOUT', 'TIMEOUT', 'TIMEOUT'],
+  }));
+
+  // const pageCount = 10;
+
   const renderTitle = () => {
     return (
       <div className="flex justify-between items-center">
@@ -128,6 +151,9 @@ export default function Page() {
           href: '/monitoring/websites',
         },
       ]}
+      queries={[
+        websites,
+      ]}
     >
       {renderTitle()}
       <div className="bg-white p-8 shadow-md">
@@ -146,10 +172,14 @@ export default function Page() {
         <Table
           bordered={false}
           className="py-8"
-          dataSource={exampleData}
+          dataSource={websiteItems}
           columns={columns}
           pagination={{
             className: 'flex justify-end pt-10',
+            pageSize: 10,
+            total: websitesData?.count!,
+            current: (search?.page ?? 0) + 1,
+            onChange: (page) => updateSearch({ page: page - 1 }),
           }}
         />
       </div>
@@ -158,19 +188,10 @@ export default function Page() {
 }
 
 interface WebsiteItem {
-  key: string;
   id: number;
   name: string;
   url: string;
-  status: (string | null | undefined)[];
+  pingInterval: number;
+  enabled: boolean;
+  userId: number;
 }
-
-const exampleData = [
-  {
-    key: '1',
-    id: 1,
-    name: 'Google',
-    url: 'https://www.google.com',
-    status: [null, null, null, 'OK', 'OK', 'OK', 'OK', 'TIMEOUT', 'TIMEOUT', 'TIMEOUT', 'TIMEOUT', 'TIMEOUT'],
-  },
-];

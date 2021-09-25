@@ -8,6 +8,20 @@ query GetWebsiteById($id: Int!) {
   }
 }
 
+query GetWebsites($websitesPage: Int!) {
+  websites(page: $websitesPage) {
+    count
+    results {
+      id
+      name
+      url
+      pingInterval
+      enabled
+      userId
+    }
+  }
+}
+
 mutation CreateWebsite($website: CreateUpdateWebsite!) {
   createWebsite(website: $website) {
     id
