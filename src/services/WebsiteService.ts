@@ -3,7 +3,7 @@ import * as t from 'io-ts';
 import { CreateUpdateWebsiteSchema } from '../graphql/types/WebsiteSchema';
 import { BaseService } from './BaseService';
 
-export class WebsiteSerice extends BaseService {
+export class WebsiteService extends BaseService {
   async findWebsiteById(id: number) {
     return this.ctx.prisma.website.findUnique({
       where: {
@@ -40,6 +40,7 @@ export class WebsiteSerice extends BaseService {
         url: website!.url,
         pingInterval: website!.pingInterval,
         enabled: website!.enabled,
+        emails: website!.emails,
       },
     });
   }
@@ -54,6 +55,7 @@ export class WebsiteSerice extends BaseService {
         url: website!.url,
         pingInterval: website!.pingInterval,
         enabled: website!.enabled,
+        emails: website!.emails,
       },
     });
   }

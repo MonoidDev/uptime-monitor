@@ -3,7 +3,7 @@ import * as t from 'io-ts';
 import { CreateTraceSchema } from '../graphql/types/TraceSchema';
 import { BaseService } from './BaseService';
 
-export class TraceSerice extends BaseService {
+export class TraceService extends BaseService {
   async findTraceById(id: number) {
     return this.ctx.prisma.trace.findUnique({
       where: {
@@ -13,6 +13,30 @@ export class TraceSerice extends BaseService {
         website: true,
       },
     });
+  }
+
+  async findErrorCountGroupByDate(rangeTime: string) {
+    if (rangeTime === '24h') {
+      return this.ctx.prisma.$queryRaw`SELECT
+      time_range, count(*)
+      FROM (
+          SELECT to_char("createdAt", 'yyyy-mm-dd hh24:00:00') time_range FROM public."Trace"
+          WHERE "createdAt" > (current_timestamp - interval '1 day')
+      ) as tmp group by time_range;`;
+    } if (rangeTime === '31d') {
+      return this.ctx.prisma.$queryRaw`SELECT
+      time_range, count(*)
+      FROM (
+          SELECT to_char("createdAt", 'yyyy-mm-dd 00:00:00') time_range FROM "Trace"
+          WHERE "createdAt" > (current_timestamp - interval '31 day')
+      ) as tmp group by time_range;`;
+    }
+    return this.ctx.prisma.$queryRaw`SELECT
+      time_range, count(*)
+      FROM (
+          SELECT to_char("createdAt", 'yyyy-mm-dd 00:00:00') time_range FROM "Trace"
+          WHERE "createdAt" > (current_timestamp - interval '31 day')
+      ) as tmp group by time_range;`;
   }
 
   async findTraces(afterId: number) {

@@ -14,7 +14,7 @@ export const createTrace = mutationField('createTrace', {
     trace: CreateTraceSchema,
   },
   async resolve(_, { trace }, ctx) {
-    const newTrace = await ctx.traceSerice.createTrace(trace);
+    const newTrace = await ctx.traceService.createTrace(trace);
     return newTrace;
   },
 });

@@ -14,7 +14,7 @@ export const createWebsite = mutationField('createWebsite', {
     website: CreateUpdateWebsiteSchema,
   },
   async resolve(_, { website }, ctx) {
-    const newWebsite = await ctx.websiteSerice.createWebsite(website);
+    const newWebsite = await ctx.websiteService.createWebsite(website);
     return newWebsite;
   },
 });
@@ -30,7 +30,7 @@ export const updateWebsite = mutationField('updateWebsite', {
     website: CreateUpdateWebsiteSchema,
   },
   async resolve(_, { websiteId, website }, ctx) {
-    const updatedWebsite = await ctx.websiteSerice.updateWebsite(websiteId, website);
+    const updatedWebsite = await ctx.websiteService.updateWebsite(websiteId, website);
     return updatedWebsite;
   },
 });
@@ -42,7 +42,7 @@ export const deleteWebsite = mutationField('deleteWebsite', {
     websiteId: nonNull(intArg()),
   },
   async resolve(_, { websiteId }, ctx) {
-    const deletedWebsite = await ctx.websiteSerice.deleteWebsite(websiteId);
+    const deletedWebsite = await ctx.websiteService.deleteWebsite(websiteId);
     return deletedWebsite;
   },
 });

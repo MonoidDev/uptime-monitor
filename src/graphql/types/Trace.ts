@@ -16,6 +16,14 @@ export const Trace = objectType({
   },
 });
 
+export const TraceOfError = objectType({
+  name: 'TraceOfError',
+  definition(t) {
+    t.string('time_range');
+    t.int('count');
+  },
+});
+
 const TraceTypeChoices = enumType({
   name: 'TraceTypeChoices',
   members: ['PING'],
