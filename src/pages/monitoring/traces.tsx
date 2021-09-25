@@ -94,8 +94,7 @@ export default function Page() {
     },
   ];
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const showDetails = (id:number) => {
+  const showDetails = (_id: number) => {
     setTraceData(exampleData[0]);
     setModalVisible(true);
   };

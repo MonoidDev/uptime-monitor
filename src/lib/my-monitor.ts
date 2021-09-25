@@ -6,7 +6,7 @@ const cronService = new CronService();
 
 class MyMonitor {
   public async run() {
-    console.log(`[MyMonitor] start at ${new Date().toISOString()}`);
+    // console.log(`[MyMonitor] start at ${new Date().toISOString()}`);
     return this.scanWebsites();
   }
 
@@ -21,6 +21,7 @@ class MyMonitor {
       if (websites.length === 0) {
         break;
       }
+
       nWebsites += websites.length;
 
       // eslint-disable-next-line @typescript-eslint/no-loop-func
@@ -29,7 +30,7 @@ class MyMonitor {
         if (this.checkInterval(website, trace, now)) {
           futures.push(this.processWebsite(website, trace));
           if ((lastId === null) || (lastId as number > website.id)) {
-            lastId = website.id;
+            lastId = website.id - 1;
           }
         }
       });
