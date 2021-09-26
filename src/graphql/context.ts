@@ -3,9 +3,9 @@ import { ServerResponse } from 'http';
 import { PrismaClient } from '@prisma/client';
 
 import { prisma } from '../lib/prisma';
-import { TraceSerice } from '../services/TraceService';
+import { TraceService } from '../services/TraceService';
 import { UserService } from '../services/UserService';
-import { WebsiteSerice } from '../services/WebsiteService';
+import { WebsiteService } from '../services/WebsiteService';
 import type { NextIncomingMessage, RequestObjectHandler } from '../utils/types';
 import { Auth, AuthInfo } from './auth';
 
@@ -14,8 +14,8 @@ export type Context = {
   prisma: PrismaClient;
   isLoggedIn: boolean;
   userService: UserService;
-  websiteSerice: WebsiteSerice;
-  traceSerice: TraceSerice;
+  websiteService: WebsiteService;
+  traceService: TraceService;
   req: NextIncomingMessage;
   res: ServerResponse;
 };
@@ -43,8 +43,8 @@ export const createContext: RequestObjectHandler<Context> = async ({ req, res })
       return Boolean(authInfo);
     },
     userService: new UserService(getContext),
-    websiteSerice: new WebsiteSerice(getContext),
-    traceSerice: new TraceSerice(getContext),
+    websiteService: new WebsiteService(getContext),
+    traceService: new TraceService(getContext),
     req,
     res,
   };

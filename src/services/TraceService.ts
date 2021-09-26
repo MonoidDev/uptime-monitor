@@ -3,7 +3,7 @@ import * as t from 'io-ts';
 import { CreateTraceSchema } from '../graphql/types/TraceSchema';
 import { BaseService } from './BaseService';
 
-export class TraceSerice extends BaseService {
+export class TraceService extends BaseService {
   async findTraceById(id: number) {
     return this.ctx.prisma.trace.findUnique({
       where: {
