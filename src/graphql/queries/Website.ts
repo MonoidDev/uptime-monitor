@@ -11,7 +11,7 @@ export const website = queryField('website', {
   },
   authorize: loginRequired,
   async resolve(_, { id }, ctx) {
-    return ctx.websiteSerice.findWebsiteById(id);
+    return ctx.websiteService.findWebsiteById(id);
   },
 });
 
@@ -22,8 +22,8 @@ export const websites = queryField('websites', {
   },
   authorize: loginRequired,
   async resolve(_, { page }, ctx) {
-    const count = await ctx.websiteSerice.total();
-    const results = await ctx.websiteSerice.findWebsites(page);
+    const count = await ctx.websiteService.total();
+    const results = await ctx.websiteService.findWebsites(page);
     return {
       count,
       results,
