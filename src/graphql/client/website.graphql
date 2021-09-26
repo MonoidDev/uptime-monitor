@@ -4,7 +4,9 @@ query GetWebsiteById($id: Int!) {
     name
     url
     pingInterval
+    enabled
     userId
+    emails
   }
 }
 
@@ -28,6 +30,20 @@ mutation CreateWebsite($website: CreateUpdateWebsite!) {
     name
     url
     pingInterval
+    enabled
     userId
+    emails
+  }
+}
+
+mutation UpdateWebsite($websiteId: Int!, $website: CreateUpdateWebsite!) {
+  updateWebsite(websiteId: $websiteId, website: $website) {
+    id
+    name
+    url
+    pingInterval
+    enabled
+    userId
+    emails
   }
 }

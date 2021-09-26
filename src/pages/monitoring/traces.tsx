@@ -126,7 +126,7 @@ export default function Page() {
           <Form.Item name="timeAfter">
             <DatePicker showTime placeholder="Start Time" />
           </Form.Item>
-          <span className="pr-2 pt-2"> to </span>
+          <span className="pr-3 pt-2"> to </span>
           <Form.Item name="timeBefore">
             <DatePicker showTime placeholder="End Time" />
           </Form.Item>
@@ -140,6 +140,41 @@ export default function Page() {
           </Form.Item>
         </Form>
       </>
+    );
+  };
+
+  const renderTraceDataModal = () => {
+    return (
+      <Modal
+        title={`Trace #${'id' in traceData ? traceData.id : ''}`}
+        visible={modalVisible}
+        onOk={() => setModalVisible(false)}
+        onCancel={() => setModalVisible(false)}
+      >
+        <TraceDataCell label="Type">
+          {'type' in traceData ? traceData.type : ''}
+        </TraceDataCell>
+        <TraceDataCell label="Website">
+          {'website' in traceData
+            ? (
+              <a
+                className="underline"
+                href={traceData.website.url}
+              >
+                {traceData.website.name}
+              </a>
+            ) : ''}
+        </TraceDataCell>
+        <TraceDataCell label="Time">
+          {'time' in traceData ? traceData.time : ''}
+        </TraceDataCell>
+        <TraceDataCell label="Status">
+          {'status' in traceData ? traceData.status : ''}
+        </TraceDataCell>
+        <TraceDataCell label="Duration">
+          {'duration' in traceData ? traceData.duration : ''}
+        </TraceDataCell>
+      </Modal>
     );
   };
 
@@ -168,36 +203,7 @@ export default function Page() {
             className: 'flex justify-end pt-10',
           }}
         />
-        <Modal
-          title={`Trace #${'id' in traceData ? traceData.id : ''}`}
-          visible={modalVisible}
-          onOk={() => setModalVisible(false)}
-          onCancel={() => setModalVisible(false)}
-        >
-          <TraceDataCell label="Type">
-            {'type' in traceData ? traceData.type : ''}
-          </TraceDataCell>
-          <TraceDataCell label="Website">
-            {'website' in traceData
-              ? (
-                <a
-                  className="underline"
-                  href={traceData.website.url}
-                >
-                  {traceData.website.name}
-                </a>
-              ) : ''}
-          </TraceDataCell>
-          <TraceDataCell label="Time">
-            {'time' in traceData ? traceData.time : ''}
-          </TraceDataCell>
-          <TraceDataCell label="Status">
-            {'status' in traceData ? traceData.status : ''}
-          </TraceDataCell>
-          <TraceDataCell label="Duration">
-            {'duration' in traceData ? traceData.duration : ''}
-          </TraceDataCell>
-        </Modal>
+        {renderTraceDataModal()}
       </div>
     </Layout>
   );
