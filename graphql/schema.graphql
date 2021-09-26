@@ -50,6 +50,7 @@ type Query {
   allUsers: [User]
   me: User
   trace(id: Int!): Trace
+  traceOfErrorCount(rangeTime: String!): [TraceOfError]
   traces(afterId: Int!): [Trace]
   user(id: Int!): User
   website(id: Int!): Website
@@ -67,6 +68,11 @@ type Trace {
   traceType: TraceType!
   website: Website!
   websiteId: Int!
+}
+
+type TraceOfError {
+  count: Int
+  time_range: String
 }
 
 enum TraceStatus {
