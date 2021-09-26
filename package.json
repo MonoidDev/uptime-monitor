@@ -16,7 +16,7 @@
     "build:cg": "graphql-codegen --config codegen.yml",
     "start": "next start",
     "lint": "eslint . --ext .ts,.tsx",
-    "gen-type": "yarn prisma generate",
+    "gen-types": "yarn prisma generate",
     "dev:env": "dotenv -e .env.development --",
     "dev:db-push": "yarn dev:env prisma db push",
     "prod:env": "dotenv -e .env.production --",
