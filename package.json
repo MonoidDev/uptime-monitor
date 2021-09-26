@@ -9,7 +9,7 @@
     "dev:watch-dev": "next dev",
     "dev:watch-gql": "ts-node-dev --transpile-only --no-notify --respawn scripts/emitGqlSchema.ts",
     "dev:watch-cg": "graphql-codegen --watch --config codegen.yml",
-    "build": "yarn gen-type && yarn build:config && yarn build:url && yarn build:gql && yarn build:cg && next build",
+    "build": "yarn gen-types && yarn build:config && yarn build:url && yarn build:gql && yarn build:cg && next build",
     "build:url": "ts-node scripts/emitNextUrls.ts",
     "build:gql": "ts-node --transpile-only scripts/emitGqlSchema.ts",
     "build:config": "ts-node --transpile-only  config/build.ts",

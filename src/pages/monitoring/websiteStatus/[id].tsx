@@ -4,6 +4,7 @@ import useSearch from '@monoid-dev/use-search';
 import {
   Select, Typography, Descriptions, Button, Row, Col,
 } from 'antd';
+import { url } from 'app/../.next-urls';
 import { useGetWebsiteByIdQuery } from 'app/../graphql/client/generated';
 import {
   ErrorChart, ErrorTable, EventTable, ResponseTimeChart,
@@ -15,9 +16,12 @@ import { gStyles } from 'app/styles';
 import descriptionsStyles from 'app/styles/descriptionsStyles.module.css';
 import classNames from 'classnames';
 import * as t from 'io-ts';
+import { useRouter } from 'next/router';
 import * as h from 'tyrann-io';
 
 export default function Page() {
+  const router = useRouter();
+
   const { search, updateSearch } = useSearch(
     useMemo(() => t.type({
       range: h.omittable(t.string),
@@ -40,7 +44,7 @@ export default function Page() {
     return (
       <div className="flex items-center mb-8">
         <Typography.Title className="!text-primary-dark !mb-0 mr-4">
-          Google Home
+          {website.data?.website?.name}
         </Typography.Title>
 
         <StatusArray
@@ -55,6 +59,7 @@ export default function Page() {
           type="primary"
           shape="round"
           className="mr-4"
+          onClick={() => router.push(url('/monitoring/websites'))}
         >
           All Sites
         </Button>
@@ -80,7 +85,13 @@ export default function Page() {
             {website.data?.website?.name}
           </Descriptions.Item>
           <Descriptions.Item label="URL">
-            {website.data?.website?.url}
+            <a
+              href={website.data?.website?.url}
+              target="_blank"
+              rel="noreferrer"
+            >
+              {website.data?.website?.url}
+            </a>
           </Descriptions.Item>
           <Descriptions.Item label="Ping Interval (s)">
             {website.data?.website?.pingInterval}
@@ -134,7 +145,7 @@ export default function Page() {
           title: 'Website Status',
         },
         {
-          title: 'Google Home',
+          title: website?.data?.website?.name ?? 'Loading...',
         },
       ]}
       queries={[
