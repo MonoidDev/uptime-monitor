@@ -40,6 +40,7 @@ export class WebsiteSerice extends BaseService {
         url: website!.url,
         pingInterval: website!.pingInterval,
         enabled: website!.enabled,
+        emails: website!.emails,
       },
     });
   }
@@ -54,6 +55,7 @@ export class WebsiteSerice extends BaseService {
         url: website!.url,
         pingInterval: website!.pingInterval,
         enabled: website!.enabled,
+        emails: website!.emails,
       },
     });
   }
