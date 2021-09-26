@@ -1,5 +1,5 @@
 import {
-  queryField, nonNull, intArg, list,
+  queryField, nonNull, intArg, list, stringArg,
 } from 'nexus';
 
 import { loginRequired } from '../auth';
@@ -23,5 +23,16 @@ export const traces = queryField('traces', {
   authorize: loginRequired,
   async resolve(_, { afterId }, ctx) {
     return ctx.traceService.findTraces(afterId);
+  },
+});
+
+export const traceOfErrorCount = queryField('traceOfErrorCount', {
+  type: list('TraceOfError'),
+  args: {
+    rangeTime: nonNull(stringArg()),
+  },
+  authorize: loginRequired,
+  async resolve(_, { rangeTime }, ctx) {
+    return ctx.traceService.findErrorCountGroupByDate(rangeTime);
   },
 });
