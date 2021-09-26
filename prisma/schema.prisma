@@ -23,9 +23,11 @@ model Website {
   name  String
   url   String
   pingInterval Int
+  enabled  Boolean @default(false)
   userId Int
   user User @relation(fields: [userId], references: [id])
   traces Trace[]
+  events Event[]
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
 }
@@ -40,8 +42,29 @@ model Trace {
   requestHeaders String?
   responseHeaders String?
   responseData String?
+  event Event?
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
+}
+
+model Event {
+  id    Int     @id @default(autoincrement())
+  type  String
+  websiteId Int
+  website Website @relation(fields: [websiteId], references: [id])
+  status SeverityType @default(LOG)
+  traceId Int
+  trace Trace @relation(fields: [traceId], references: [id])
+  data String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
+enum SeverityType {
+  LOG
+  WARN
+  ERROR
+  FATAL
 }
 
 enum TraceType {

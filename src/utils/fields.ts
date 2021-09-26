@@ -40,6 +40,10 @@ export const requiredNumberField = (label: string) => {
   return h.number().withLabel(label);
 };
 
+export const booleanField = (label: string) => {
+  return h.boolean().withLabel(label);
+};
+
 export const traceTypeField = t.literal('PING');
 
 export const traceStatusField = t.union([

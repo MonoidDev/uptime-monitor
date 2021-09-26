@@ -7,15 +7,27 @@ export const Website = objectType({
     t.model.name();
     t.model.url();
     t.model.pingInterval();
+    t.model.enabled();
     t.model.userId();
   },
 });
 
-export const CreateWebsite = inputObjectType({
-  name: 'CreateWebsite',
+export const PaginatedWebsite = objectType({
+  name: 'PaginatedWebsite',
+  definition(t) {
+    t.int('count');
+    t.list.field('results', {
+      type: Website,
+    });
+  },
+});
+
+export const CreateUpdateWebsite = inputObjectType({
+  name: 'CreateUpdateWebsite',
   definition(t) {
     t.nonNull.string('name');
     t.nonNull.string('url');
     t.nonNull.int('pingInterval');
+    t.nonNull.boolean('enabled');
   },
 });

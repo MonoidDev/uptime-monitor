@@ -12,15 +12,16 @@ input CreateTrace {
   websiteId: Int!
 }
 
-input CreateUser {
-  email: String!
-  inputPassword: String!
-}
-
-input CreateWebsite {
+input CreateUpdateWebsite {
+  enabled: Boolean!
   name: String!
   pingInterval: Int!
   url: String!
+}
+
+input CreateUser {
+  email: String!
+  inputPassword: String!
 }
 
 scalar DateTime
@@ -33,18 +34,25 @@ input Login {
 type Mutation {
   createTrace(trace: CreateTrace!): Trace
   createUser(user: CreateUser!): User
-  createWebsite(website: CreateWebsite!): Website
+  createWebsite(website: CreateUpdateWebsite!): Website
+  deleteWebsite(websiteId: Int!): Website
   login(auth: Login!): User
+  updateWebsite(website: CreateUpdateWebsite!, websiteId: Int!): Website
+}
+
+type PaginatedWebsite {
+  count: Int
+  results: [Website]
 }
 
 type Query {
   allUsers: [User]
   me: User
   trace(id: Int!): Trace
-  traces(page: Int!): [Trace]
+  traces(afterId: Int!): [Trace]
   user(id: Int!): User
   website(id: Int!): Website
-  websites(page: Int!): [Website]
+  websites(page: Int!): PaginatedWebsite
 }
 
 type Trace {
@@ -91,6 +99,7 @@ type User {
 }
 
 type Website {
+  enabled: Boolean!
   id: Int!
   name: String!
   pingInterval: Int!

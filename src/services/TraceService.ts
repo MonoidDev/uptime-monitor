@@ -15,13 +15,16 @@ export class TraceSerice extends BaseService {
     });
   }
 
-  async findTraces(page: number) {
-    const offset = (page - 1) * 10;
+  async findTraces(afterId: number) {
     return this.ctx.prisma.trace.findMany({
+      where: {
+        id: {
+          lt: afterId,
+        },
+      },
       orderBy: {
         createdAt: 'desc',
       },
-      skip: offset,
       take: 10,
     });
   }
