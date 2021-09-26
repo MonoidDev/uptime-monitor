@@ -18,7 +18,7 @@ class MyScheduler {
     this.enabled = false;
   }
 
-  public enable(): Boolean {
+  public start(): Boolean {
     if (this.enabled) return false;
 
     this.runningJob = schedule.scheduleJob('* * * * * *', async () => {
@@ -31,16 +31,16 @@ class MyScheduler {
     });
 
     this.enabled = true;
-    console.log('[MyScheduler] enabled');
+    console.log('[monitor] scheduler started');
     return true;
   }
 
-  public disable(): Boolean {
+  public stop(): Boolean {
     if (!this.enabled) return true;
 
     this.runningJob?.cancel();
     this.enabled = false;
-    console.log('[MyScheduler] disabled');
+    console.log('[monitor] scheduler stopped');
     return true;
   }
 }

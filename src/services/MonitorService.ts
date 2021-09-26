@@ -12,16 +12,16 @@ function getTraceStatus(result: PingResult) {
   return TraceStatus.OK;
 }
 
-export class CronService {
-  async findEnabledWebsites(lastId: number | null) {
+export class MonitorService {
+  async findEnabledWebsites(count: number, lastId: number | null) {
     let args : any = {
       where: {
-        // enabled: true,
+        enabled: true,
       },
       orderBy: {
-        id: 'desc',
+        id: 'asc',
       },
-      take: 100,
+      take: count,
     };
     if (lastId !== null) {
       args = {
@@ -29,6 +29,7 @@ export class CronService {
         cursor: {
           id: lastId,
         },
+        skip: 1,
       };
     }
     return prisma.website.findMany(args);

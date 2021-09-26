@@ -23,6 +23,24 @@ function headersToStrings(i: Headers) {
 async function doPing(url: string): Promise<PingResult> {
   const result = new PingResult();
 
+  if (process.env.NODE_ENV !== 'production')
+  {
+    // mock
+    console.log(`[fetch] mock for ${url}`);
+
+    result.timeout = false;
+    result.latency = 100;
+    result.statusCode = 200;
+    result.reqHeaders = [
+      'User-Agent: mock',
+    ];
+    result.resHeaders = [
+      'Content-Length: 0',
+    ];
+    result.resBody = "MOCK";
+    return result;
+  }
+
   const reqHeadersDefault: { [key: string]: string } = {
     'Accept-Encoding': 'gzip,deflate,br',
     'Accept': '*/*',
@@ -43,7 +61,7 @@ async function doPing(url: string): Promise<PingResult> {
     timeout = true;
   }, 5000);
 
-  console.log(`[doPing] pinging ${url}`);
+  // console.log(`[doPing] pinging ${url}`);
   try {
     const response = await fetch(url, {
       signal: controller.signal,
@@ -68,8 +86,7 @@ async function doPing(url: string): Promise<PingResult> {
   const endAt = new Date();
   result.latency = endAt.getTime() - startAt.getTime();
 
-  console.log(`[doPing] pinged ${url} in ${result.latency}ms.`);
-
+  // console.log(`[doPing] pinged ${url} in ${result.latency}ms.`);
   return result;
 }
 

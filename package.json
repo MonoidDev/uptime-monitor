@@ -19,6 +19,7 @@
     "gen-types": "yarn prisma generate",
     "dev:env": "dotenv -e .env.development --",
     "dev:db-push": "yarn dev:env prisma db push",
+    "dev:start-monitor": "yarn dev:env ts-node-dev --transpile-only scripts/startMonitor.ts",
     "prod:env": "dotenv -e .env.production --",
     "prod:db-push": "yarn prod:env prisma db push"
   },
