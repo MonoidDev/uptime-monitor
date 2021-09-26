@@ -19,8 +19,16 @@ export const Trace = objectType({
 export const TraceOfError = objectType({
   name: 'TraceOfError',
   definition(t) {
-    t.string('time_range');
+    t.string('groupId');
     t.int('count');
+  },
+});
+
+export const TraceOfResponse = objectType({
+  name: 'TraceOfResponse',
+  definition(t) {
+    t.string('groupId');
+    t.int('avgDuration');
   },
 });
 

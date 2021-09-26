@@ -36,6 +36,7 @@ model Website {
 model Trace {
   id    Int     @id @default(autoincrement())
   traceType TraceType
+  userId Int
   websiteId Int
   website Website @relation(fields: [websiteId], references: [id])
   status TraceStatus @default(OK)
