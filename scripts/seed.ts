@@ -3,9 +3,9 @@ import range from 'lodash/range';
 
 import { Context } from '../src/graphql/context';
 import { prisma } from '../src/lib/prisma';
-import { TraceSerice } from '../src/services/TraceService';
+import { TraceService } from '../src/services/TraceService';
 import { UserService } from '../src/services/UserService';
-import { WebsiteSerice } from '../src/services/WebsiteService';
+import { WebsiteService } from '../src/services/WebsiteService';
 
 if (process.env.NODE_ENV === 'production') {
   throw new Error('seed.ts is only for development!');
@@ -22,8 +22,8 @@ if (process.env.NODE_ENV === 'production') {
     prisma,
     isLoggedIn: false,
     userService: new UserService(getContext),
-    websiteSerice: new WebsiteSerice(getContext),
-    traceSerice: new TraceSerice(getContext),
+    websiteService: new WebsiteService(getContext),
+    traceService: new TraceService(getContext),
     req: {} as any,
     res: {} as any,
   };
@@ -38,7 +38,7 @@ if (process.env.NODE_ENV === 'production') {
     isAdmin: false,
   } as any;
 
-  const website = await ctx.websiteSerice.createWebsite({
+  const website = await ctx.websiteService.createWebsite({
     name: 'Baidu',
     url: 'https://www.baidu.com',
     pingInterval: 10,
