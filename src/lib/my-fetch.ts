@@ -23,8 +23,7 @@ function headersToStrings(i: Headers) {
 async function doPing(url: string): Promise<PingResult> {
   const result = new PingResult();
 
-  if (process.env.NODE_ENV !== 'production')
-  {
+  if (process.env.NODE_ENV !== 'production') {
     // mock
     console.log(`[fetch] mock for ${url}`);
 
@@ -37,7 +36,7 @@ async function doPing(url: string): Promise<PingResult> {
     result.resHeaders = [
       'Content-Length: 0',
     ];
-    result.resBody = "MOCK";
+    result.resBody = 'MOCK!!!';
     return result;
   }
 
