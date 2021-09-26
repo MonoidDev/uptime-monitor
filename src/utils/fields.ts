@@ -22,6 +22,10 @@ export const emailField = (label: string) => {
     .matches(emailRegex, formStrings.invalid(label));
 };
 
+export const emailArrayField = (label: string) => {
+  return h.array(h.string().matches(emailRegex, formStrings.invalid(label))).withLabel(label);
+};
+
 export const newPasswordField = (label: string) => {
   return h.string()
     .withLabel(label)

@@ -1,4 +1,4 @@
-import { objectType, inputObjectType } from 'nexus';
+import { objectType, inputObjectType, nonNull } from 'nexus';
 
 export const Website = objectType({
   name: 'Website',
@@ -9,6 +9,7 @@ export const Website = objectType({
     t.model.pingInterval();
     t.model.enabled();
     t.model.userId();
+    t.model.emails();
   },
 });
 
@@ -29,5 +30,8 @@ export const CreateUpdateWebsite = inputObjectType({
     t.nonNull.string('url');
     t.nonNull.int('pingInterval');
     t.nonNull.boolean('enabled');
+    t.nonNull.list.field('emails', {
+      type: nonNull('String'),
+    });
   },
 });
