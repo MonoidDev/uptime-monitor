@@ -8,13 +8,13 @@ import {
   Form,
   Input,
 } from 'antd';
-import { useGetWebsitesQuery } from 'app/../graphql/client/generated';
+import { useGetWebsitesQuery } from 'graphql/client/generated';
 import * as t from 'io-ts';
 import { useRouter } from 'next/router';
 import * as h from 'tyrann-io';
 
-import { url } from '../../../.next-urls';
-import { Layout } from '../../components/Layout';
+import { url } from '../../../../.next-urls';
+import { Layout } from '../../../components/Layout';
 
 export default function Page() {
   const { search, updateSearch } = useSearch(
@@ -60,6 +60,7 @@ export default function Page() {
     const onFinish = async (values: any) => {
       updateSearch({
         ...values,
+        page: 0,
       });
     };
     return (
@@ -130,7 +131,7 @@ export default function Page() {
           type="primary"
           shape="round"
           onClick={() => {
-            router.push(`${url('/monitoring/websiteDetails')}?id=${record.id}`);
+            router.push(`${'/monitoring/websites/'}${record.id}`);
           }}
         >
           Modify
@@ -163,7 +164,7 @@ export default function Page() {
             type="primary"
             shape="round"
             onClick={() => {
-              router.push(`${url('/monitoring/websiteDetails')}`);
+              router.push(`${url('/monitoring/websites/add')}`);
             }}
           >
             Add

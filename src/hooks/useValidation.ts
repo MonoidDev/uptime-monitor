@@ -29,7 +29,7 @@ export type Validators = { [key in string]: h.Validator<any> };
 
 export interface ValidationOptions<P, A> {
   type: t.InterfaceType<P, A>;
-  initialValues: t.TypeOf<t.InterfaceType<P, A>>;
+  initialValues?: t.TypeOf<t.InterfaceType<P, A>>;
   error?: ApolloError;
   onSubmit?: (values: t.TypeOf<t.InterfaceType<P, A>>) => Promise<void>;
 }
