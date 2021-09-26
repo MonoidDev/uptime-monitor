@@ -1,10 +1,12 @@
+import { ServerResponse } from 'http';
+
 import { PrismaClient } from '@prisma/client';
 
 import { prisma } from '../lib/prisma';
 import { TraceSerice } from '../services/TraceService';
 import { UserService } from '../services/UserService';
 import { WebsiteSerice } from '../services/WebsiteService';
-import type { RequestObjectHandler } from '../utils/types';
+import type { NextIncomingMessage, RequestObjectHandler } from '../utils/types';
 import { Auth, AuthInfo } from './auth';
 
 export type Context = {
@@ -14,11 +16,13 @@ export type Context = {
   userService: UserService;
   websiteSerice: WebsiteSerice;
   traceSerice: TraceSerice;
+  req: NextIncomingMessage;
+  res: ServerResponse;
 };
 
 const auth = new Auth();
 
-export const createContext: RequestObjectHandler<Context> = async ({ req }) => {
+export const createContext: RequestObjectHandler<Context> = async ({ req, res }) => {
   let authInfo: AuthInfo | undefined;
   const token = req.cookies?.uptimeMonitorToken
     ?? req.headers.authorization?.replace(/^Bearer /, '');
@@ -41,6 +45,8 @@ export const createContext: RequestObjectHandler<Context> = async ({ req }) => {
     userService: new UserService(getContext),
     websiteSerice: new WebsiteSerice(getContext),
     traceSerice: new TraceSerice(getContext),
+    req,
+    res,
   };
 
   function getContext() {

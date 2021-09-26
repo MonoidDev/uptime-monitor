@@ -4,18 +4,18 @@ import useSearch from '@monoid-dev/use-search';
 import {
   Typography, Select, Row, Col,
 } from 'antd';
+import {
+  ErrorChart, ErrorTable, EventTable, ResponseTimeChart,
+} from 'app/components/dashboard';
+import { Layout } from 'app/components/Layout';
+import { gStyles } from 'app/styles';
+import { url } from 'app/utils/types';
 import classNames from 'classnames';
 import dayjs from 'dayjs';
 import * as t from 'io-ts';
 import random from 'lodash/random';
 import range from 'lodash/range';
 import * as h from 'tyrann-io';
-
-import {
-  ErrorChart, ErrorTable, EventTable, ResponseTimeChart,
-} from '../components/dashboard';
-import { Layout } from '../components/Layout';
-import { gStyles } from '../styles';
 
 export default function Page() {
   const { search, updateSearch } = useSearch(
@@ -83,7 +83,7 @@ export default function Page() {
       breadcrumb={[
         {
           title: 'Dashboard',
-          href: '/',
+          href: url('/'),
         },
       ]}
     >

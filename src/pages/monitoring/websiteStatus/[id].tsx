@@ -1,0 +1,158 @@
+import React, { useMemo } from 'react';
+
+import useSearch from '@monoid-dev/use-search';
+import {
+  Select, Typography, Descriptions, Button, Row, Col,
+} from 'antd';
+import { useGetWebsiteByIdQuery } from 'app/../graphql/client/generated';
+import {
+  ErrorChart, ErrorTable, EventTable, ResponseTimeChart,
+} from 'app/components/dashboard';
+import { Layout } from 'app/components/Layout';
+import { StatusArray } from 'app/components/StatusArray';
+import { usePageQuery } from 'app/hooks/usePageQuery';
+import { gStyles } from 'app/styles';
+import descriptionsStyles from 'app/styles/descriptionsStyles.module.css';
+import classNames from 'classnames';
+import * as t from 'io-ts';
+import * as h from 'tyrann-io';
+
+export default function Page() {
+  const { search, updateSearch } = useSearch(
+    useMemo(() => t.type({
+      range: h.omittable(t.string),
+    }), []),
+  );
+
+  const { id } = usePageQuery(
+    useMemo(() => t.type({
+      id: h.number().castString(),
+    }), []),
+  );
+
+  const website = useGetWebsiteByIdQuery({
+    variables: {
+      id,
+    },
+  });
+
+  const renderTitle = () => {
+    return (
+      <div className="flex items-center mb-8">
+        <Typography.Title className="!text-primary-dark !mb-0 mr-4">
+          Google Home
+        </Typography.Title>
+
+        <StatusArray
+          status={[
+            'UNKNOWN', 'UNKNOWN', 'UNKNOWN', 'ERROR', 'ERROR', 'ERROR', 'OK', 'OK', 'OK', 'ERROR', 'ERROR',
+          ]}
+        />
+
+        <div className="flex-1" />
+
+        <Button
+          type="primary"
+          shape="round"
+          className="mr-4"
+        >
+          All Sites
+        </Button>
+
+        <Select
+          value={search?.range ?? '24h'}
+          style={{ width: 120 }}
+          onChange={(value) => updateSearch({ range: value })}
+        >
+          <Select.Option value="24h">24 Hours</Select.Option>
+          <Select.Option value="7d">7 Days</Select.Option>
+          <Select.Option value="31d">31 Days</Select.Option>
+        </Select>
+      </div>
+    );
+  };
+
+  const renderWebsiteInfo = () => {
+    return (
+      <div className={classNames(gStyles.paper, descriptionsStyles.descriptions, 'mb-8')}>
+        <Descriptions title="Website">
+          <Descriptions.Item label="Name">
+            {website.data?.website?.name}
+          </Descriptions.Item>
+          <Descriptions.Item label="URL">
+            {website.data?.website?.url}
+          </Descriptions.Item>
+          <Descriptions.Item label="Ping Interval (s)">
+            {website.data?.website?.pingInterval}
+          </Descriptions.Item>
+        </Descriptions>
+      </div>
+    );
+  };
+
+  const renderErrors = () => {
+    return (
+      <div className={classNames(gStyles.paper, 'mb-8')}>
+        <Row gutter={32}>
+          <Col span={12}>
+            <ErrorChart />
+          </Col>
+
+          <Col span={12}>
+            <ErrorTable />
+          </Col>
+        </Row>
+      </div>
+    );
+  };
+
+  const renderResponseTimeAndEvents = () => {
+    return (
+      <Row gutter={32}>
+        <Col span={12}>
+          <div className={classNames(gStyles.paper)}>
+            <ResponseTimeChart />
+          </div>
+        </Col>
+
+        <Col span={12}>
+          <div className={classNames(gStyles.paper, 'h-full')}>
+            <EventTable />
+          </div>
+        </Col>
+      </Row>
+    );
+  };
+
+  return (
+    <Layout
+      breadcrumb={[
+        {
+          title: 'Monitoring',
+        },
+        {
+          title: 'Website Status',
+        },
+        {
+          title: 'Google Home',
+        },
+      ]}
+      queries={[
+        website,
+      ]}
+    >
+      {() => (
+        <>
+          {renderTitle()}
+          {renderWebsiteInfo()}
+          {renderErrors()}
+          {renderResponseTimeAndEvents()}
+        </>
+      )}
+    </Layout>
+  );
+}
+
+export const getServerSideProps = () => ({
+  props: {},
+});

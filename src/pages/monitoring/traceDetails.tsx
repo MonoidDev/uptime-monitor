@@ -13,6 +13,8 @@ export default function Page() {
           href: '/monitoring/traces',
         },
       ]}
-    />
+    >
+      {null}
+    </Layout>
   );
 }
