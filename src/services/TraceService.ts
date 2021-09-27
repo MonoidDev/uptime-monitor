@@ -16,27 +16,33 @@ export class TraceService extends BaseService {
   }
 
   async findErrorCountGroupByDate(rangeTime: string) {
-    if (rangeTime === '24h') {
-      return this.ctx.prisma.$queryRaw`SELECT
-      time_range, count(*)
-      FROM (
-          SELECT to_char("createdAt", 'yyyy-mm-dd hh24:00:00') time_range FROM public."Trace"
-          WHERE "createdAt" > (current_timestamp - interval '1 day')
-      ) as tmp group by time_range;`;
-    } if (rangeTime === '31d') {
-      return this.ctx.prisma.$queryRaw`SELECT
-      time_range, count(*)
-      FROM (
-          SELECT to_char("createdAt", 'yyyy-mm-dd 00:00:00') time_range FROM "Trace"
-          WHERE "createdAt" > (current_timestamp - interval '31 day')
-      ) as tmp group by time_range;`;
+    const userId = this.ctx.authInfo!.id;
+    switch (rangeTime) {
+      case '24h':
+        return this.ctx.prisma.$queryRaw`SELECT
+          group_id, count(*)
+          FROM (
+              SELECT
+              floor((EXTRACT(epoch FROM current_timestamp) - EXTRACT(epoch FROM "createdAt")) / 3600) group_id
+              FROM "Trace" WHERE "createdAt" > (current_timestamp - interval '1 day') and status != 'OK' and "userId" = ${userId}
+          ) as tmp group by group_id order by group_id;`;
+      case '7d':
+        return this.ctx.prisma.$queryRaw`SELECT
+          group_id, count(*)
+          FROM (
+              SELECT
+              floor((EXTRACT(epoch FROM current_timestamp) - EXTRACT(epoch FROM "createdAt")) / 21600) group_id
+              FROM "Trace" WHERE "createdAt" > (current_timestamp - interval '7 day') and status != 'OK' and "userId" = ${userId}
+          ) as tmp group by group_id order by group_id;`;
+      default:
+        return this.ctx.prisma.$queryRaw`SELECT
+          group_id, count(*)
+          FROM (
+              SELECT
+              floor((EXTRACT(epoch FROM current_timestamp) - EXTRACT(epoch FROM "createdAt")) / 86400) group_id
+              FROM "Trace" WHERE "createdAt" > (current_timestamp - interval '31 day') and status != 'OK' and "userId" = ${userId}
+          ) as tmp group by group_id order by group_id;`;
     }
-    return this.ctx.prisma.$queryRaw`SELECT
-      time_range, count(*)
-      FROM (
-          SELECT to_char("createdAt", 'yyyy-mm-dd 00:00:00') time_range FROM "Trace"
-          WHERE "createdAt" > (current_timestamp - interval '31 day')
-      ) as tmp group by time_range;`;
   }
 
   async findTraces(afterId: number) {
@@ -54,8 +60,10 @@ export class TraceService extends BaseService {
   }
 
   createTrace(trace: t.TypeOf<typeof CreateTraceSchema>) {
+    const userId = this.ctx.authInfo!.id;
     return this.ctx.prisma.trace.create({
       data: {
+        userId,
         traceType: trace!.traceType,
         websiteId: trace!.websiteId,
         duration: trace!.duration,

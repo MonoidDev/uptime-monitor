@@ -57,6 +57,7 @@ if (process.env.NODE_ENV === 'production') {
         status: Math.random() < 0.3 ? 'HTTP_ERROR' : 'OK',
         duration: Math.floor(Math.random() * 100 + 200),
         createdAt: date.toDate(),
+        userId: 1,
       },
     });
   }

@@ -72,7 +72,7 @@ type Trace {
 
 type TraceOfError {
   count: Int
-  time_range: String
+  group_id: String
 }
 
 enum TraceStatus {

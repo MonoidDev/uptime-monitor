@@ -50,6 +50,7 @@ export class CronService {
       data: {
         traceType: TraceType.PING,
         websiteId: website.id,
+        userId: website.userId,
         status: getTraceStatus(result),
         duration: result.latency,
         requestHeaders: result.reqHeaders.join('\n'),
