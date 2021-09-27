@@ -36,3 +36,14 @@ export const traceOfErrorCount = queryField('traceOfErrorCount', {
     return ctx.traceService.findErrorCountGroupByDate(rangeTime);
   },
 });
+
+export const traceOfResponse = queryField('traceOfResponse', {
+  type: list('TraceOfResponse'),
+  args: {
+    rangeTime: nonNull(stringArg()),
+  },
+  authorize: loginRequired,
+  async resolve(_, { rangeTime }, ctx) {
+    return ctx.traceService.findavgDurationGroupByDate(rangeTime);
+  },
+});

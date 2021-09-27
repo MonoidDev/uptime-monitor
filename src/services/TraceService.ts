@@ -15,33 +15,63 @@ export class TraceService extends BaseService {
     });
   }
 
+  async findavgDurationGroupByDate(rangeTime: string) {
+    const userId = this.ctx.authInfo!.id;
+    switch (rangeTime) {
+      case '24h':
+        return this.ctx.prisma.$queryRaw`SELECT
+          groupId "groupId", avg(duration) "avgDuration"
+          FROM (
+              SELECT
+              floor((EXTRACT(epoch FROM current_timestamp) - EXTRACT(epoch FROM "createdAt")) / 3600) groupId, duration
+              FROM "Trace" WHERE "createdAt" > (current_timestamp - interval '1 day') and status = 'OK' and "userId" = ${userId}
+          ) as tmp group by groupId order by groupId;`;
+      case '7d':
+        return this.ctx.prisma.$queryRaw`SELECT
+        groupId "groupId", avg(duration) "avgDuration"
+          FROM (
+              SELECT
+              floor((EXTRACT(epoch FROM current_timestamp) - EXTRACT(epoch FROM "createdAt")) / 21600) groupId, duration
+              FROM "Trace" WHERE "createdAt" > (current_timestamp - interval '7 day') and status = 'OK' and "userId" = ${userId}
+          ) as tmp group by groupId order by groupId;`;
+      default:
+        return this.ctx.prisma.$queryRaw`SELECT
+        groupId "groupId", avg(duration) "avgDuration"
+          FROM (
+              SELECT
+              floor((EXTRACT(epoch FROM current_timestamp) - EXTRACT(epoch FROM "createdAt")) / 86400) groupId, duration
+              FROM "Trace" WHERE "createdAt" > (current_timestamp - interval '31 day') and status = 'OK' and "userId" = ${userId}
+          ) as tmp group by groupId order by groupId;`;
+    }
+  }
+
   async findErrorCountGroupByDate(rangeTime: string) {
     const userId = this.ctx.authInfo!.id;
     switch (rangeTime) {
       case '24h':
         return this.ctx.prisma.$queryRaw`SELECT
-          group_id, count(*)
+          groupId "groupId", count(*)
           FROM (
               SELECT
-              floor((EXTRACT(epoch FROM current_timestamp) - EXTRACT(epoch FROM "createdAt")) / 3600) group_id
+              floor((EXTRACT(epoch FROM current_timestamp) - EXTRACT(epoch FROM "createdAt")) / 3600) groupId
               FROM "Trace" WHERE "createdAt" > (current_timestamp - interval '1 day') and status != 'OK' and "userId" = ${userId}
-          ) as tmp group by group_id order by group_id;`;
+          ) as tmp group by groupId order by groupId;`;
       case '7d':
         return this.ctx.prisma.$queryRaw`SELECT
-          group_id, count(*)
+        groupId "groupId", count(*)
           FROM (
               SELECT
-              floor((EXTRACT(epoch FROM current_timestamp) - EXTRACT(epoch FROM "createdAt")) / 21600) group_id
+              floor((EXTRACT(epoch FROM current_timestamp) - EXTRACT(epoch FROM "createdAt")) / 21600) groupId
               FROM "Trace" WHERE "createdAt" > (current_timestamp - interval '7 day') and status != 'OK' and "userId" = ${userId}
-          ) as tmp group by group_id order by group_id;`;
+          ) as tmp group by groupId order by groupId;`;
       default:
         return this.ctx.prisma.$queryRaw`SELECT
-          group_id, count(*)
+        groupId "groupId", count(*)
           FROM (
               SELECT
-              floor((EXTRACT(epoch FROM current_timestamp) - EXTRACT(epoch FROM "createdAt")) / 86400) group_id
+              floor((EXTRACT(epoch FROM current_timestamp) - EXTRACT(epoch FROM "createdAt")) / 86400) groupId
               FROM "Trace" WHERE "createdAt" > (current_timestamp - interval '31 day') and status != 'OK' and "userId" = ${userId}
-          ) as tmp group by group_id order by group_id;`;
+          ) as tmp group by groupId order by groupId;`;
     }
   }
 
