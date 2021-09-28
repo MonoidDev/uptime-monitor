@@ -30,10 +30,11 @@ export const traceOfErrorCount = queryField('traceOfErrorCount', {
   type: list(nonNull('TraceOfError')),
   args: {
     rangeTime: nonNull(stringArg()),
+    websiteId: intArg(),
   },
   authorize: loginRequired,
-  async resolve(_, { rangeTime }, ctx) {
-    return ctx.traceService.findErrorCountGroupByDate(rangeTime);
+  async resolve(_, { rangeTime, websiteId }, ctx) {
+    return ctx.traceService.findErrorCountGroupByDate(rangeTime, websiteId);
   },
 });
 

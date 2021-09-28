@@ -110,7 +110,7 @@ export default function Page() {
       <div className={classNames(gStyles.paper, 'mb-8')}>
         <Row gutter={32}>
           <Col span={12}>
-            <ErrorChart rangeTime={rangeTime!} />
+            <ErrorChart rangeTime={rangeTime!} websiteId={id} />
           </Col>
 
           <Col span={12}>
@@ -146,7 +146,8 @@ export default function Page() {
           title: 'Monitoring',
         },
         {
-          title: 'Website Status',
+          title: 'Websites',
+          href: url('/monitoring/websites'),
         },
         {
           title: website?.data?.website?.name ?? 'Loading...',

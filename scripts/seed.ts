@@ -38,15 +38,19 @@ if (process.env.NODE_ENV === 'production') {
     isAdmin: false,
   } as any;
 
-  const website = await ctx.websiteService.createWebsite({
-    name: 'Baidu',
-    url: 'https://www.baidu.com',
-    pingInterval: 10,
-    enabled: false,
-    emails: ['wangchenyu2017@gmail.com'],
-  });
-
   const n = 1000;
+
+  const website = await prisma.website.create({
+    data: {
+      userId: user.id,
+      name: 'Baidu',
+      url: 'https://www.baidu.com',
+      pingInterval: 10,
+      enabled: false,
+      emails: ['wangchenyu2017@gmail.com'],
+      createdAt: dayjs().subtract(((n - 31) * ((3600 * 24) * 31)) / n, 'seconds').toISOString(),
+    },
+  });
 
   for (const i of range(0, n)) {
     const date = dayjs().subtract(((n - i) * ((3600 * 24) * 31)) / n, 'seconds');
@@ -57,7 +61,33 @@ if (process.env.NODE_ENV === 'production') {
         status: Math.random() < 0.3 ? 'HTTP_ERROR' : 'OK',
         duration: Math.floor(Math.random() * 100 + 200),
         createdAt: date.toDate(),
-        userId: 1,
+        userId: user.id,
+      },
+    });
+  }
+
+  const website2 = await prisma.website.create({
+    data: {
+      userId: user.id,
+      name: 'Sougou',
+      url: 'https://www.zhihu.com',
+      pingInterval: 10,
+      enabled: false,
+      emails: ['wangchenyu2017@gmail.com'],
+      createdAt: dayjs().subtract(((n - 31) * ((3600 * 24) * 15)) / n, 'seconds').toISOString(),
+    },
+  });
+
+  for (const i of range(0, n)) {
+    const date = dayjs().subtract(((n - i) * ((3600 * 24) * 15)) / n, 'seconds');
+    await prisma.trace.create({
+      data: {
+        traceType: 'PING',
+        websiteId: website2.id,
+        status: Math.random() < 0.2 ? 'HTTP_ERROR' : 'OK',
+        duration: Math.floor(Math.random() * 100 + 300),
+        createdAt: date.toDate(),
+        userId: user.id,
       },
     });
   }

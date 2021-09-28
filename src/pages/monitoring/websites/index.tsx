@@ -8,6 +8,8 @@ import {
   Form,
   Input,
 } from 'antd';
+import { gStyles } from 'app/styles';
+import classNames from 'classnames';
 import { useGetWebsitesQuery } from 'graphql/client/generated';
 import * as t from 'io-ts';
 import { useRouter } from 'next/router';
@@ -172,9 +174,17 @@ export default function Page() {
         </div>
         <Table
           bordered={false}
-          className="py-8"
+          className={classNames('py-8', gStyles.tableRowClickable)}
           dataSource={websiteItems}
           columns={columns}
+          onRow={(record) => ({
+            onClick() {
+              router.push({
+                pathname: `${url('/monitoring/websiteStatus/[id]')}`,
+                query: `id=${record.id}`,
+              });
+            },
+          })}
           pagination={{
             className: 'flex justify-end pt-10',
             pageSize: 10,

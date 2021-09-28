@@ -27,6 +27,15 @@ export class WebsiteService extends BaseService {
     });
   }
 
+  async findUserWebsiteIds() {
+    const userId = this.ctx.authInfo!.id;
+
+    return (await this.ctx.prisma.website.findMany({
+      where: { userId },
+    }))
+      .map((w) => w.id);
+  }
+
   async findFirstWebsite() {
     const userId = this.ctx.authInfo!.id;
     return this.ctx.prisma.website.findFirst({

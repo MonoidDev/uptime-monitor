@@ -172,6 +172,7 @@ export const Layout: React.FC<LayoutProps> = (props) => {
           {breadcrumb && renderBreadcrumb()}
           <Content className="p-6 bg-gray-100 overflow-y-scroll">
             <QueryContainer
+              queries={queries}
               renderError={() => (
                 <div className="h-full flex justify-center items-center">
                   <ErrorView

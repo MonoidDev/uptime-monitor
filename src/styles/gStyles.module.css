@@ -27,3 +27,7 @@
 .tag.fatal {
   @apply bg-black;
 }
+
+.tableRowClickable :global(.ant-table-row) {
+  @apply hover:cursor-pointer;
+}

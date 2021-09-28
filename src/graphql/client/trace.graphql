@@ -31,8 +31,8 @@ mutation CreateTrace($trace: CreateTrace!) {
   }
 }
 
-query TraceOfErrorCount($rangeTime: String!) {
-  traceOfErrorCount(rangeTime: $rangeTime) {
+query TraceOfErrorCount($rangeTime: String!, $websiteId: Int) {
+  traceOfErrorCount(rangeTime: $rangeTime, websiteId: $websiteId) {
     time
     groupId
     count

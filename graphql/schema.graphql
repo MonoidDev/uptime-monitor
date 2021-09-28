@@ -51,7 +51,7 @@ type Query {
   firstWebsite: Website
   me: User
   trace(id: Int!): Trace
-  traceOfErrorCount(rangeTime: String!): [TraceOfError!]
+  traceOfErrorCount(rangeTime: String!, websiteId: Int): [TraceOfError!]
   traceOfResponseTime(rangeTime: String!): [TraceOfResponseTime!]
   traces(afterId: Int!): [Trace]
   user(id: Int!): User

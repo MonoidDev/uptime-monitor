@@ -6,7 +6,11 @@ import {
 import { getTickCountFromRangeTime, getTickFromRangeTime } from 'app/utils/date';
 import classNames from 'classnames';
 import dayjs from 'dayjs';
-import { useGetFirstWebsiteQuery, useTraceOfErrorCountQuery, useTraceOfResponseTimeQuery } from 'graphql/client/generated';
+import {
+  useGetFirstWebsiteQuery,
+  useTraceOfErrorCountQuery,
+  useTraceOfResponseTimeQuery,
+} from 'graphql/client/generated';
 
 import { gStyles } from '../styles';
 import tableStyles from '../styles/tableStyles.module.css';
@@ -67,8 +71,6 @@ export const ResponseTimeChart: React.VFC<ResponseTimeChartProps> = React.memo((
   const data = useMemo(() => {
     if (!traceOfResponseTime) return [];
 
-    console.log(traceOfResponseTime);
-
     const normalized = normalizeTraceGroups(
       rangeTime,
       traceOfResponseTime,
@@ -110,16 +112,18 @@ export const ResponseTimeChart: React.VFC<ResponseTimeChartProps> = React.memo((
 
 export interface ErrorChartProps {
   rangeTime: string;
+  websiteId?: number;
 }
 
 export const ErrorChart: React.VFC<ErrorChartProps> = React.memo((props) => {
-  const { rangeTime } = props;
+  const { rangeTime, websiteId } = props;
 
   const firstWebsite = useGetFirstWebsiteQuery();
 
   const traces = useTraceOfErrorCountQuery({
     variables: {
       rangeTime,
+      websiteId,
     },
   });
 
@@ -162,8 +166,6 @@ export const ErrorChart: React.VFC<ErrorChartProps> = React.memo((props) => {
     const validPoints = data.filter(
       (p) => p.iso >= firstWebsite.data!.firstWebsite!.createdAt,
     );
-
-    console.log(data, firstWebsite.data!.firstWebsite);
 
     return validPoints.filter((p) => p.count === 0).length / validPoints.length;
   }, [traceOfErrorCount, firstWebsite.data?.firstWebsite]);
