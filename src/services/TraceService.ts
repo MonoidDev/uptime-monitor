@@ -30,8 +30,6 @@ export class TraceService extends BaseService {
       ? [byWebsiteId]
       : await this.ctx.websiteService.findUserWebsiteIds();
 
-    console.log(websiteIds);
-
     switch (rangeTime) {
       case '24h':
         return this.ctx.prisma.$queryRaw`
@@ -72,8 +70,11 @@ export class TraceService extends BaseService {
     }
   }
 
-  async queryAverageDurationGroupByDate(rangeTime: string): Promise<AverageDurationGroup> {
-    const userId = this.ctx.authInfo!.id;
+  async queryAverageDurationGroupByDate(rangeTime: string, byWebsiteId?: number | null): Promise<AverageDurationGroup> {
+    const websiteIds = byWebsiteId
+      ? [byWebsiteId]
+      : await this.ctx.websiteService.findUserWebsiteIds();
+
     switch (rangeTime) {
       case '24h':
         return this.ctx.prisma.$queryRaw`
@@ -82,7 +83,10 @@ export class TraceService extends BaseService {
             FROM (
               SELECT
               (23 - floor((EXTRACT(epoch FROM current_timestamp) - EXTRACT(epoch FROM "createdAt")) / 3600)) groupId, duration
-              FROM "Trace" WHERE EXTRACT(epoch FROM "createdAt") > (EXTRACT(epoch FROM current_timestamp) - 3600 * 24) and status = 'OK' and "userId" = ${userId}
+              FROM "Trace" WHERE
+                EXTRACT(epoch FROM "createdAt") > (EXTRACT(epoch FROM current_timestamp) - 3600 * 24)
+                and status = 'OK'
+                and "websiteId" IN (${Prisma.join(websiteIds)})
             ) as tmp group by groupId order by groupId;`;
       case '7d':
         return this.ctx.prisma.$queryRaw`
@@ -91,7 +95,9 @@ export class TraceService extends BaseService {
             FROM (
               SELECT
               (27 - floor((EXTRACT(epoch FROM current_timestamp) - EXTRACT(epoch FROM "createdAt")) / 21600)) groupId, duration
-              FROM "Trace" WHERE EXTRACT(epoch FROM "createdAt") > (EXTRACT(epoch FROM current_timestamp) - 86400 * 7) and status = 'OK' and "userId" = ${userId}
+              FROM "Trace" WHERE EXTRACT(epoch FROM "createdAt") > (EXTRACT(epoch FROM current_timestamp) - 86400 * 7)
+                and status = 'OK'
+                and "websiteId" IN (${Prisma.join(websiteIds)})
             ) as tmp group by groupId order by groupId;`;
       default:
         return this.ctx.prisma.$queryRaw`
@@ -100,7 +106,10 @@ export class TraceService extends BaseService {
             FROM (
                 SELECT
                 (30 - floor((EXTRACT(epoch FROM current_timestamp) - EXTRACT(epoch FROM "createdAt")) / 86400)) groupId, duration
-                FROM "Trace" WHERE EXTRACT(epoch FROM "createdAt") > (EXTRACT(epoch FROM current_timestamp) - 86400 * 31) and status = 'OK' and "userId" = ${userId}
+                FROM "Trace"
+                  WHERE EXTRACT(epoch FROM "createdAt") > (EXTRACT(epoch FROM current_timestamp) - 86400 * 31)
+                  and status = 'OK'
+                  and "websiteId" IN (${Prisma.join(websiteIds)})
             ) as tmp group by groupId order by groupId;`;
     }
   }
@@ -115,8 +124,8 @@ export class TraceService extends BaseService {
     return result;
   }
 
-  async findAverageDurationGroupByDate(rangeTime: string) {
-    const queryResult = await this.queryAverageDurationGroupByDate(rangeTime);
+  async findAverageDurationGroupByDate(rangeTime: string, websiteId?: number | null) {
+    const queryResult = await this.queryAverageDurationGroupByDate(rangeTime, websiteId);
     const result = queryResult.map(({ groupId, avgDuration }) => ({
       time: getTickFromRangeTime(rangeTime, groupId),
       groupId,
