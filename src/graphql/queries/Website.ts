@@ -30,3 +30,11 @@ export const websites = queryField('websites', {
     };
   },
 });
+
+export const firstWebsite = queryField('firstWebsite', {
+  type: 'Website',
+  authorize: loginRequired,
+  async resolve(_, __, ctx) {
+    return ctx.websiteService.findFirstWebsite();
+  },
+});

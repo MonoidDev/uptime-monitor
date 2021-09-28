@@ -5,7 +5,7 @@
 .tag {
   min-width: 40px;
 
-  @apply inline-block text-white text-center text-xs rounded-sm leading-5;
+  @apply px-1 inline-block text-white text-center text-xs rounded-sm leading-5;
 }
 
 .tag.log {

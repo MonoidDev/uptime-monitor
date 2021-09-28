@@ -24,9 +24,13 @@ export default function Page() {
 
   const { search, updateSearch } = useSearch(
     useMemo(() => t.type({
-      range: h.omittable(t.string),
+      rangeTime: h.omittable(t.string),
     }), []),
   );
+
+  const {
+    rangeTime = '24h',
+  } = search ?? {};
 
   const { id } = usePageQuery(
     useMemo(() => t.type({
@@ -65,9 +69,9 @@ export default function Page() {
         </Button>
 
         <Select
-          value={search?.range ?? '24h'}
+          value={rangeTime!}
           style={{ width: 120 }}
-          onChange={(value) => updateSearch({ range: value })}
+          onChange={(value) => updateSearch({ rangeTime: value })}
         >
           <Select.Option value="24h">24 Hours</Select.Option>
           <Select.Option value="7d">7 Days</Select.Option>
@@ -106,7 +110,7 @@ export default function Page() {
       <div className={classNames(gStyles.paper, 'mb-8')}>
         <Row gutter={32}>
           <Col span={12}>
-            <ErrorChart />
+            <ErrorChart rangeTime={rangeTime!} />
           </Col>
 
           <Col span={12}>

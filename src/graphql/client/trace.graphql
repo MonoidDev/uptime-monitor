@@ -30,3 +30,11 @@ mutation CreateTrace($trace: CreateTrace!) {
     responseData
   }
 }
+
+query TraceOfErrorCount($rangeTime: String!) {
+  traceOfErrorCount(rangeTime: $rangeTime) {
+    time
+    groupId
+    count
+  }
+}

@@ -27,7 +27,7 @@ export const traces = queryField('traces', {
 });
 
 export const traceOfErrorCount = queryField('traceOfErrorCount', {
-  type: list('TraceOfError'),
+  type: list(nonNull('TraceOfError')),
   args: {
     rangeTime: nonNull(stringArg()),
   },
@@ -44,6 +44,6 @@ export const traceOfResponse = queryField('traceOfResponse', {
   },
   authorize: loginRequired,
   async resolve(_, { rangeTime }, ctx) {
-    return ctx.traceService.findavgDurationGroupByDate(rangeTime);
+    return ctx.traceService.findAverageDurationGroupByDate(rangeTime);
   },
 });

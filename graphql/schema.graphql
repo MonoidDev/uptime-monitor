@@ -48,9 +48,10 @@ type PaginatedWebsite {
 
 type Query {
   allUsers: [User]
+  firstWebsite: Website
   me: User
   trace(id: Int!): Trace
-  traceOfErrorCount(rangeTime: String!): [TraceOfError]
+  traceOfErrorCount(rangeTime: String!): [TraceOfError!]
   traceOfResponse(rangeTime: String!): [TraceOfResponse]
   traces(afterId: Int!): [Trace]
   user(id: Int!): User
@@ -72,13 +73,14 @@ type Trace {
 }
 
 type TraceOfError {
-  count: Int
-  groupId: String
+  count: Int!
+  groupId: Int!
+  time: String!
 }
 
 type TraceOfResponse {
   avgDuration: Int
-  groupId: String
+  groupId: Int
 }
 
 enum TraceStatus {
@@ -112,6 +114,7 @@ type User {
 }
 
 type Website {
+  createdAt: DateTime!
   emails: [String!]!
   enabled: Boolean!
   id: Int!

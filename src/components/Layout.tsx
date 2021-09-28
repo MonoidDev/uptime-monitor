@@ -7,7 +7,6 @@ import MonitorOutlined from '@ant-design/icons/MonitorOutlined';
 import type { QueryResult } from '@apollo/client';
 import {
   Avatar, Breadcrumb, Dropdown, Layout as AntdLayout, Menu,
-  Spin,
 } from 'antd';
 import classNames from 'classnames';
 import { useRouter } from 'next/router';
@@ -17,6 +16,7 @@ import { useMeQuery } from '../../graphql/client/generated';
 import { useAuth } from '../hooks/useAuth';
 import { ErrorView } from './ErrorView';
 import styles from './Layout.module.css';
+import { QueryContainer } from './QueryContainer';
 
 const { Header, Sider, Content } = AntdLayout;
 
@@ -50,10 +50,6 @@ export const Layout: React.FC<LayoutProps> = (props) => {
 
   // Get the deepest 'directory' that includes current route.
   const currentRoot = `/${router.pathname.split('/')[1] ?? ''}`;
-
-  const isSuccessfull = queries.every((q) => q.data !== undefined);
-  const isLoading = queries.some((q) => q.loading);
-  const isFailed = queries.some((q) => q.error);
 
   const onLogout = () => {
     // eslint-disable-next-line no-restricted-globals, no-alert
@@ -167,11 +163,6 @@ export const Layout: React.FC<LayoutProps> = (props) => {
     );
   };
 
-  const renderChildren = () => {
-    if (typeof children === 'function') return children();
-    return children;
-  };
-
   return (
     <AntdLayout className={classNames('h-screen', styles.layout)}>
       {renderHeader()}
@@ -180,21 +171,19 @@ export const Layout: React.FC<LayoutProps> = (props) => {
         <AntdLayout>
           {breadcrumb && renderBreadcrumb()}
           <Content className="p-6 bg-gray-100 overflow-y-scroll">
-            {isSuccessfull && renderChildren()}
-            {isFailed && (
-              <div className="h-full flex justify-center items-center">
-                <ErrorView
-                  message={queries.map(
-                    (m) => m.error!.message,
-                  ).join('\n')}
-                />
-              </div>
-            )}
-            {isLoading && (
-              <div className="h-full flex justify-center items-center">
-                <Spin />
-              </div>
-            )}
+            <QueryContainer
+              renderError={() => (
+                <div className="h-full flex justify-center items-center">
+                  <ErrorView
+                    message={queries.map(
+                      (m) => m.error!.message,
+                    ).join('\n')}
+                  />
+                </div>
+              )}
+            >
+              {children}
+            </QueryContainer>
           </Content>
         </AntdLayout>
       </AntdLayout>

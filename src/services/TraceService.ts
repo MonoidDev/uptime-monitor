@@ -1,7 +1,14 @@
+import { getTickFromRangeTime } from 'app/utils/date';
+import dayjs from 'dayjs';
+import duration from 'dayjs/plugin/duration';
 import * as t from 'io-ts';
 
 import { CreateTraceSchema } from '../graphql/types/TraceSchema';
 import { BaseService } from './BaseService';
+
+dayjs.extend(duration);
+
+export type CountGroup = { groupId: number, count: number }[];
 
 export class TraceService extends BaseService {
   async findTraceById(id: number) {
@@ -15,7 +22,41 @@ export class TraceService extends BaseService {
     });
   }
 
-  async findavgDurationGroupByDate(rangeTime: string) {
+  async queryErrorCountGroupByDate(rangeTime: string): Promise<CountGroup> {
+    const userId = this.ctx.authInfo!.id;
+
+    switch (rangeTime) {
+      case '24h':
+        return this.ctx.prisma.$queryRaw`
+        SELECT
+          groupId "groupId", count(*)
+          FROM (
+              SELECT
+              (23 - floor((EXTRACT(epoch FROM current_timestamp) - EXTRACT(epoch FROM "createdAt")) / 3600)) groupId
+              FROM "Trace" WHERE EXTRACT(epoch FROM "createdAt") > (EXTRACT(epoch FROM current_timestamp) - 3600 * 24) and status != 'OK' and "userId" = ${userId}
+          ) as tmp group by groupId order by groupId;`;
+      case '7d':
+        return this.ctx.prisma.$queryRaw`
+        SELECT
+        groupId "groupId", count(*)
+          FROM (
+              SELECT
+              (27 - floor((EXTRACT(epoch FROM current_timestamp) - EXTRACT(epoch FROM "createdAt")) / 21600)) groupId
+              FROM "Trace" WHERE EXTRACT(epoch FROM "createdAt") > (EXTRACT(epoch FROM current_timestamp) - 86400 * 7) and status != 'OK' and "userId" = ${userId}
+          ) as tmp group by groupId order by groupId;`;
+      default:
+        return this.ctx.prisma.$queryRaw`
+        SELECT
+        groupId "groupId", count(*)
+          FROM (
+              SELECT
+              (30 - floor((EXTRACT(epoch FROM current_timestamp) - EXTRACT(epoch FROM "createdAt")) / 86400)) groupId
+              FROM "Trace" WHERE EXTRACT(epoch FROM "createdAt") > (EXTRACT(epoch FROM current_timestamp) - 86400 * 31) and status != 'OK' and "userId" = ${userId}
+          ) as tmp group by groupId order by groupId;`;
+    }
+  }
+
+  async findAverageDurationGroupByDate(rangeTime: string) {
     const userId = this.ctx.authInfo!.id;
     switch (rangeTime) {
       case '24h':
@@ -46,33 +87,15 @@ export class TraceService extends BaseService {
   }
 
   async findErrorCountGroupByDate(rangeTime: string) {
-    const userId = this.ctx.authInfo!.id;
-    switch (rangeTime) {
-      case '24h':
-        return this.ctx.prisma.$queryRaw`SELECT
-          groupId "groupId", count(*)
-          FROM (
-              SELECT
-              floor((EXTRACT(epoch FROM current_timestamp) - EXTRACT(epoch FROM "createdAt")) / 3600) groupId
-              FROM "Trace" WHERE "createdAt" > (current_timestamp - interval '1 day') and status != 'OK' and "userId" = ${userId}
-          ) as tmp group by groupId order by groupId;`;
-      case '7d':
-        return this.ctx.prisma.$queryRaw`SELECT
-        groupId "groupId", count(*)
-          FROM (
-              SELECT
-              floor((EXTRACT(epoch FROM current_timestamp) - EXTRACT(epoch FROM "createdAt")) / 21600) groupId
-              FROM "Trace" WHERE "createdAt" > (current_timestamp - interval '7 day') and status != 'OK' and "userId" = ${userId}
-          ) as tmp group by groupId order by groupId;`;
-      default:
-        return this.ctx.prisma.$queryRaw`SELECT
-        groupId "groupId", count(*)
-          FROM (
-              SELECT
-              floor((EXTRACT(epoch FROM current_timestamp) - EXTRACT(epoch FROM "createdAt")) / 86400) groupId
-              FROM "Trace" WHERE "createdAt" > (current_timestamp - interval '31 day') and status != 'OK' and "userId" = ${userId}
-          ) as tmp group by groupId order by groupId;`;
-    }
+    const queryResult = await this.queryErrorCountGroupByDate(rangeTime);
+    const result = queryResult.map(({ groupId, count }) => ({
+      time: getTickFromRangeTime(rangeTime, groupId),
+      groupId,
+      count,
+    }));
+    console.log(result);
+
+    return result;
   }
 
   async findTraces(afterId: number) {
