@@ -1,4 +1,6 @@
-import { objectType, inputObjectType, enumType } from 'nexus';
+import {
+  objectType, inputObjectType, enumType, nonNull,
+} from 'nexus';
 
 export const Trace = objectType({
   name: 'Trace',
@@ -25,7 +27,7 @@ export const TraceOfError = objectType({
   },
 });
 
-export const TraceOfResponsTime = objectType({
+export const TraceOfResponseTime = objectType({
   name: 'TraceOfResponseTime',
   definition(t) {
     t.nonNull.string('time');
@@ -54,5 +56,27 @@ export const CreateTrace = inputObjectType({
     t.nonNull.string('requestHeaders');
     t.nonNull.string('responseHeaders');
     t.nonNull.string('responseData');
+  },
+});
+
+export const PaginatedTraces = objectType({
+  name: 'PaginatedTraces',
+  definition(t) {
+    t.int('minId');
+    t.int('maxId');
+    t.nonNull.list.field('results', {
+      type: nonNull('Trace'),
+    });
+  },
+});
+
+export const TraceQuery = inputObjectType({
+  name: 'TraceQuery',
+  definition(t) {
+    t.int('afterId');
+    t.int('beforeId');
+    t.boolean('isError');
+    t.int('websiteId');
+    t.string('rangeTime');
   },
 });

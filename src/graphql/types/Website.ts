@@ -10,11 +10,7 @@ export const Website = objectType({
     t.model.enabled();
     t.model.userId();
     t.model.emails();
-    t.model.createdAt({
-      resolve(r) {
-        return r.createdAt.toISOString();
-      },
-    });
+    t.model.createdAt();
   },
 });
 

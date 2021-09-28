@@ -25,6 +25,10 @@ export function getTickFromRangeTime(rangeTime: string, index: number) {
   return min.add(interval).toISOString();
 }
 
+export function getStartFromRangeTime(rangeTime: string) {
+  return getTickFromRangeTime(rangeTime, -1);
+}
+
 export function getTickCountFromRangeTime(rangeTime: string) {
   return {
     '24h': 24,
