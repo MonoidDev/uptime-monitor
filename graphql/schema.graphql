@@ -42,8 +42,8 @@ type Mutation {
 }
 
 type PaginatedWebsite {
-  count: Int
-  results: [Website]
+  count: Int!
+  results: [Website]!
 }
 
 type Query {
@@ -121,6 +121,13 @@ type Website {
   id: Int!
   name: String!
   pingInterval: Int!
+  status: [WebsiteStatusType]
   url: String!
   userId: Int!
+}
+
+enum WebsiteStatusType {
+  ERROR
+  OK
+  UNAVAILABLE
 }

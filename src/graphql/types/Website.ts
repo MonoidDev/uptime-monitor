@@ -1,4 +1,11 @@
-import { objectType, inputObjectType, nonNull } from 'nexus';
+import {
+  objectType, inputObjectType, nonNull, enumType,
+} from 'nexus';
+
+export const WebsiteStatusType = enumType({
+  name: 'WebsiteStatusType',
+  members: ['UNAVAILABLE', 'OK', 'ERROR'],
+});
 
 export const Website = objectType({
   name: 'Website',
@@ -15,14 +22,17 @@ export const Website = objectType({
         return r.createdAt.toISOString();
       },
     });
+    t.list.field('status', {
+      type: WebsiteStatusType,
+    });
   },
 });
 
 export const PaginatedWebsite = objectType({
   name: 'PaginatedWebsite',
   definition(t) {
-    t.int('count');
-    t.list.field('results', {
+    t.nonNull.int('count');
+    t.nonNull.list.field('results', {
       type: Website,
     });
   },

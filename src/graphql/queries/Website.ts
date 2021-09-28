@@ -23,7 +23,11 @@ export const websites = queryField('websites', {
   authorize: loginRequired,
   async resolve(_, { page }, ctx) {
     const count = await ctx.websiteService.total();
-    const results = await ctx.websiteService.findWebsites(page);
+    const queryResult = await ctx.websiteService.findWebsites(page);
+    const results = await Promise.all(queryResult.map((w) => ({
+      status: ctx.websiteService.findWebsiteStatus(w.id),
+      ...w,
+    })));
     return {
       count,
       results,
