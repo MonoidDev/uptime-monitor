@@ -213,3 +213,7 @@ const formListItemLayoutWithOutLabel = {
     offset: 3,
   },
 };
+
+export const getServerSideProps = () => ({
+  props: {},
+});
