@@ -132,8 +132,12 @@ export default function Page() {
         <Button
           type="primary"
           shape="round"
-          onClick={() => {
-            router.push(`${'/monitoring/websites/'}${record.id}`);
+          onClick={(event) => {
+            event.stopPropagation();
+            router.push({
+              pathname: `${url('/monitoring/websites/[id]')}`,
+              query: `id=${record.id}`,
+            });
           }}
         >
           Modify
