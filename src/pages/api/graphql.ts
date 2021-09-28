@@ -3,7 +3,6 @@ import { PageConfig } from 'next';
 
 import { createContext } from '../../graphql/context';
 import { createSchema } from '../../graphql/schema';
-// import MyScheduler from '../../lib/my-scheduler';
 import { RequestHandler } from '../../utils/types';
 
 const apolloServer = new ApolloServer({
@@ -16,11 +15,6 @@ const apolloServer = new ApolloServer({
 });
 
 const startServer = apolloServer.start();
-
-if (process.env.NODE_ENV === 'production' || (global as any).MyScheduler === undefined) {
-  // MyScheduler.enable();
-  // (global as any).MyScheduler = MyScheduler;
-}
 
 export default (async (req, res) => {
   res.setHeader('Access-Control-Allow-Credentials', 'true');
