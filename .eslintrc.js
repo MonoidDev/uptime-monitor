@@ -4,6 +4,15 @@ module.exports = {
     "**/generated/**",
   ],
   rules: {
+    "max-len": ["error", {
+      code: 140,
+      tabWidth: 2,
+      // ignoreComments: true,
+      ignoreTrailingComments: true,
+      // ignoreStrings: true,
+      ignoreTemplateLiterals: true,
+      ignoreRegExpLiterals: true,
+    }],
     "react/react-in-jsx-scope": "off",
     "import/prefer-default-export": "off",
     "@typescript-eslint/no-use-before-define": "off",
