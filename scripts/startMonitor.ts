@@ -1,3 +1,11 @@
 import MyScheduler from '../src/lib/my-scheduler';
 
-MyScheduler.enable();
+process.once('SIGINT', async () => {
+  MyScheduler.stop();
+});
+
+process.once('exit', () => {
+  console.log('[monitor] process exiting');
+});
+
+MyScheduler.start();
