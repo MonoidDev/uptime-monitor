@@ -1,11 +1,11 @@
 import * as schedule from 'node-schedule';
 
-import MyMonitor from './my-monitor';
+import Monitor from './monitor';
 
-class MyScheduler {
-  private static instance: MyScheduler;
+class Scheduler {
+  private static instance: Scheduler;
 
-  public static get Instance(): MyScheduler {
+  public static get Instance() {
     // eslint-disable-next-line no-return-assign
     return this.instance || (this.instance = new this());
   }
@@ -23,8 +23,8 @@ class MyScheduler {
 
     this.runningJob = schedule.scheduleJob('* * * * * *', async () => {
       try {
-        const instance = new MyMonitor();
-        await instance.run();
+        const monitor = new Monitor();
+        await monitor.run();
       } catch (error) {
         console.error(error);
       }
@@ -45,4 +45,4 @@ class MyScheduler {
   }
 }
 
-export default MyScheduler.Instance;
+export default Scheduler.Instance;

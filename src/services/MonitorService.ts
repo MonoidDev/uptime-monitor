@@ -1,6 +1,6 @@
-import { PingResult } from '../lib/my-fetch';
+import { PingResult } from '../lib/monitor-fetch';
 import { prisma } from '../lib/prisma';
-import { Website, TraceType, TraceStatus } from '.prisma/client';
+import { Website, Trace, TraceType, TraceStatus } from '.prisma/client';
 
 function getTraceStatus(result: PingResult) {
   if (result.timeout) {
@@ -62,7 +62,7 @@ export class MonitorService {
   }
 
   /* eslint-disable @typescript-eslint/no-unused-vars */
-  async addEvent(website: Website, event: object) {
+  async addEvent(website: Website, trace: Trace, event: object) {
     // TODO
   }
   /* eslint-enable @typescript-eslint/no-unused-vars */

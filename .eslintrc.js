@@ -37,6 +37,7 @@ module.exports = {
     "linebreak-style": "off",
     "quote-props": "off",
     "no-console": "off",
+    "object-curly-newline": "warn",
     "import/order": [
       "error",
       {

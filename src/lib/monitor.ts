@@ -1,10 +1,10 @@
 import { MonitorService } from '../services/MonitorService';
-import { doPing, PingResult } from './my-fetch';
-import { Trace, Website } from '.prisma/client';
+import { doPing, PingResult } from './monitor-fetch';
+import { Trace, TraceStatus, Website } from '.prisma/client';
 
 const monitorService = new MonitorService();
 
-class MyMonitor {
+class Monitor {
   public async run() {
     return this.scanWebsites();
   }
@@ -77,19 +77,22 @@ class MyMonitor {
     const trace = await monitorService.addTrace(website, result);
     if (this.checkEvent(website, lastTrace, trace)) {
       const websiteEvent = {};
-      await monitorService.addEvent(website, websiteEvent);
+      await monitorService.addEvent(website, trace, websiteEvent);
     }
   }
 
-  /* eslint-disable @typescript-eslint/no-unused-vars */
   private checkEvent(
     website: Website,
     lastTrace: Trace | null,
-    currentTrace: Trace | null,
+    currentTrace: Trace,
   ) : Boolean {
-    return true;
+    if (lastTrace === null) {
+      return true;
+    }
+    const lastOk = lastTrace.status === TraceStatus.OK;
+    const currentOk = currentTrace.status === TraceStatus.OK;
+    return lastOk !== currentOk;
   }
-  /* eslint-enable @typescript-eslint/no-unused-vars */
 }
 
-export default MyMonitor;
+export default Monitor;

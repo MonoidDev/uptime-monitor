@@ -1,11 +1,11 @@
-import MyScheduler from '../src/lib/my-scheduler';
+import Scheduler from '../src/lib/monitor-scheduler';
 
 process.once('SIGINT', async () => {
-  MyScheduler.stop();
+  Scheduler.stop();
 });
 
 process.once('exit', () => {
   console.log('[monitor] process exiting');
 });
 
-MyScheduler.start();
+Scheduler.start();
