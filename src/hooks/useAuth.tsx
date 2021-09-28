@@ -16,7 +16,6 @@ export type AuthAction = {
   token: string;
 } | {
   type: 'logout',
-  token: string,
 };
 
 const AuthContext = React.createContext<{

@@ -1,11 +1,12 @@
 import React from 'react';
 
+import DownOutlined from '@ant-design/icons/DownOutlined';
 import HomeFilled from '@ant-design/icons/HomeFilled';
 import HomeOutlined from '@ant-design/icons/HomeOutlined';
 import MonitorOutlined from '@ant-design/icons/MonitorOutlined';
 import type { QueryResult } from '@apollo/client';
 import {
-  Avatar, Breadcrumb, Layout as AntdLayout, Menu,
+  Avatar, Breadcrumb, Dropdown, Layout as AntdLayout, Menu,
   Spin,
 } from 'antd';
 import classNames from 'classnames';
@@ -54,6 +55,16 @@ export const Layout: React.FC<LayoutProps> = (props) => {
   const isLoading = queries.some((q) => q.loading);
   const isFailed = queries.some((q) => q.error);
 
+  const onLogout = () => {
+    // eslint-disable-next-line no-restricted-globals, no-alert
+    if (confirm('Do you really want to log out? ')) {
+      auth.dispatch({
+        type: 'logout',
+      });
+      router.replace(url('/auth/login'));
+    }
+  };
+
   const renderSider = () => {
     return (
       <Sider width={200}>
@@ -100,6 +111,29 @@ export const Layout: React.FC<LayoutProps> = (props) => {
     );
   };
 
+  const renderUserMenu = () => {
+    const menu = (
+      <Menu>
+        <Menu.Item>
+          <a onClick={onLogout}>
+            Log out
+          </a>
+        </Menu.Item>
+      </Menu>
+    );
+
+    return (
+      <Dropdown overlay={menu}>
+        <div className="px-6 text-sm self-stretch flex flex-col justify-center hover:cursor-pointer">
+          <div>
+            {me?.data?.me?.name}
+            <DownOutlined className="ml-4" style={{ fontSize: 12 }} />
+          </div>
+        </div>
+      </Dropdown>
+    );
+  };
+
   const renderHeader = () => {
     return (
       <Header className="text-white text-2xl flex items-center">
@@ -109,10 +143,7 @@ export const Layout: React.FC<LayoutProps> = (props) => {
         {me?.data && (
           <>
             <Avatar />
-
-            <div className="px-6 text-sm">
-              {me?.data?.me?.name}
-            </div>
+            {renderUserMenu()}
           </>
         )}
       </Header>

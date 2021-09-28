@@ -12,7 +12,7 @@
     "build": "yarn gen-types && yarn build:config && yarn build:url && yarn build:gql && yarn build:cg && next build",
     "build:url": "ts-node scripts/emitNextUrls.ts",
     "build:gql": "ts-node --transpile-only scripts/emitGqlSchema.ts",
-    "build:config": "ts-node --transpile-only  config/build.ts",
+    "build:config": "ts-node --transpile-only config/build.ts",
     "build:cg": "graphql-codegen --config codegen.yml",
     "start": "next start",
     "lint": "eslint . --ext .ts,.tsx",
