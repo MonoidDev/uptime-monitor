@@ -1,6 +1,23 @@
 import { PingResult } from '../lib/monitor-fetch';
 import { prisma } from '../lib/prisma';
-import { Website, Trace, TraceType, TraceStatus } from '.prisma/client';
+import { Website, Trace, TraceType, TraceStatus, SeverityType } from '.prisma/client';
+
+export enum WebsiteEventSource {
+  NotAvailable,
+  HighLatency,
+}
+
+export type WebsiteEventParams = {
+  source: WebsiteEventSource,
+  data: unknown,
+};
+
+export type WebsiteEventDataNotAvailable = boolean;
+
+export type WebsiteEventDataHighLatency = {
+  isActive: boolean,
+  duration: number,
+};
 
 function getTraceStatus(result: PingResult) {
   if (result.timeout) {
@@ -61,9 +78,36 @@ export class MonitorService {
     });
   }
 
-  /* eslint-disable @typescript-eslint/no-unused-vars */
-  async addEvent(website: Website, trace: Trace, event: object) {
-    // TODO
+  async addEvent(website: Website, trace: Trace, eventParams: WebsiteEventParams) {
+    let eventSeverity: SeverityType;
+    let eventDataString: string;
+    switch (eventParams.source) {
+      case WebsiteEventSource.NotAvailable: {
+        const eventData = (eventParams.data as WebsiteEventDataNotAvailable);
+        eventSeverity = eventData ? SeverityType.ERROR : SeverityType.WARN;
+        eventDataString = JSON.stringify(eventData);
+        break;
+      }
+      case WebsiteEventSource.HighLatency: {
+        const eventData = (eventParams.data as WebsiteEventDataHighLatency);
+        eventSeverity = eventData.isActive ? SeverityType.WARN : SeverityType.WARN;
+        eventDataString = JSON.stringify(eventData);
+        break;
+      }
+      default: {
+        console.error(`[monitor] Unknown event source: ${eventParams.source}`);
+        return null;
+      }
+    }
+
+    return prisma.event.create({
+      data: {
+        type: eventParams.source.toString(),
+        websiteId: website.id,
+        status: eventSeverity,
+        traceId: trace.id,
+        data: eventDataString,
+      },
+    });
   }
-  /* eslint-enable @typescript-eslint/no-unused-vars */
 }

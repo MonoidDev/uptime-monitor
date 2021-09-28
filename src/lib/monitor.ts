@@ -1,4 +1,4 @@
-import { MonitorService } from '../services/MonitorService';
+import { MonitorService, WebsiteEventDataNotAvailable, WebsiteEventParams, WebsiteEventSource } from '../services/MonitorService';
 import { doPing, PingResult } from './monitor-fetch';
 import { Trace, TraceStatus, Website } from '.prisma/client';
 
@@ -75,23 +75,32 @@ class Monitor {
 
     const result: PingResult = await doPing(website.url);
     const trace = await monitorService.addTrace(website, result);
-    if (this.checkEvent(website, lastTrace, trace)) {
-      const websiteEvent = {};
-      await monitorService.addEvent(website, trace, websiteEvent);
+
+    const eventAvailability = this.checkEventAvailability(website, lastTrace, trace);
+    if (eventAvailability !== null) {
+      await monitorService.addEvent(website, trace, eventAvailability);
     }
   }
 
-  private checkEvent(
+  private checkEventAvailability(
     website: Website,
     lastTrace: Trace | null,
     currentTrace: Trace,
-  ) : Boolean {
-    if (lastTrace === null) {
-      return true;
-    }
-    const lastOk = lastTrace.status === TraceStatus.OK;
+  ) {
+    const lastOk = (lastTrace === null) ? false : (lastTrace.status === TraceStatus.OK);
     const currentOk = currentTrace.status === TraceStatus.OK;
-    return lastOk !== currentOk;
+    if (lastOk === currentOk) {
+      // no status changed
+      return null;
+    }
+
+    const eventData: WebsiteEventDataNotAvailable = !currentOk;
+
+    const params: WebsiteEventParams = {
+      source: WebsiteEventSource.NotAvailable,
+      data: eventData,
+    };
+    return params;
   }
 }
 
