@@ -6,9 +6,7 @@ import {
 import { getTickCountFromRangeTime, getTickFromRangeTime } from 'app/utils/date';
 import classNames from 'classnames';
 import dayjs from 'dayjs';
-import { useGetFirstWebsiteQuery, useTraceOfErrorCountQuery } from 'graphql/client/generated';
-import random from 'lodash/random';
-import range from 'lodash/range';
+import { useGetFirstWebsiteQuery, useTraceOfErrorCountQuery, useTraceOfResponseTimeQuery } from 'graphql/client/generated';
 
 import { gStyles } from '../styles';
 import tableStyles from '../styles/tableStyles.module.css';
@@ -35,7 +33,7 @@ export const normalizeTraceGroups = <
   const result: T[] = [];
 
   while (j < tickCount) {
-    if (groups[i].groupId > j) {
+    if (i >= groups.length || groups[i].groupId > j) {
       result.push({
         ...getPlaceholder(j),
         groupId: j,
@@ -51,18 +49,62 @@ export const normalizeTraceGroups = <
   return result;
 };
 
-export const ResponseTimeChart: React.VFC = React.memo(() => {
+export interface ResponseTimeChartProps {
+  rangeTime: string;
+}
+
+export const ResponseTimeChart: React.VFC<ResponseTimeChartProps> = React.memo((props) => {
+  const { rangeTime } = props;
+
+  const traces = useTraceOfResponseTimeQuery({
+    variables: {
+      rangeTime,
+    },
+  });
+
+  const traceOfResponseTime = traces.data?.traceOfResponseTime;
+
+  const data = useMemo(() => {
+    if (!traceOfResponseTime) return [];
+
+    console.log(traceOfResponseTime);
+
+    const normalized = normalizeTraceGroups(
+      rangeTime,
+      traceOfResponseTime,
+      (i: number) => ({
+        groupId: i,
+        time: getTickFromRangeTime(rangeTime, i),
+        avgDuration: NaN,
+      }),
+    );
+
+    return normalized.map((n) => ({
+      time: rangeTime === '24h' ? dayjs(n.time).format('hh:mm') : dayjs(n.time).format('M-D'),
+      iso: n.time,
+      avgDuration: n.avgDuration,
+    }));
+  }, [traceOfResponseTime]);
+
   return (
-    <SingleLineChart
-      title="Response Time"
-      data={sampleResponseTimeData}
-      xDataKey="time"
-      linkDataKey="responseTime"
-      yAxisProps={{
-        unit: 'ms',
-        width: 60,
-      }}
-    />
+    <QueryContainer
+      queries={[traces]}
+      isNotFound={traces.data?.traceOfResponseTime?.length === 0}
+      className="h-[355px]"
+    >
+      {() => (
+        <SingleLineChart
+          title="Response Time"
+          data={data}
+          xDataKey="time"
+          linkDataKey="avgDuration"
+          yAxisProps={{
+            unit: 'ms',
+            width: 60,
+          }}
+        />
+      )}
+    </QueryContainer>
   );
 });
 
@@ -306,8 +348,3 @@ export const EventTable: React.VFC = React.memo(() => {
     </div>
   );
 });
-
-const sampleResponseTimeData = range(31).map((i) => ({
-  time: dayjs().subtract(31 - i, 'day').format('D/M'),
-  responseTime: random(100, 200, false),
-}));

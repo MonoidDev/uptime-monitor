@@ -126,7 +126,7 @@ export default function Page() {
       <Row gutter={32}>
         <Col span={12}>
           <div className={classNames(gStyles.paper)}>
-            <ResponseTimeChart />
+            <ResponseTimeChart rangeTime={rangeTime!} />
           </div>
         </Col>
 

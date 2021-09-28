@@ -25,11 +25,12 @@ export const TraceOfError = objectType({
   },
 });
 
-export const TraceOfResponse = objectType({
-  name: 'TraceOfResponse',
+export const TraceOfResponsTime = objectType({
+  name: 'TraceOfResponseTime',
   definition(t) {
-    t.int('groupId');
-    t.int('avgDuration');
+    t.nonNull.string('time');
+    t.nonNull.int('groupId');
+    t.nonNull.int('avgDuration');
   },
 });
 

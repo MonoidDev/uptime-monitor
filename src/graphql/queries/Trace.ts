@@ -37,8 +37,8 @@ export const traceOfErrorCount = queryField('traceOfErrorCount', {
   },
 });
 
-export const traceOfResponse = queryField('traceOfResponse', {
-  type: list('TraceOfResponse'),
+export const traceOfResponseTime = queryField('traceOfResponseTime', {
+  type: list(nonNull('TraceOfResponseTime')),
   args: {
     rangeTime: nonNull(stringArg()),
   },

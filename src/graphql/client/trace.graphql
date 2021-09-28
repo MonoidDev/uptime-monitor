@@ -38,3 +38,11 @@ query TraceOfErrorCount($rangeTime: String!) {
     count
   }
 }
+
+query TraceOfResponseTime($rangeTime: String!) {
+  traceOfResponseTime(rangeTime: $rangeTime) {
+    time
+    groupId
+    avgDuration
+  }
+}
