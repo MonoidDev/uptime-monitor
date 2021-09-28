@@ -48,8 +48,8 @@ type PaginatedTraces {
 }
 
 type PaginatedWebsite {
-  count: Int
-  results: [Website]
+  count: Int!
+  results: [Website]!
 }
 
 type Query {
@@ -58,7 +58,7 @@ type Query {
   me: User
   trace(id: Int!): Trace
   traceOfErrorCount(rangeTime: String!, websiteId: Int): [TraceOfError!]
-  traceOfResponseTime(rangeTime: String!): [TraceOfResponseTime!]
+  traceOfResponseTime(rangeTime: String!, websiteId: Int): [TraceOfResponseTime!]
   traces(query: TraceQuery!): PaginatedTraces!
   user(id: Int!): User
   website(id: Int!): Website
@@ -135,6 +135,13 @@ type Website {
   id: Int!
   name: String!
   pingInterval: Int!
+  status: [WebsiteStatusType]
   url: String!
   userId: Int!
+}
+
+enum WebsiteStatusType {
+  ERROR
+  OK
+  UNAVAILABLE
 }

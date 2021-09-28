@@ -42,9 +42,10 @@ export const traceOfResponseTime = queryField('traceOfResponseTime', {
   type: list(nonNull('TraceOfResponseTime')),
   args: {
     rangeTime: nonNull(stringArg()),
+    websiteId: intArg(),
   },
   authorize: loginRequired,
-  async resolve(_, { rangeTime }, ctx) {
-    return ctx.traceService.findAverageDurationGroupByDate(rangeTime);
+  async resolve(_, { rangeTime, websiteId }, ctx) {
+    return ctx.traceService.findAverageDurationGroupByDate(rangeTime, websiteId);
   },
 });
