@@ -13,10 +13,16 @@ import {
   InputNumber,
 } from 'antd';
 import { usePageQuery } from 'app/hooks/usePageQuery';
-import { useUpdateWebsiteMutation, useGetWebsiteByIdQuery } from 'graphql/client/generated';
+import {
+  useGetWebsiteByIdQuery,
+  useUpdateWebsiteMutation,
+  useDeleteWebsiteMutation,
+} from 'graphql/client/generated';
 import * as t from 'io-ts';
+import { useRouter } from 'next/router';
 import * as h from 'tyrann-io';
 
+import { url } from '../../../../.next-urls';
 import { Layout } from '../../../components/Layout';
 import { CreateUpdateWebsiteSchema } from '../../../graphql/types/WebsiteSchema';
 import { useValidation } from '../../../hooks/useValidation';
@@ -27,6 +33,8 @@ export default function Page() {
       id: h.number().castString(),
     }), []),
   );
+
+  const router = useRouter();
 
   const websiteDetails = useGetWebsiteByIdQuery({
     variables: {
@@ -43,6 +51,7 @@ export default function Page() {
   };
 
   const [updateWebsite, { error }] = useUpdateWebsiteMutation();
+  const [deleteWebstie] = useDeleteWebsiteMutation();
 
   const validation = useValidation({
     type: CreateUpdateWebsiteSchema,
@@ -58,6 +67,15 @@ export default function Page() {
       console.log(response);
     },
   });
+
+  const onDelete = async () => {
+    await deleteWebstie({
+      variables: {
+        websiteId: id,
+      },
+    });
+    router.push(`${url('/monitoring/websites')}`);
+  };
 
   const renderTitle = () => {
     return (
@@ -179,6 +197,7 @@ export default function Page() {
               shape="round"
               htmlType="button"
               className="ml-5 bg-red-600 border-red-600 hover:bg-red-500 hover:border-red-500"
+              onClick={onDelete}
             >
               Delete
             </Button>

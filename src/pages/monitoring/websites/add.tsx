@@ -13,24 +13,29 @@ import {
   InputNumber,
 } from 'antd';
 import { useCreateWebsiteMutation } from 'graphql/client/generated';
+import { useRouter } from 'next/router';
 
+import { url } from '../../../../.next-urls';
 import { Layout } from '../../../components/Layout';
 import { CreateUpdateWebsiteSchema } from '../../../graphql/types/WebsiteSchema';
 import { useValidation } from '../../../hooks/useValidation';
 
 export default function Page() {
+  const router = useRouter();
   const [createWebsite, { error }] = useCreateWebsiteMutation();
 
   const validation = useValidation({
     type: CreateUpdateWebsiteSchema,
     error,
     onSubmit: async (website) => {
+      console.log(website);
       const response = await createWebsite({
         variables: {
           website,
         },
       });
       console.log(response);
+      router.push(`${url('/monitoring/websites')}`);
     },
   });
 
