@@ -30,7 +30,7 @@ yarn install
 - Generate Prisma client
 
 	```bash
-	yarn gen-types
+	yarn db-types
 	```
 - Synchronize the Prisma schema and your database schema
 
@@ -52,4 +52,4 @@ Finally, open [http://localhost:3000](http://localhost:3000) with your browser t
 
 Also, you can visit [http://localhost:3000/api/graphql](http://localhost:3000/api/graphql) to explore the API document.
 
-Notice that you need to re-run the `yarn gen-types` and `yarn dev:db-push` command after every change that's made to your Prisma schema to update the generated Prisma Client code.
+Notice that you need to re-run the `yarn db-types` and `yarn dev:db-push` command after every change that's made to your Prisma schema to update the generated Prisma Client code.

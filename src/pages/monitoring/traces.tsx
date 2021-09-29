@@ -189,17 +189,20 @@ export default function Page() {
             className="underline"
             href={traceData?.website.url}
           >
-            {traceData?.website.name}
+            {traceData?.website.name ?? ' '}
           </a>
         </TraceDataCell>
         <TraceDataCell label="Time">
-          {traceData?.createdAt}
+          {traceData?.createdAt ?? ' '}
         </TraceDataCell>
         <TraceDataCell label="Status">
-          {traceData?.status}
+          {traceData?.status ?? ' '}
         </TraceDataCell>
         <TraceDataCell label="Duration">
-          {traceData?.duration}
+          {traceData?.duration ?? ' '}
+        </TraceDataCell>
+        <TraceDataCell label="Request Headers" multilines>
+          {traceData?.requestHeaders ?? ' '}
         </TraceDataCell>
       </Modal>
     );
