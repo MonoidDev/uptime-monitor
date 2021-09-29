@@ -21,6 +21,7 @@
     "dev:db-push": "yarn dev:env prisma db push",
     "dev:seed": "yarn dev:env ts-node --transpile-only scripts/seed.ts",
     "dev:start-monitor": "yarn dev:env ts-node-dev --transpile-only scripts/startMonitor.ts",
+    "prod:start-monitor": "yarn prod:env ts-node --transpile-only scripts/startMonitor.ts",
     "prod:env": "dotenv -e .env.production --",
     "prod:db-push": "yarn prod:env prisma db push"
   },
