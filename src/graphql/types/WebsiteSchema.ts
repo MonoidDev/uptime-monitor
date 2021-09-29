@@ -10,7 +10,7 @@ export const CreateUpdateWebsiteSchema = defineSchema(
   t.interface({
     name: requiredStringField('Name'),
     url: requiredStringField('Url'),
-    pingInterval: requiredNumberField('PingInterval'),
+    pingInterval: requiredNumberField('Ping Interval (s)'),
     enabled: booleanField('Enabled'),
     emails: emailArrayField('Emails'),
   }),

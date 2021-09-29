@@ -12,14 +12,13 @@ export class WebsiteService extends BaseService {
     });
   }
 
-  async findWebsites(page: number) {
+  async findWebsites(page: number, keyword?: string | null) {
     const skip = (page - 1) * 8;
-    const userId = this.ctx.authInfo!.id;
     return this.ctx.prisma.website.findMany({
       skip,
       take: 8,
       where: {
-        userId,
+        ...this.getFilterWebsiteWhere(keyword),
       },
       orderBy: {
         createdAt: 'desc',
@@ -70,8 +69,12 @@ export class WebsiteService extends BaseService {
     });
   }
 
-  async total() {
-    return this.ctx.prisma.website.count();
+  async total(keyword?: string | null) {
+    return this.ctx.prisma.website.count({
+      where: {
+        ...this.getFilterWebsiteWhere(keyword),
+      },
+    });
   }
 
   createWebsite(website: t.TypeOf<typeof CreateUpdateWebsiteSchema>) {
@@ -109,5 +112,37 @@ export class WebsiteService extends BaseService {
         id: websiteId,
       },
     });
+  }
+
+  getFilterWebsiteWhere(keyword?: string | null) {
+    const userId = this.ctx.authInfo!.id;
+
+    return {
+      AND: [
+        {
+          userId,
+        },
+        {
+          OR: [
+            {
+              ...keyword && {
+                name: {
+                  contains: keyword,
+                  mode: 'insensitive' as const,
+                },
+              },
+            },
+            {
+              ...keyword && {
+                url: {
+                  contains: keyword,
+                  mode: 'insensitive' as const,
+                },
+              },
+            },
+          ],
+        },
+      ],
+    };
   }
 }

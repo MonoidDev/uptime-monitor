@@ -1,6 +1,12 @@
 import { PingResult } from '../lib/monitor-fetch';
 import { prisma } from '../lib/prisma';
-import { Website, Trace, TraceType, TraceStatus, SeverityType } from '.prisma/client';
+import {
+  Website,
+  Trace,
+  TraceType,
+  TraceStatus,
+  SeverityType,
+} from '.prisma/client';
 
 export enum WebsiteEventSource {
   NotAvailable,

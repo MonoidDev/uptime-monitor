@@ -33,6 +33,10 @@ const WithApollo: React.FC = ({ children }) => {
         Authorization: `Bearer ${auth.state.token}`,
       } : {},
     }));
+
+    if (!auth.state.token) {
+      client.clearStore();
+    }
   }, [auth.state.token]);
 
   return (

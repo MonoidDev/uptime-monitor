@@ -1,4 +1,9 @@
-import { MonitorService, WebsiteEventDataNotAvailable, WebsiteEventParams, WebsiteEventSource } from '../services/MonitorService';
+import {
+  MonitorService,
+  WebsiteEventDataNotAvailable,
+  WebsiteEventParams,
+  WebsiteEventSource,
+} from '../services/MonitorService';
 import { doPing, PingResult } from './monitor-fetch';
 import { Trace, TraceStatus, Website } from '.prisma/client';
 

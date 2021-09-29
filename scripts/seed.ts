@@ -7,12 +7,20 @@ import { TraceService } from '../src/services/TraceService';
 import { UserService } from '../src/services/UserService';
 import { WebsiteService } from '../src/services/WebsiteService';
 
-if (process.env.NODE_ENV === 'production') {
+if (process.env.NODE_ENV !== 'development') {
   throw new Error('seed.ts is only for development!');
 }
 
 (async () => {
-  await prisma.$queryRaw('TRUNCATE TABLE "User" CASCADE;');
+  await prisma.$queryRaw(`
+    TRUNCATE TABLE "User" CASCADE;
+  `);
+
+  for (const seq of ['Event_id_seq', 'Trace_id_seq', 'User_id_seq', 'Website_id_seq']) {
+    await prisma.$queryRaw(`
+      ALTER SEQUENCE "${seq}" RESTART;
+    `);
+  }
 
   function getContext() {
     return ctx;
@@ -91,6 +99,114 @@ if (process.env.NODE_ENV === 'production') {
       },
     });
   }
+
+  await prisma.website.create({
+    data: {
+      userId: user.id,
+      name: 'sina',
+      url: 'https://www.sina.com',
+      pingInterval: 10,
+      enabled: false,
+      emails: ['wangchenyu2017@gmail.com'],
+      createdAt: dayjs().subtract(((n - 31) * ((3600 * 24) * 15)) / n, 'seconds').toISOString(),
+    },
+  });
+
+  await prisma.website.create({
+    data: {
+      userId: user.id,
+      name: 'sina',
+      url: 'https://monoid.co.jp',
+      pingInterval: 10,
+      enabled: false,
+      emails: ['wangchenyu2017@gmail.com'],
+      createdAt: dayjs().subtract(((n - 31) * ((3600 * 24) * 15)) / n, 'seconds').toISOString(),
+    },
+  });
+
+  await prisma.website.create({
+    data: {
+      userId: user.id,
+      name: 'Fox News',
+      url: 'https://foxnews.com',
+      pingInterval: 100,
+      enabled: false,
+      emails: ['wangchenyu2017@gmail.com'],
+      createdAt: dayjs().subtract(((n - 31) * ((3600 * 24) * 15)) / n, 'seconds').toISOString(),
+    },
+  });
+
+  await prisma.website.create({
+    data: {
+      userId: user.id,
+      name: 'USC',
+      url: 'https://www.usc.edu',
+      pingInterval: 100,
+      enabled: true,
+      emails: ['wangchenyu2017@gmail.com'],
+      createdAt: dayjs().subtract(((n - 31) * ((3600 * 24) * 15)) / n, 'seconds').toISOString(),
+    },
+  });
+
+  await prisma.website.create({
+    data: {
+      userId: user.id,
+      name: 'Github',
+      url: 'https://github.com',
+      pingInterval: 100,
+      enabled: true,
+      emails: ['wangchenyu2017@gmail.com'],
+      createdAt: dayjs().subtract(((n - 31) * ((3600 * 24) * 15)) / n, 'seconds').toISOString(),
+    },
+  });
+
+  await prisma.website.create({
+    data: {
+      userId: user.id,
+      name: 'Gitee',
+      url: 'https://gitee.com',
+      pingInterval: 100,
+      enabled: true,
+      emails: ['wangchenyu2017@gmail.com'],
+      createdAt: dayjs().subtract(((n - 31) * ((3600 * 24) * 15)) / n, 'seconds').toISOString(),
+    },
+  });
+
+  await prisma.website.create({
+    data: {
+      userId: user.id,
+      name: 'npm',
+      url: 'https://npmjs.com',
+      pingInterval: 500,
+      enabled: true,
+      emails: ['wangchenyu2017@gmail.com'],
+      createdAt: dayjs().subtract(((n - 31) * ((3600 * 24) * 15)) / n, 'seconds').toISOString(),
+    },
+  });
+
+  await prisma.website.create({
+    data: {
+      userId: user.id,
+      name: 'GitLab',
+      url: 'https://gitlab.com',
+      pingInterval: 500,
+      enabled: true,
+      emails: ['wangchenyu2017@gmail.com'],
+      createdAt: dayjs().subtract(((n - 31) * ((3600 * 24) * 15)) / n, 'seconds').toISOString(),
+    },
+  });
+
+  await prisma.website.create({
+    data: {
+      userId: user.id,
+      name: 'Wopal',
+      url: 'https://wopal.dev',
+      pingInterval: 500,
+      enabled: true,
+      emails: ['wangchenyu2017@gmail.com'],
+      createdAt: dayjs().subtract(((n - 31) * ((3600 * 24) * 15)) / n, 'seconds').toISOString(),
+    },
+  });
 
   await prisma.$disconnect();
 })();
