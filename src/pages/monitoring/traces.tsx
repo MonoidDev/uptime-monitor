@@ -9,6 +9,7 @@ import {
   DatePicker,
   Modal,
 } from 'antd';
+import { useGetTraceByIdQuery, useTracesQuery } from 'graphql/client/generated';
 import * as t from 'io-ts';
 import * as h from 'tyrann-io';
 
@@ -16,10 +17,8 @@ import { Layout } from '../../components/Layout';
 import { TraceDataCell } from '../../components/TraceDataCell';
 
 interface Website {
-  id: number,
   name: string,
   url: string,
-  pingInterval: number,
 }
 
 interface TraceItem {
@@ -27,8 +26,8 @@ interface TraceItem {
   id: number;
   type: string;
   website: Website;
-  time: string;
-  status: string | null | undefined;
+  websiteId: number;
+  status: string;
   duration: number;
 }
 
@@ -41,7 +40,38 @@ export default function Page() {
   );
 
   const [modalVisible, setModalVisible] = useState<boolean>(false);
-  const [traceData, setTraceData] = useState<TraceItem | {}>({});
+  const [traceId, setTraceId] = useState<number>(0);
+
+  const tracesResponse = useTracesQuery({
+    variables: {
+      query: {
+        rangeTime: undefined,
+      },
+    },
+  });
+
+  const traceResponse = useGetTraceByIdQuery({
+    variables: {
+      id: traceId,
+    },
+  });
+
+  const tracesData = tracesResponse.data?.traces;
+
+  const traceData = traceResponse.data?.trace;
+
+  const traceItems = tracesData?.results?.map((trace) => ({
+    key: String(trace.id),
+    id: trace.id,
+    type: trace.traceType,
+    website: {
+      name: trace.website.name,
+      url: trace.website.url,
+    },
+    websiteId: trace.websiteId,
+    duration: trace.duration,
+    status: trace.status,
+  }));
 
   const columns = [
     {
@@ -94,8 +124,8 @@ export default function Page() {
     },
   ];
 
-  const showDetails = (_id: number) => {
-    setTraceData(exampleData[0]);
+  const showDetails = (id: number) => {
+    setTraceId(id);
     setModalVisible(true);
   };
 
@@ -146,33 +176,30 @@ export default function Page() {
   const renderTraceDataModal = () => {
     return (
       <Modal
-        title={`Trace #${'id' in traceData ? traceData.id : ''}`}
+        title={`Trace #${traceData?.id}`}
         visible={modalVisible}
         onOk={() => setModalVisible(false)}
         onCancel={() => setModalVisible(false)}
       >
         <TraceDataCell label="Type">
-          {'type' in traceData ? traceData.type : ''}
+          {traceData?.traceType}
         </TraceDataCell>
         <TraceDataCell label="Website">
-          {'website' in traceData
-            ? (
-              <a
-                className="underline"
-                href={traceData.website.url}
-              >
-                {traceData.website.name}
-              </a>
-            ) : ''}
+          <a
+            className="underline"
+            href={traceData?.website.url}
+          >
+            {traceData?.website.name}
+          </a>
         </TraceDataCell>
         <TraceDataCell label="Time">
-          {'time' in traceData ? traceData.time : ''}
+          {traceData?.createdAt}
         </TraceDataCell>
         <TraceDataCell label="Status">
-          {'status' in traceData ? traceData.status : ''}
+          {traceData?.status}
         </TraceDataCell>
         <TraceDataCell label="Duration">
-          {'duration' in traceData ? traceData.duration : ''}
+          {traceData?.duration}
         </TraceDataCell>
       </Modal>
     );
@@ -190,6 +217,7 @@ export default function Page() {
           href: '/monitoring/traces',
         },
       ]}
+      queries={[tracesResponse]}
     >
       {renderTitle()}
       <div className="bg-white p-8 shadow-md">
@@ -197,7 +225,7 @@ export default function Page() {
         <Table
           bordered={false}
           className="py-8"
-          dataSource={exampleData}
+          dataSource={traceItems}
           columns={columns}
           pagination={{
             className: 'flex justify-end pt-10',
@@ -215,20 +243,3 @@ const colorMap: { [key:string]: string } = {
   HTTP_ERROR: 'text-red-600',
   SSL_ERROR: 'text-red-600',
 };
-
-const exampleData = [
-  {
-    key: '1',
-    id: 1,
-    type: 'PING',
-    website: {
-      id: 1,
-      url: 'https://www.google.com',
-      name: 'Google Home',
-      pingInterval: 100,
-    },
-    time: '2021-09-11 11:30:01',
-    status: 'TIMEOUT',
-    duration: 999,
-  },
-];
