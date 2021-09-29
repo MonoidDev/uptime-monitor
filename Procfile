@@ -1,1 +1,1 @@
-web: yarn prod:start-monitor
+web: yarn && yarn prod:start-monitor
