@@ -1,6 +1,15 @@
 # Uptime Monitor
 
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+Uptime Monitor provides a website monitoring service, to let users know when their endpoints go down. It is featured by configurable website setting and visualized real-time dashboard. 
+
+This project uses:
+- [Next.js](https://nextjs.org/) as SSR React framework
+- [Ant Design](https://ant.design/) as React UI library
+- [tailwindcss](https://tailwindcss.com/) as CSS framework
+- [GraphQL](https://graphql.org) as query language
+- [Apollo](https://www.apollographql.com/) for the communication between the client and backend services
+- [Nexus](https://nexusjs.org/) to write the GraphQL schemas in Typescript
+- [Prisma](https://www.prisma.io/) as Typescript ORM
 
 ## Requirements
 
@@ -8,37 +17,39 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 - `typescript >= 4.3` 
 - `yarn`
 
-## Getting Started
-
-First, run the development server:
-
+## Installation
+To install the dependencies, please run
 ```bash
-npm run dev
+yarn 
 # or
-yarn dev
+yarn install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Usage
+- create a `.env.development` file and a `.env.production` file, and set your own environment variables for development and production respectively.
+- Generate Prisma client
 
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
+	```bash
+	yarn gen-types
+	```
+- Synchronize the Prisma schema and your database schema
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.js`.
+	```bash
+	yarn dev:db-push
+	```
+- Seed the database
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+	```bash
+	yarn dev:seed
+	```
+	Alternatively, you can also create the data from scratch.
+- Start the development server
 
-## Learn More
+	```
+	yarn dev
+	```
+Finally, open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-To learn more about Next.js, take a look at the following resources:
+Also, you can visit [http://localhost:3000/api/graphql](http://localhost:3000/api/graphql) to explore the API document.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
-
-## Server
+Notice that you need to re-run the `yarn gen-types` and `yarn dev:db-push` command after every change that's made to your Prisma schema to update the generated Prisma Client code.
