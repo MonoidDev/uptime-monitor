@@ -1,6 +1,7 @@
 import { ServerResponse } from 'http';
 
 import { PrismaClient } from '@prisma/client';
+import { EventService } from 'app/services/EventService';
 
 import { prisma } from '../lib/prisma';
 import { TraceService } from '../services/TraceService';
@@ -14,6 +15,7 @@ export type Context = {
   prisma: PrismaClient;
   isLoggedIn: boolean;
   userService: UserService;
+  eventService: EventService;
   websiteService: WebsiteService;
   traceService: TraceService;
   req: NextIncomingMessage;
@@ -45,6 +47,7 @@ export const createContext: RequestObjectHandler<Context> = async ({ req, res })
     userService: new UserService(getContext),
     websiteService: new WebsiteService(getContext),
     traceService: new TraceService(getContext),
+    eventService: new EventService(getContext),
     req,
     res,
   };

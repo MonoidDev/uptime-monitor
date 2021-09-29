@@ -27,6 +27,23 @@ input CreateUser {
 
 scalar DateTime
 
+type Event {
+  createdAt: DateTime!
+  data: String!
+  id: Int!
+  traceId: Int!
+  type: String!
+  website: Website!
+  websiteId: Int!
+}
+
+input EventQuery {
+  afterId: Int
+  beforeId: Int
+  rangeTime: String
+  websiteId: Int
+}
+
 input Login {
   email: String!
   inputPassword: String!
@@ -39,6 +56,12 @@ type Mutation {
   deleteWebsite(websiteId: Int!): Website
   login(auth: Login!): User
   updateWebsite(website: CreateUpdateWebsite!, websiteId: Int!): Website
+}
+
+type PaginatedEvents {
+  maxId: Int
+  minId: Int
+  results: [Event!]!
 }
 
 type PaginatedTraces {
@@ -54,6 +77,7 @@ type PaginatedWebsite {
 
 type Query {
   allUsers: [User]
+  events(query: EventQuery!): PaginatedEvents!
   firstWebsite: Website
   me: User
   trace(id: Int!): Trace
