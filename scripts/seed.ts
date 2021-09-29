@@ -1,3 +1,4 @@
+import { EventService } from 'app/services/EventService';
 import dayjs from 'dayjs';
 import range from 'lodash/range';
 
@@ -32,6 +33,7 @@ if (process.env.NODE_ENV !== 'development') {
     userService: new UserService(getContext),
     websiteService: new WebsiteService(getContext),
     traceService: new TraceService(getContext),
+    eventService: new EventService(getContext),
     req: {} as any,
     res: {} as any,
   };
