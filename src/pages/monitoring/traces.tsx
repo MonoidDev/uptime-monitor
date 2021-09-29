@@ -9,6 +9,7 @@ import {
   DatePicker,
   Modal,
 } from 'antd';
+import dayjs from 'dayjs';
 import { useGetTraceByIdQuery, useTracesQuery } from 'graphql/client/generated';
 import * as t from 'io-ts';
 import * as h from 'tyrann-io';
@@ -105,7 +106,7 @@ export default function Page() {
       key: 'duration',
       render: (duration: number) => (
         <span>
-          {`${duration}ms`}
+          {`${duration}s`}
         </span>
       ),
     },
@@ -193,9 +194,9 @@ export default function Page() {
           </a>
         </TraceDataCell>
         <TraceDataCell label="Time">
-          {traceData?.createdAt ?? ' '}
+          {traceData?.createdAt ? dayjs(traceData?.createdAt).format('YYYY-MM-DD HH:mm:ss') : ' '}
         </TraceDataCell>
-        <TraceDataCell label="Status">
+        <TraceDataCell label="Status" className={colorMap[traceData?.status!]}>
           {traceData?.status ?? ' '}
         </TraceDataCell>
         <TraceDataCell label="Duration">
@@ -203,6 +204,12 @@ export default function Page() {
         </TraceDataCell>
         <TraceDataCell label="Request Headers" multilines>
           {traceData?.requestHeaders ?? ' '}
+        </TraceDataCell>
+        <TraceDataCell label="Response Headers" multilines>
+          {traceData?.responseHeaders ?? ' '}
+        </TraceDataCell>
+        <TraceDataCell label="Response Data" multilines>
+          {traceData?.responseData ?? ' '}
         </TraceDataCell>
       </Modal>
     );

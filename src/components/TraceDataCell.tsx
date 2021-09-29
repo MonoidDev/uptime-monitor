@@ -1,15 +1,20 @@
 import React from 'react';
 
-interface TraceDataCellProps {
+import classNames from 'classnames';
+
+export interface TraceDataCellProps {
   label: string;
+  children: React.ReactNode | (() => React.ReactNode);
+  className?: string;
   multilines?: boolean;
 }
 
 export const TraceDataCell: React.FC<TraceDataCellProps> = (props) => {
   const {
-    children,
     label,
-    multilines,
+    children,
+    className = '',
+    multilines = false,
   } = props;
 
   return (
@@ -21,20 +26,16 @@ export const TraceDataCell: React.FC<TraceDataCellProps> = (props) => {
           {' '}
         </div>
         {!multilines && (
-        <div className="bg-gray-200 px-2 py-0.5 w-3/4 rounded-md">
+        <div className={classNames('bg-gray-200 px-2 py-0.5 w-3/4 rounded-md', className)}>
           {children}
         </div>
         )}
       </div>
       {multilines && (
-        <div className="bg-gray-200 px-2 py-0.5 w-full overflow-y-auto h-25 rounded-md">
+        <div className={classNames('bg-gray-200 px-2 py-0.5 w-full overflow-y-auto h-20 rounded-md', className)}>
           {children}
         </div>
       )}
     </p>
   );
-};
-
-TraceDataCell.defaultProps = {
-  multilines: false,
 };
