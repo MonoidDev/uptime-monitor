@@ -1,1 +1,1 @@
-web: npm start prod:start-monitor
+web: yarn prod:start-monitor
