@@ -16,9 +16,11 @@ export type AverageDurationGroup = { groupId: number, avgDuration: number }[];
 
 export class TraceService extends BaseService {
   async findTraceById(id: number) {
-    return this.ctx.prisma.trace.findUnique({
+    const userId = this.ctx.authInfo!.id;
+    return this.ctx.prisma.trace.findFirst({
       where: {
         id,
+        userId,
       },
       include: {
         website: true,
