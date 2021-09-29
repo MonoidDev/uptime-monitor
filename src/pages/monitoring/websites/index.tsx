@@ -146,7 +146,8 @@ export default function Page() {
         <Button
           type="primary"
           shape="round"
-          onClick={() => {
+          onClick={(e) => {
+            e.stopPropagation();
             router.push(`${'/monitoring/websites/'}${record.id}`);
           }}
         >
@@ -179,9 +180,7 @@ export default function Page() {
           <Button
             type="primary"
             shape="round"
-            onClick={() => {
-              router.push(`${url('/monitoring/websites/add')}`);
-            }}
+            onClick={() => router.push(`${url('/monitoring/websites/add')}`)}
           >
             Add
           </Button>

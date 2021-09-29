@@ -106,12 +106,26 @@ export class WebsiteService extends BaseService {
     });
   }
 
-  deleteWebsite(websiteId: number) {
-    return this.ctx.prisma.website.delete({
-      where: {
-        id: websiteId,
-      },
-    });
+  async deleteWebsite(websiteId: number) {
+    const [,, website] = await this.ctx.prisma.$transaction([
+      this.ctx.prisma.event.deleteMany({
+        where: {
+          websiteId,
+        },
+      }),
+      this.ctx.prisma.trace.deleteMany({
+        where: {
+          websiteId,
+        },
+      }),
+      this.ctx.prisma.website.delete({
+        where: {
+          id: websiteId,
+        },
+      }),
+    ]);
+
+    return website;
   }
 
   getFilterWebsiteWhere(keyword?: string | null) {

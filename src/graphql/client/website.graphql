@@ -53,3 +53,10 @@ mutation UpdateWebsite($websiteId: Int!, $website: CreateUpdateWebsite!) {
     emails
   }
 }
+
+mutation DeleteWebsite($websiteId: Int!) {
+  deleteWebsite(websiteId: $websiteId) {
+    id
+    name
+  }
+}
