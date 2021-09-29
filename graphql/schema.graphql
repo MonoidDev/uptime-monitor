@@ -62,7 +62,7 @@ type Query {
   traces(query: TraceQuery!): PaginatedTraces!
   user(id: Int!): User
   website(id: Int!): Website
-  websites(page: Int!): PaginatedWebsite
+  websites(keyword: String, page: Int!): PaginatedWebsite
 }
 
 type Trace {

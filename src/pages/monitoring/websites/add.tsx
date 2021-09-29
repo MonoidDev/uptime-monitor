@@ -11,31 +11,42 @@ import {
   Col,
   Alert,
   InputNumber,
+  message,
 } from 'antd';
+import { url } from 'app/../.next-urls';
+import { Layout } from 'app/components/Layout';
+import { CreateUpdateWebsiteSchema } from 'app/graphql/types/WebsiteSchema';
+import { useValidation } from 'app/hooks/useValidation';
 import { useCreateWebsiteMutation } from 'graphql/client/generated';
 import { useRouter } from 'next/router';
-
-import { url } from '../../../../.next-urls';
-import { Layout } from '../../../components/Layout';
-import { CreateUpdateWebsiteSchema } from '../../../graphql/types/WebsiteSchema';
-import { useValidation } from '../../../hooks/useValidation';
+import sleep from 'sleep-promise';
 
 export default function Page() {
   const router = useRouter();
-  const [createWebsite, { error }] = useCreateWebsiteMutation();
+
+  const [createWebsite, { error, loading }] = useCreateWebsiteMutation();
 
   const validation = useValidation({
+    initialValues: {
+      name: '',
+      url: '',
+      pingInterval: 600,
+      enabled: true,
+      emails: [],
+    },
     type: CreateUpdateWebsiteSchema,
     error,
     onSubmit: async (website) => {
-      console.log(website);
       const response = await createWebsite({
         variables: {
           website,
         },
       });
-      console.log(response);
-      router.push(`${url('/monitoring/websites')}`);
+
+      message.success(`Successfully added site ${response.data?.createWebsite?.name}`);
+
+      await sleep(1000);
+      router.push(url('/monitoring/websites'));
     },
   });
 
@@ -93,7 +104,6 @@ export default function Page() {
           <Form.Item
             {...validation.item('pingInterval')}
             required
-            label="Ping Interval"
           >
             <InputNumber placeholder="Ping Interval" className="w-full" />
           </Form.Item>
@@ -148,6 +158,7 @@ export default function Page() {
               type="primary"
               shape="round"
               htmlType="submit"
+              loading={loading}
             >
               Add
             </Button>

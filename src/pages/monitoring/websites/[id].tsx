@@ -1,7 +1,9 @@
+/* eslint-disable no-alert */
 import React, { useMemo } from 'react';
 
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import {
+  message,
   Typography,
   Button,
   Form,
@@ -12,29 +14,26 @@ import {
   Alert,
   InputNumber,
 } from 'antd';
+import { url } from 'app/../.next-urls';
 import { usePageQuery } from 'app/hooks/usePageQuery';
-import {
-  useGetWebsiteByIdQuery,
-  useUpdateWebsiteMutation,
-  useDeleteWebsiteMutation,
-} from 'graphql/client/generated';
+import { useUpdateWebsiteMutation, useGetWebsiteByIdQuery, useDeleteWebsiteMutation } from 'graphql/client/generated';
 import * as t from 'io-ts';
 import { useRouter } from 'next/router';
+import sleep from 'sleep-promise';
 import * as h from 'tyrann-io';
 
-import { url } from '../../../../.next-urls';
 import { Layout } from '../../../components/Layout';
 import { CreateUpdateWebsiteSchema } from '../../../graphql/types/WebsiteSchema';
 import { useValidation } from '../../../hooks/useValidation';
 
 export default function Page() {
+  const router = useRouter();
+
   const { id } = usePageQuery(
     useMemo(() => t.type({
       id: h.number().castString(),
     }), []),
   );
-
-  const router = useRouter();
 
   const websiteDetails = useGetWebsiteByIdQuery({
     variables: {
@@ -51,30 +50,42 @@ export default function Page() {
   };
 
   const [updateWebsite, { error }] = useUpdateWebsiteMutation();
-  const [deleteWebstie] = useDeleteWebsiteMutation();
+
+  const [deleteWebsite] = useDeleteWebsiteMutation();
 
   const validation = useValidation({
     type: CreateUpdateWebsiteSchema,
     error,
     initialValues: websiteDetailsData,
     onSubmit: async (website) => {
-      const response = await updateWebsite({
+      await updateWebsite({
         variables: {
           websiteId: id,
           website,
         },
       });
-      console.log(response);
+      message.success(`Successfully modified site ${website.name}`);
+
+      await sleep(1000);
+      router.push(url('/monitoring/websites'));
     },
   });
 
-  const onDelete = async () => {
-    await deleteWebstie({
+  const onDeleteWebsite = async () => {
+    if (!window.confirm(`Do you really want to delete ${websiteDetailsData.name}? All related data will be deleted and cannnot be reversed. `)) {
+      return;
+    }
+
+    await deleteWebsite({
       variables: {
         websiteId: id,
       },
     });
-    router.push(`${url('/monitoring/websites')}`);
+
+    message.success(`Successfully deleted site ${websiteDetailsData.name}`);
+
+    await sleep(1000);
+    router.push(url('/monitoring/websites'));
   };
 
   const renderTitle = () => {
@@ -197,7 +208,7 @@ export default function Page() {
               shape="round"
               htmlType="button"
               className="ml-5 bg-red-600 border-red-600 hover:bg-red-500 hover:border-red-500"
-              onClick={onDelete}
+              onClick={onDeleteWebsite}
             >
               Delete
             </Button>

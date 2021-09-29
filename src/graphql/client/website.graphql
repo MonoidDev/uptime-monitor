@@ -16,8 +16,8 @@ query GetFirstWebsite {
   }
 }
 
-query GetWebsites($websitesPage: Int!) {
-  websites(page: $websitesPage) {
+query GetWebsites($page: Int!, $keyword: String) {
+  websites(page: $page, keyword: $keyword) {
     count
     results {
       id
@@ -57,5 +57,6 @@ mutation UpdateWebsite($websiteId: Int!, $website: CreateUpdateWebsite!) {
 mutation DeleteWebsite($websiteId: Int!) {
   deleteWebsite(websiteId: $websiteId) {
     id
+    name
   }
 }

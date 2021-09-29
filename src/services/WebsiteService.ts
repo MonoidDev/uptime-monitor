@@ -12,14 +12,13 @@ export class WebsiteService extends BaseService {
     });
   }
 
-  async findWebsites(page: number) {
+  async findWebsites(page: number, keyword?: string | null) {
     const skip = (page - 1) * 8;
-    const userId = this.ctx.authInfo!.id;
     return this.ctx.prisma.website.findMany({
       skip,
       take: 8,
       where: {
-        userId,
+        ...this.getFilterWebsiteWhere(keyword),
       },
       orderBy: {
         createdAt: 'desc',
@@ -70,8 +69,12 @@ export class WebsiteService extends BaseService {
     });
   }
 
-  async total() {
-    return this.ctx.prisma.website.count();
+  async total(keyword?: string | null) {
+    return this.ctx.prisma.website.count({
+      where: {
+        ...this.getFilterWebsiteWhere(keyword),
+      },
+    });
   }
 
   createWebsite(website: t.TypeOf<typeof CreateUpdateWebsiteSchema>) {
@@ -103,11 +106,57 @@ export class WebsiteService extends BaseService {
     });
   }
 
-  deleteWebsite(websiteId: number) {
-    return this.ctx.prisma.website.delete({
-      where: {
-        id: websiteId,
-      },
-    });
+  async deleteWebsite(websiteId: number) {
+    const [,, website] = await this.ctx.prisma.$transaction([
+      this.ctx.prisma.event.deleteMany({
+        where: {
+          websiteId,
+        },
+      }),
+      this.ctx.prisma.trace.deleteMany({
+        where: {
+          websiteId,
+        },
+      }),
+      this.ctx.prisma.website.delete({
+        where: {
+          id: websiteId,
+        },
+      }),
+    ]);
+
+    return website;
+  }
+
+  getFilterWebsiteWhere(keyword?: string | null) {
+    const userId = this.ctx.authInfo!.id;
+
+    return {
+      AND: [
+        {
+          userId,
+        },
+        {
+          OR: [
+            {
+              ...keyword && {
+                name: {
+                  contains: keyword,
+                  mode: 'insensitive' as const,
+                },
+              },
+            },
+            {
+              ...keyword && {
+                url: {
+                  contains: keyword,
+                  mode: 'insensitive' as const,
+                },
+              },
+            },
+          ],
+        },
+      ],
+    };
   }
 }

@@ -19,7 +19,7 @@ import { url } from '../../../../.next-urls';
 import { Layout } from '../../../components/Layout';
 
 export default function Page() {
-  const { search, updateSearch } = useSearch(
+  const { search, updateSearch, setSearch } = useSearch(
     useMemo(() => t.type({
       keyword: h.omittable(t.string),
       page: h.omittable(h.number().castString()),
@@ -30,8 +30,10 @@ export default function Page() {
 
   const websites = useGetWebsitesQuery({
     variables: {
-      websitesPage: (search?.page ?? 0) + 1,
+      page: (search?.page ?? 0) + 1,
+      keyword: search?.keyword,
     },
+    fetchPolicy: 'cache-and-network',
   });
 
   const websitesData = websites.data?.websites;
@@ -74,12 +76,24 @@ export default function Page() {
           onFinish={onFinish}
         >
           <Form.Item name="keyword">
-            <Input placeholder="Keyword" />
+            <Input
+              placeholder="Keyword"
+              allowClear
+              onChange={(e) => {
+                if (e.type === 'click') {
+                  setSearch({
+                    keyword: undefined,
+                    page: undefined,
+                  });
+                }
+              }}
+            />
           </Form.Item>
           <Form.Item>
             <Button
               type="primary"
               shape="round"
+              htmlType="submit"
             >
               Search
             </Button>
@@ -132,12 +146,9 @@ export default function Page() {
         <Button
           type="primary"
           shape="round"
-          onClick={(event) => {
-            event.stopPropagation();
-            router.push({
-              pathname: `${url('/monitoring/websites/[id]')}`,
-              query: `id=${record.id}`,
-            });
+          onClick={(e) => {
+            e.stopPropagation();
+            router.push(`${'/monitoring/websites/'}${record.id}`);
           }}
         >
           Modify
@@ -169,9 +180,7 @@ export default function Page() {
           <Button
             type="primary"
             shape="round"
-            onClick={() => {
-              router.push(`${url('/monitoring/websites/add')}`);
-            }}
+            onClick={() => router.push(`${url('/monitoring/websites/add')}`)}
           >
             Add
           </Button>

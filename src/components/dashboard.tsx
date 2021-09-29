@@ -70,6 +70,7 @@ export const ResponseTimeChart: React.VFC<ResponseTimeChartProps> = React.memo((
     variables: {
       rangeTime,
     },
+    fetchPolicy: 'cache-and-network',
   });
 
   const traceOfResponseTime = traces.data?.traceOfResponseTime;
@@ -131,6 +132,7 @@ export const ErrorChart: React.VFC<ErrorChartProps> = React.memo((props) => {
       rangeTime,
       websiteId,
     },
+    fetchPolicy: 'cache-and-network',
   });
 
   const traceOfErrorCount = traceCount.data?.traceOfErrorCount;
@@ -246,6 +248,7 @@ export const ErrorTable: React.VFC<ErrorTableProps> = React.memo((props) => {
         isError: true,
       },
     },
+    fetchPolicy: 'cache-and-network',
   });
 
   const renderRow = (row: TracesQuery['traces']['results'][number]) => {
