@@ -103,7 +103,7 @@ export const useValidation = <T extends Validators, A = any>(
         label: type.props[key].label,
         name: key,
         validateStatus: shouldDisplayError(key) ? 'error' as const : undefined,
-        help: shouldDisplayError(key) && getFieldErrorMessage(key),
+        help: getFieldErrorMessage(key),
       };
     },
     reset() {

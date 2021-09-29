@@ -70,6 +70,7 @@ export const ResponseTimeChart: React.VFC<ResponseTimeChartProps> = React.memo((
     variables: {
       rangeTime,
     },
+    fetchPolicy: 'cache-and-network',
   });
 
   const traceOfResponseTime = traces.data?.traceOfResponseTime;
