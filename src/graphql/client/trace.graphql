@@ -46,3 +46,24 @@ query TraceOfResponseTime($rangeTime: String!) {
     avgDuration
   }
 }
+
+query Traces($query: TraceQuery!) {
+  traces(query: $query) {
+    minId
+    maxId
+    results {
+      id
+      traceType
+      websiteId
+      duration
+      status
+      requestHeaders
+      responseHeaders
+      responseData
+      website {
+        id
+        name
+      }
+    }
+  }
+}

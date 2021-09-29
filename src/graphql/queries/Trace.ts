@@ -16,13 +16,13 @@ export const trace = queryField('trace', {
 });
 
 export const traces = queryField('traces', {
-  type: list('Trace'),
+  type: nonNull('PaginatedTraces'),
   args: {
-    afterId: nonNull(intArg()),
+    query: nonNull('TraceQuery'),
   },
   authorize: loginRequired,
-  async resolve(_, { afterId }, ctx) {
-    return ctx.traceService.findTraces(afterId);
+  async resolve(_, { query }, ctx) {
+    return ctx.traceService.findTraces(query);
   },
 });
 

@@ -47,7 +47,7 @@ const useRouter = () => {
 
   return {
     get pathname() {
-      return router.pathname;
+      return router.asPath.split('?')[0] ?? '';
     },
     get search() {
       return router.asPath.split('?')[1] ?? '';

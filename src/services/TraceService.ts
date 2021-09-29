@@ -2,8 +2,9 @@ import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
 import * as t from 'io-ts';
 
+import { TraceQuery } from '../../graphql/client/generated';
 import { CreateTraceSchema } from '../graphql/types/TraceSchema';
-import { getTickFromRangeTime } from '../utils/date';
+import { getStartFromRangeTime, getTickFromRangeTime } from '../utils/date';
 import { BaseService } from './BaseService';
 import { Prisma } from '.prisma/client';
 
@@ -134,18 +135,76 @@ export class TraceService extends BaseService {
     return result;
   }
 
-  async findTraces(afterId: number) {
-    return this.ctx.prisma.trace.findMany({
-      where: {
+  async findTraces(query: TraceQuery) {
+    const {
+      beforeId,
+      afterId,
+      isError,
+      websiteId,
+      rangeTime,
+    } = query;
+
+    const where = {
+      ...isError && {
+        status: {
+          not: 'OK' as const,
+        },
+      },
+      ...websiteId && {
+        websiteId,
+      },
+      ...rangeTime && {
+        createdAt: {
+          gt: getStartFromRangeTime(rangeTime),
+        },
+      },
+    } as const;
+
+    const whereWithId = {
+      ...afterId && {
         id: {
           lt: afterId,
         },
       },
+      ...beforeId && {
+        id: {
+          gt: beforeId,
+        },
+      },
+      ...where,
+      userId: this.ctx.authInfo!.id,
+    } as const;
+
+    const minId = (await this.ctx.prisma.trace.findFirst({
+      where,
+      orderBy: {
+        createdAt: 'asc',
+      },
+    }))?.id;
+
+    const maxId = (await this.ctx.prisma.trace.findFirst({
+      where,
       orderBy: {
         createdAt: 'desc',
       },
-      take: 10,
+    }))?.id;
+
+    const results = await this.ctx.prisma.trace.findMany({
+      where: whereWithId,
+      orderBy: {
+        id: afterId ? 'desc' : 'asc',
+      },
+      include: {
+        website: true,
+      },
+      take: 8,
     });
+
+    return {
+      minId,
+      maxId,
+      results: results.sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime()),
+    };
   }
 
   createTrace(trace: t.TypeOf<typeof CreateTraceSchema>) {

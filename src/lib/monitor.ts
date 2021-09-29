@@ -1,10 +1,10 @@
-import { MonitorService } from '../services/MonitorService';
-import { doPing, PingResult } from './my-fetch';
-import { Trace, Website } from '.prisma/client';
+import { MonitorService, WebsiteEventDataNotAvailable, WebsiteEventParams, WebsiteEventSource } from '../services/MonitorService';
+import { doPing, PingResult } from './monitor-fetch';
+import { Trace, TraceStatus, Website } from '.prisma/client';
 
 const monitorService = new MonitorService();
 
-class MyMonitor {
+class Monitor {
   public async run() {
     return this.scanWebsites();
   }
@@ -75,21 +75,33 @@ class MyMonitor {
 
     const result: PingResult = await doPing(website.url);
     const trace = await monitorService.addTrace(website, result);
-    if (this.checkEvent(website, lastTrace, trace)) {
-      const websiteEvent = {};
-      await monitorService.addEvent(website, websiteEvent);
+
+    const eventAvailability = this.checkEventAvailability(website, lastTrace, trace);
+    if (eventAvailability !== null) {
+      await monitorService.addEvent(website, trace, eventAvailability);
     }
   }
 
-  /* eslint-disable @typescript-eslint/no-unused-vars */
-  private checkEvent(
+  private checkEventAvailability(
     website: Website,
     lastTrace: Trace | null,
-    currentTrace: Trace | null,
-  ) : Boolean {
-    return true;
+    currentTrace: Trace,
+  ) {
+    const lastOk = (lastTrace === null) ? false : (lastTrace.status === TraceStatus.OK);
+    const currentOk = currentTrace.status === TraceStatus.OK;
+    if (lastOk === currentOk) {
+      // no status changed
+      return null;
+    }
+
+    const eventData: WebsiteEventDataNotAvailable = !currentOk;
+
+    const params: WebsiteEventParams = {
+      source: WebsiteEventSource.NotAvailable,
+      data: eventData,
+    };
+    return params;
   }
-  /* eslint-enable @typescript-eslint/no-unused-vars */
 }
 
-export default MyMonitor;
+export default Monitor;

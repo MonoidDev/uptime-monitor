@@ -13,11 +13,11 @@ export class WebsiteService extends BaseService {
   }
 
   async findWebsites(page: number) {
-    const skip = (page - 1) * 10;
+    const skip = (page - 1) * 8;
     const userId = this.ctx.authInfo!.id;
     return this.ctx.prisma.website.findMany({
       skip,
-      take: 10,
+      take: 8,
       where: {
         userId,
       },
@@ -46,6 +46,27 @@ export class WebsiteService extends BaseService {
       orderBy: {
         createdAt: 'asc',
       },
+    });
+  }
+
+  async findWebsiteStatus(websiteId: number) {
+    const queryResult = await this.ctx.prisma.$queryRaw`SELECT
+        groupId "groupId",
+        SUM(CASE WHEN status = 'HTTP_ERROR' THEN 1 ELSE 0 END) "httpErrorCount"
+      FROM (
+        SELECT
+        (11 - floor((EXTRACT(epoch FROM current_timestamp) - EXTRACT(epoch FROM "createdAt")) / 7200)) groupId, status
+        FROM "Trace" WHERE
+          EXTRACT(epoch FROM "createdAt") > (EXTRACT(epoch FROM current_timestamp) - 3600 * 24) and
+          "websiteId" = ${websiteId}
+      ) as tmp group by groupId order by groupId;`;
+    const ranges = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
+    return ranges.map((tick) => {
+      const info = queryResult[tick];
+      if (info) {
+        return info.httpErrorCount > 0 ? 'ERROR' : 'OK';
+      }
+      return 'UNAVAILABLE';
     });
   }
 

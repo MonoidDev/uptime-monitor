@@ -1,19 +1,25 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
 import {
   Pagination, Button,
 } from 'antd';
-import { getTickCountFromRangeTime, getTickFromRangeTime } from 'app/utils/date';
-import classNames from 'classnames';
-import dayjs from 'dayjs';
+import { url } from 'app/../.next-urls';
 import {
+  TracesQuery,
   useGetFirstWebsiteQuery,
   useTraceOfErrorCountQuery,
   useTraceOfResponseTimeQuery,
-} from 'graphql/client/generated';
+  useTracesQuery,
+} from 'app/../graphql/client/generated';
+import { getTickCountFromRangeTime, getTickFromRangeTime } from 'app/utils/date';
+import classNames from 'classnames';
+import dayjs from 'dayjs';
+import Link from 'next/link';
+import { unstable_batchedUpdates } from 'react-dom';
 
 import { gStyles } from '../styles';
 import tableStyles from '../styles/tableStyles.module.css';
+import { BidirectionalPagination } from './BidirectionalPagination';
 import { QueryContainer } from './QueryContainer';
 import { SingleLineChart } from './SingleLineChart';
 
@@ -120,21 +126,21 @@ export const ErrorChart: React.VFC<ErrorChartProps> = React.memo((props) => {
 
   const firstWebsite = useGetFirstWebsiteQuery();
 
-  const traces = useTraceOfErrorCountQuery({
+  const traceCount = useTraceOfErrorCountQuery({
     variables: {
       rangeTime,
       websiteId,
     },
   });
 
-  const traceOfErrorCount = traces.data?.traceOfErrorCount;
+  const traceOfErrorCount = traceCount.data?.traceOfErrorCount;
 
   const data = useMemo(() => {
-    if (traces.data === undefined) return [];
+    if (traceCount.data === undefined) return [];
 
     const normalized = normalizeTraceGroups(
       rangeTime,
-      traces.data!.traceOfErrorCount!,
+      traceCount.data!.traceOfErrorCount!,
       (i: number) => ({
         groupId: i,
         time: getTickFromRangeTime(rangeTime, i),
@@ -153,7 +159,7 @@ export const ErrorChart: React.VFC<ErrorChartProps> = React.memo((props) => {
     if (traceOfErrorCount === undefined) return 0;
 
     return Math.max(
-      Math.max(...traces.data!.traceOfErrorCount!.map((d) => d.count)),
+      Math.max(...traceCount.data!.traceOfErrorCount!.map((d) => d.count)),
       2,
     );
   }, [traceOfErrorCount]);
@@ -179,7 +185,7 @@ export const ErrorChart: React.VFC<ErrorChartProps> = React.memo((props) => {
 
   return (
     <QueryContainer
-      queries={[traces, firstWebsite]}
+      queries={[traceCount, firstWebsite]}
       isNotFound={firstWebsite.data?.firstWebsite === null}
       className="h-[355px]"
     >
@@ -209,7 +215,64 @@ export const ErrorChart: React.VFC<ErrorChartProps> = React.memo((props) => {
   );
 });
 
-export const ErrorTable: React.VFC = React.memo(() => {
+export interface ErrorTableProps {
+  rangeTime: string;
+  websiteId?: number;
+}
+
+export const ErrorTable: React.VFC<ErrorTableProps> = React.memo((props) => {
+  const {
+    rangeTime,
+    websiteId,
+  } = props;
+
+  const [afterId, setAfterId] = useState<number | undefined>(2 ** 31 - 1);
+  const [beforeId, setBeforeId] = useState<number | undefined>(undefined);
+
+  useEffect(() => {
+    unstable_batchedUpdates(() => {
+      setAfterId(2 ** 31 - 1);
+      setBeforeId(undefined);
+    });
+  }, [websiteId, rangeTime]);
+
+  const traces = useTracesQuery({
+    variables: {
+      query: {
+        afterId,
+        beforeId,
+        websiteId,
+        rangeTime,
+        isError: true,
+      },
+    },
+  });
+
+  const renderRow = (row: TracesQuery['traces']['results'][number]) => {
+    return (
+      <tr key={row.id}>
+        <td>
+          <Link
+            href={url('/monitoring/websiteStatus/[id]').replace('[id]', String(row.website.id))}
+          >
+            {row.website.name}
+          </Link>
+        </td>
+        <td className={tableStyles.error}>
+          {row.status}
+        </td>
+        <td>
+          {row.duration}
+        </td>
+        <td>
+          <a>
+            More
+          </a>
+        </td>
+      </tr>
+    );
+  };
+
   const renderTable = () => {
     return (
       <table className={tableStyles.simpleTable}>
@@ -222,7 +285,7 @@ export const ErrorTable: React.VFC = React.memo(() => {
               Status
             </th>
             <th>
-              Count
+              Duration
             </th>
             <th>
               {' '}
@@ -230,30 +293,16 @@ export const ErrorTable: React.VFC = React.memo(() => {
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>
-              <a>
-                Google Home
-              </a>
-            </td>
-            <td className={tableStyles.error}>
-              Timeout
-            </td>
-            <td>
-              100
-            </td>
-            <td>
-              <a>
-                More
-              </a>
-            </td>
-          </tr>
+          {traces.data?.traces.results.map((row) => renderRow(row))}
         </tbody>
       </table>
     );
   };
 
   const renderBottom = () => {
+    const currentMinId = Math.min(...traces.data?.traces.results.map((t) => t.id) ?? []);
+    const currentMaxId = Math.max(...traces.data?.traces.results.map((t) => t.id) ?? []);
+
     return (
       <div className="flex justify-between">
         <Button
@@ -263,20 +312,38 @@ export const ErrorTable: React.VFC = React.memo(() => {
           All
         </Button>
 
-        <Pagination
-          current={1}
-          pageSize={10}
-          total={50}
+        <BidirectionalPagination
+          hasMoreBefore={(traces.data?.traces?.maxId ?? 0) > currentMaxId}
+          hasMoreAfter={(traces.data?.traces?.minId ?? 0) < currentMinId}
+          onClickAfter={() => {
+            unstable_batchedUpdates(() => {
+              setBeforeId(undefined);
+              setAfterId(currentMinId);
+            });
+          }}
+          onClickBefore={() => {
+            unstable_batchedUpdates(() => {
+              setBeforeId(currentMaxId);
+              setAfterId(undefined);
+            });
+          }}
         />
       </div>
     );
   };
 
   return (
-    <div className="h-full flex flex-col justify-between">
-      {renderTable()}
-      {renderBottom()}
-    </div>
+    <QueryContainer
+      className="h-full"
+      queries={[traces]}
+    >
+      {() => (
+        <div className="h-full flex flex-col justify-between">
+          {renderTable()}
+          {renderBottom()}
+        </div>
+      )}
+    </QueryContainer>
   );
 });
 

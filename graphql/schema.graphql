@@ -41,9 +41,15 @@ type Mutation {
   updateWebsite(website: CreateUpdateWebsite!, websiteId: Int!): Website
 }
 
+type PaginatedTraces {
+  maxId: Int
+  minId: Int
+  results: [Trace!]!
+}
+
 type PaginatedWebsite {
-  count: Int
-  results: [Website]
+  count: Int!
+  results: [Website]!
 }
 
 type Query {
@@ -53,7 +59,7 @@ type Query {
   trace(id: Int!): Trace
   traceOfErrorCount(rangeTime: String!, websiteId: Int): [TraceOfError!]
   traceOfResponseTime(rangeTime: String!, websiteId: Int): [TraceOfResponseTime!]
-  traces(afterId: Int!): [Trace]
+  traces(query: TraceQuery!): PaginatedTraces!
   user(id: Int!): User
   website(id: Int!): Website
   websites(page: Int!): PaginatedWebsite
@@ -82,6 +88,14 @@ type TraceOfResponseTime {
   avgDuration: Int!
   groupId: Int!
   time: String!
+}
+
+input TraceQuery {
+  afterId: Int
+  beforeId: Int
+  isError: Boolean
+  rangeTime: String
+  websiteId: Int
 }
 
 enum TraceStatus {
@@ -121,6 +135,13 @@ type Website {
   id: Int!
   name: String!
   pingInterval: Int!
+  status: [WebsiteStatusType]
   url: String!
   userId: Int!
+}
+
+enum WebsiteStatusType {
+  ERROR
+  OK
+  UNAVAILABLE
 }

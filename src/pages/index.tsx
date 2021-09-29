@@ -57,7 +57,7 @@ export default function Page() {
           </Col>
 
           <Col span={12}>
-            <ErrorTable />
+            <ErrorTable rangeTime={rangeTime!} />
           </Col>
         </Row>
       </div>
