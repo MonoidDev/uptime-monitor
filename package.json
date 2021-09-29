@@ -14,7 +14,7 @@
     "build:gql": "ts-node --transpile-only scripts/emitGqlSchema.ts",
     "build:config": "ts-node --transpile-only config/build.ts",
     "build:cg": "graphql-codegen --config codegen.yml",
-    "start": "yarn prod:env ts-node --transpile-only scripts/startMonitor.ts & next start",
+    "start": "yarn ts-node --transpile-only scripts/startMonitor.ts & next start",
     "lint": "eslint . --ext .ts,.tsx",
     "db-types": "yarn prisma generate",
     "dev:env": "dotenv -e .env.development --",
