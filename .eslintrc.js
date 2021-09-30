@@ -36,7 +36,6 @@ module.exports = {
     "class-methods-use-this": "off",
     "linebreak-style": "off",
     "quote-props": "off",
-    "no-console": "off",
     "object-curly-newline": "warn",
     "import/order": [
       "error",

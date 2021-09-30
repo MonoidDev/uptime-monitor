@@ -52,8 +52,6 @@ export class EmailService {
 
     const html = ReactDOMServer.renderToString(<Template />);
 
-    console.log(html);
-
     return {
       subject,
       html,

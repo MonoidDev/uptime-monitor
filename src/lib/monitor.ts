@@ -18,7 +18,7 @@ class Monitor {
     const startAt = new Date();
 
     if (process.env.NODE_ENV !== 'production') {
-      console.log(`[monitor] scanning at ${startAt.toISOString()}`);
+      console.info(`[monitor] scanning at ${startAt.toISOString()}`);
     }
 
     let pagingCount: number = 0;
@@ -53,7 +53,7 @@ class Monitor {
     }
 
     if (process.env.NODE_ENV !== 'production') {
-      console.log(`[monitor] scheduled / found = ${futures.length} / ${nWebsites}`);
+      console.info(`[monitor] scheduled / found = ${futures.length} / ${nWebsites}`);
     }
 
     await Promise.all(futures);
@@ -61,7 +61,7 @@ class Monitor {
     if (process.env.NODE_ENV !== 'production') {
       const endAt = new Date();
       const duration = endAt.getTime() - startAt.getTime();
-      console.log(`[monitor] done in ${duration}ms`);
+      console.info(`[monitor] done in ${duration}ms`);
     }
   }
 
@@ -75,7 +75,7 @@ class Monitor {
 
   private async processWebsite(website: Website, lastTrace: Trace | null) {
     if (process.env.NODE_ENV !== 'production') {
-      console.log(`[monitor] process ${website.id}`);
+      console.info(`[monitor] process ${website.id}`);
     }
 
     const result: PingResult = await doPing(website.url);

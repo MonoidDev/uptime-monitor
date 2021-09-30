@@ -7,5 +7,5 @@ import { EmailService } from '../src/services/EmailService';
 
   const result = await service.sendWebsiteAlert(website!, 'wangchenyu2017@gmail.com');
 
-  console.log(result);
+  console.info(result);
 })();

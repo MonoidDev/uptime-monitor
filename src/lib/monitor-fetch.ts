@@ -25,7 +25,7 @@ async function doPing(url: string): Promise<PingResult> {
 
   if (process.env.NODE_ENV !== 'production') {
     // mock
-    console.log(`[fetch] mock for ${url}`);
+    console.info(`[fetch] mock for ${url}`);
 
     result.timeout = false;
     result.latency = 100;

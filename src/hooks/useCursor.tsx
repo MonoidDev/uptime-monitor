@@ -54,8 +54,6 @@ export const useCursor = (options: CursorOptions) => {
     onCursorChange(initialCursor);
   };
 
-  console.log(data, hasMoreAfter, hasMoreBefore);
-
   return {
     hasMoreBefore,
     hasMoreAfter,
