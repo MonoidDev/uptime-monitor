@@ -1,8 +1,8 @@
+import { WebsiteEventSource } from '../graphql/types/EventSchema';
 import {
   MonitorService,
   WebsiteEventDataNotAvailable,
   WebsiteEventParams,
-  WebsiteEventSource,
 } from '../services/MonitorService';
 import { doPing, PingResult } from './monitor-fetch';
 import { Trace, TraceStatus, Website } from '.prisma/client';

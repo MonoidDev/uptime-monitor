@@ -6,6 +6,7 @@ import { TraceQuery } from '../../graphql/client/generated';
 import { CreateTraceSchema } from '../graphql/types/TraceSchema';
 import { getStartFromRangeTime, getTickFromRangeTime } from '../utils/date';
 import { BaseService } from './BaseService';
+import { createCursorQuery } from './helpers/cursorQuery';
 import { Prisma } from '.prisma/client';
 
 dayjs.extend(duration);
@@ -139,12 +140,14 @@ export class TraceService extends BaseService {
 
   async findTraces(query: TraceQuery) {
     const {
-      beforeId,
-      afterId,
       isError,
       websiteId,
       rangeTime,
+      timeAfter,
+      timeBefore,
     } = query;
+
+    const { cursorWhere, orderBy } = createCursorQuery(query);
 
     const where = {
       ...isError && {
@@ -160,19 +163,20 @@ export class TraceService extends BaseService {
           gt: getStartFromRangeTime(rangeTime),
         },
       },
+      ...timeAfter && {
+        createdAt: {
+          gt: timeAfter,
+        },
+      },
+      ...timeBefore && {
+        createdAt: {
+          lt: timeBefore,
+        },
+      },
     } as const;
 
     const whereWithId = {
-      ...afterId && {
-        id: {
-          lt: afterId,
-        },
-      },
-      ...beforeId && {
-        id: {
-          gt: beforeId,
-        },
-      },
+      ...cursorWhere,
       ...where,
       userId: this.ctx.authInfo!.id,
     } as const;
@@ -180,22 +184,20 @@ export class TraceService extends BaseService {
     const minId = (await this.ctx.prisma.trace.findFirst({
       where,
       orderBy: {
-        createdAt: 'asc',
+        id: 'asc',
       },
     }))?.id;
 
     const maxId = (await this.ctx.prisma.trace.findFirst({
       where,
       orderBy: {
-        createdAt: 'desc',
+        id: 'desc',
       },
     }))?.id;
 
     const results = await this.ctx.prisma.trace.findMany({
       where: whereWithId,
-      orderBy: {
-        id: afterId ? 'desc' : 'asc',
-      },
+      orderBy,
       include: {
         website: true,
       },
@@ -205,7 +207,7 @@ export class TraceService extends BaseService {
     return {
       minId,
       maxId,
-      results: results.sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime()),
+      results: results.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime()),
     };
   }
 

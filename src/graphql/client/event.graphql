@@ -1,18 +1,17 @@
-query GetEvents($query: EventQuery!) {
+query Events($query: EventQuery!) {
   events(query: $query) {
     minId
     maxId
     results {
       id
       type
+      status
       website {
+        id
         name
-        url
       }
-      websiteId
-      traceId
-      data
       createdAt
+      traceId
     }
   }
 }

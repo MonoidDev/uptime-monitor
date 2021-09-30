@@ -3,14 +3,14 @@ import React from 'react';
 import { LeftOutlined, RightOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
 
-export interface BidirectionalPaginationProps {
+export interface CursorPaginationProps {
   hasMoreBefore?: boolean;
   hasMoreAfter?: boolean;
   onClickBefore?: () => void;
   onClickAfter?: () => void;
 }
 
-export const BidirectionalPagination: React.VFC<BidirectionalPaginationProps> = (props) => {
+export const CursorPagination: React.VFC<CursorPaginationProps> = (props) => {
   const {
     hasMoreBefore = true,
     hasMoreAfter = true,

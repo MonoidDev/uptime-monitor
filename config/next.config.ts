@@ -8,6 +8,13 @@ import tw from './tailwind.config';
 const nextConfig: NextConfig = {
   experimental: {},
   future: {},
+  webpack(config) {
+    // eslint-disable-next-line no-param-reassign
+    config.plugins = [
+      ...config.plugins,
+    ];
+    return config;
+  },
 };
 
 export default withLess({

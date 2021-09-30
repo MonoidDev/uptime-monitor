@@ -1,12 +1,18 @@
 import {
-  objectType, inputObjectType, nonNull,
+  objectType, inputObjectType, nonNull, enumType,
 } from 'nexus';
+
+export const SeverityType = enumType({
+  name: 'SeverityType',
+  members: ['LOG', 'WARN', 'ERROR', 'FATAL'],
+});
 
 export const Event = objectType({
   name: 'Event',
   definition(t) {
     t.model.id();
     t.model.type();
+    t.model.status();
     t.model.website();
     t.model.websiteId();
     t.model.traceId();
@@ -33,5 +39,7 @@ export const EventQuery = inputObjectType({
     t.int('beforeId');
     t.int('websiteId');
     t.string('rangeTime');
+    t.string('timeBefore');
+    t.string('timeAfter');
   },
 });

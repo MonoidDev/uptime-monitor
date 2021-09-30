@@ -2,6 +2,8 @@ import 'antd/dist/antd.less';
 import '../styles/globals.css';
 import React, { useMemo } from 'react';
 
+import 'dayjs/locale';
+
 import {
   ApolloClient,
   InMemoryCache,

@@ -6,32 +6,29 @@ import {
   Table,
   Button,
   Form,
-  DatePicker,
-  Modal,
 } from 'antd';
-import { BidirectionalPagination } from 'app/components/BidirectionalPagination';
-import dayjs from 'dayjs';
-import { useGetTraceByIdQuery, useTracesQuery } from 'graphql/client/generated';
+import { url } from 'app/../.next-urls';
+import { CursorPagination } from 'app/components/CursorPagination';
+import { DatePicker } from 'app/components/DatePicker';
+import { traceColorMap, TraceDataModal } from 'app/components/traces';
+import { useCursor } from 'app/hooks/useCursor';
+import dayjs, { Dayjs } from 'dayjs';
+import { useTracesQuery } from 'graphql/client/generated';
 import * as t from 'io-ts';
+import Link from 'next/link';
 import * as h from 'tyrann-io';
 
 import { Layout } from '../../components/Layout';
-import { TraceDataCell } from '../../components/TraceDataCell';
-import { usePagination } from '../../hooks/usePagination';
 
 interface Website {
   name: string,
   url: string,
+  id: number;
 }
 
-interface TraceItem {
-  key: string;
-  id: number;
-  type: string;
-  website: Website;
-  websiteId: number;
-  status: string;
-  duration: number;
+interface FilterValues {
+  timeAfter?: Dayjs;
+  timeBefore?: Dayjs;
 }
 
 export default function Page() {
@@ -39,66 +36,64 @@ export default function Page() {
     useMemo(() => t.type({
       timeBefore: h.omittable(t.string),
       timeAfter: h.omittable(t.string),
+      afterId: h.omittable(h.number().cast()),
+      beforeId: h.omittable(h.number().cast()),
     }), []),
   );
 
-  const [modalVisible, setModalVisible] = useState<boolean>(false);
-  const [traceId, setTraceId] = useState<number>(0);
-
-  const page = usePagination();
+  const [currentTrace, setCurrentTrace] = useState<number>();
 
   const tracesResponse = useTracesQuery({
     variables: {
-      query: {
-        afterId: page.afterId,
-        beforeId: page.beforeId,
-        rangeTime: undefined,
-      },
+      query: search!,
     },
+    fetchPolicy: 'cache-and-network',
   });
 
-  const traceResponse = useGetTraceByIdQuery({
-    variables: {
-      id: traceId,
+  const {
+    hasMoreBefore,
+    hasMoreAfter,
+    nextPage,
+    previousPage,
+    resetCursor,
+  } = useCursor({
+    cursor: {
+      afterId: search?.afterId,
+      beforeId: search?.beforeId,
     },
+    onCursorChange: (cursor) => updateSearch(cursor),
+    data: tracesResponse.data?.traces,
   });
+
+  useEffect(() => {
+    resetCursor();
+  }, [search?.timeAfter, search?.timeBefore]);
 
   const tracesData = tracesResponse.data?.traces;
 
-  const traceData = traceResponse.data?.trace;
-
   const traceItems = tracesData?.results?.map((trace) => ({
     key: String(trace.id),
-    id: trace.id,
-    type: trace.traceType,
-    website: {
-      name: trace.website.name,
-      url: trace.website.url,
-    },
-    websiteId: trace.websiteId,
-    duration: trace.duration,
-    status: trace.status,
+    ...trace,
   }));
-
-  useEffect(() => {
-    page.updatePagination(tracesData);
-  },
-  [tracesResponse]);
 
   const columns = [
     {
       title: 'Type',
-      dataIndex: 'type',
-      key: 'type',
+      dataIndex: 'traceType',
+      key: 'traceType',
     },
     {
       title: 'Website',
       dataIndex: 'website',
       key: 'website',
       render: (website: Website) => (
-        <a className="underline" href={website.url}>
-          {website.name}
-        </a>
+        <Link
+          href={url('/monitoring/websiteStatus/[id]').replace('[id]', String(website.id))}
+        >
+          <a className="underline">
+            {website.name}
+          </a>
+        </Link>
       ),
     },
     {
@@ -106,7 +101,7 @@ export default function Page() {
       dataIndex: 'status',
       key: 'status',
       render: (status: string) => (
-        <div className={colorMap[status]}>
+        <div className={traceColorMap[status]}>
           {status}
         </div>
       ),
@@ -117,29 +112,34 @@ export default function Page() {
       key: 'duration',
       render: (duration: number) => (
         <span>
-          {`${duration}s`}
+          {`${duration}ms`}
+        </span>
+      ),
+    },
+    {
+      title: 'Time',
+      dataIndex: 'createdAt',
+      key: 'createdAt',
+      render: (createdAt: any) => (
+        <span>
+          {dayjs(createdAt).format('YYYY-MM-DD HH:mm:ss')}
         </span>
       ),
     },
     {
       title: 'Action',
       key: 'action',
-      render: (_: any, record: TraceItem) => (
+      render: (_: any, record: Exclude<typeof traceItems, undefined>[number]) => (
         <Button
           type="primary"
           shape="round"
-          onClick={() => showDetails(record.id)}
+          onClick={() => setCurrentTrace(record.id)}
         >
           Details
         </Button>
       ),
     },
   ];
-
-  const showDetails = (id: number) => {
-    setTraceId(id);
-    setModalVisible(true);
-  };
 
   const renderTitle = () => {
     return (
@@ -152,9 +152,16 @@ export default function Page() {
   };
 
   const renderSearch = () => {
-    const onFinish = async (values: any) => {
+    const onFinish = async (values: FilterValues) => {
+      if (values.timeAfter && values.timeBefore && (values.timeAfter.toISOString() > values.timeBefore.toISOString())) {
+        // eslint-disable-next-line no-alert
+        window.alert('Cannot set the end time later than before time. ');
+        return;
+      }
+
       updateSearch({
-        ...values,
+        timeAfter: values.timeAfter?.toISOString(),
+        timeBefore: values.timeBefore?.toISOString(),
       });
     };
     return (
@@ -162,20 +169,28 @@ export default function Page() {
         <Form
           layout="inline"
           name="websiteSearch"
-          initialValues={search}
+          initialValues={{
+            timeAfter: search?.timeAfter && dayjs(search?.timeAfter),
+            timeBefore: search?.timeBefore && dayjs(search?.timeBefore),
+          }}
           onFinish={onFinish}
         >
-          <Form.Item name="timeAfter">
+          <Form.Item
+            name="timeAfter"
+          >
             <DatePicker showTime placeholder="Start Time" />
           </Form.Item>
           <span className="pr-3 pt-2"> to </span>
-          <Form.Item name="timeBefore">
+          <Form.Item
+            name="timeBefore"
+          >
             <DatePicker showTime placeholder="End Time" />
           </Form.Item>
           <Form.Item>
             <Button
               type="primary"
               shape="round"
+              htmlType="submit"
             >
               Search
             </Button>
@@ -185,59 +200,21 @@ export default function Page() {
     );
   };
 
-  const renderTraceDataModal = () => {
-    return (
-      <Modal
-        title={`Trace #${traceData?.id}`}
-        visible={modalVisible}
-        onOk={() => setModalVisible(false)}
-        onCancel={() => setModalVisible(false)}
-      >
-        <TraceDataCell label="Type">
-          {traceData?.traceType}
-        </TraceDataCell>
-        <TraceDataCell label="Website">
-          <a
-            className="underline"
-            href={traceData?.website.url}
-          >
-            {traceData?.website.name ?? ' '}
-          </a>
-        </TraceDataCell>
-        <TraceDataCell label="Time">
-          {traceData?.createdAt ? dayjs(traceData?.createdAt).format('YYYY-MM-DD HH:mm:ss') : ' '}
-        </TraceDataCell>
-        <TraceDataCell label="Status" className={colorMap[traceData?.status!]}>
-          {traceData?.status ?? ' '}
-        </TraceDataCell>
-        <TraceDataCell label="Duration">
-          {traceData?.duration ?? ' '}
-        </TraceDataCell>
-        <TraceDataCell label="Request Headers" multilines>
-          {traceData?.requestHeaders ?? ' '}
-        </TraceDataCell>
-        <TraceDataCell label="Response Headers" multilines>
-          {traceData?.responseHeaders ?? ' '}
-        </TraceDataCell>
-        <TraceDataCell label="Response Data" multilines>
-          {traceData?.responseData ?? ' '}
-        </TraceDataCell>
-      </Modal>
-    );
-  };
-
   const renderBottom = () => {
     return (
       <div className="flex justify-between">
         <Button
           type="primary"
           shape="round"
-          onClick={page.onReset}
+          onClick={() => resetCursor()}
         >
           Page 1
         </Button>
-        <BidirectionalPagination
-          {...page}
+        <CursorPagination
+          hasMoreBefore={hasMoreBefore}
+          hasMoreAfter={hasMoreAfter}
+          onClickAfter={nextPage}
+          onClickBefore={previousPage}
         />
       </div>
     );
@@ -257,6 +234,11 @@ export default function Page() {
       ]}
       queries={[tracesResponse]}
     >
+      <TraceDataModal
+        id={currentTrace}
+        onClose={() => setCurrentTrace(undefined)}
+        visible={currentTrace !== undefined}
+      />
       {renderTitle()}
       <div className="bg-white p-8 shadow-md">
         {renderSearch()}
@@ -268,15 +250,7 @@ export default function Page() {
           pagination={{ position: [] }}
         />
         {renderBottom()}
-        {renderTraceDataModal()}
       </div>
     </Layout>
   );
 }
-
-const colorMap: { [key:string]: string } = {
-  OK: 'text-green-400',
-  TIMEOUT: 'text-yellow-400',
-  HTTP_ERROR: 'text-red-600',
-  SSL_ERROR: 'text-red-600',
-};

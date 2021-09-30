@@ -1,27 +1,30 @@
 import React, { useEffect, useMemo, useState } from 'react';
 
-import {
-  Pagination, Button,
-} from 'antd';
+import { Button } from 'antd';
 import { url } from 'app/../.next-urls';
 import {
+  EventsQuery,
   TracesQuery,
+  useEventsQuery,
   useGetFirstWebsiteQuery,
   useTraceOfErrorCountQuery,
   useTraceOfResponseTimeQuery,
   useTracesQuery,
 } from 'app/../graphql/client/generated';
+import { websiteEventTypeToDescription } from 'app/data/events';
+import { WebsiteEventSource } from 'app/graphql/types/EventSchema';
+import { REVERSE_INITIAL_CURSOR, useCursor } from 'app/hooks/useCursor';
 import { getTickCountFromRangeTime, getTickFromRangeTime } from 'app/utils/date';
 import classNames from 'classnames';
 import dayjs from 'dayjs';
 import Link from 'next/link';
-import { unstable_batchedUpdates } from 'react-dom';
 
 import { gStyles } from '../styles';
 import tableStyles from '../styles/tableStyles.module.css';
-import { BidirectionalPagination } from './BidirectionalPagination';
+import { CursorPagination } from './CursorPagination';
 import { QueryContainer } from './QueryContainer';
 import { SingleLineChart } from './SingleLineChart';
+import { TraceDataModal } from './traces';
 
 export interface TimeDataPoint {
   time: string;
@@ -61,14 +64,16 @@ export const normalizeTraceGroups = <
 
 export interface ResponseTimeChartProps {
   rangeTime: string;
+  websiteId?: number;
 }
 
 export const ResponseTimeChart: React.VFC<ResponseTimeChartProps> = React.memo((props) => {
-  const { rangeTime } = props;
+  const { rangeTime, websiteId } = props;
 
   const traces = useTraceOfResponseTimeQuery({
     variables: {
       rangeTime,
+      websiteId,
     },
     fetchPolicy: 'cache-and-network',
   });
@@ -99,6 +104,12 @@ export const ResponseTimeChart: React.VFC<ResponseTimeChartProps> = React.memo((
     <QueryContainer
       queries={[traces]}
       isNotFound={traces.data?.traceOfResponseTime?.length === 0}
+      renderNotFound={() => (
+        <div className="flex justify-center items-center h-[355px] text-gray-500 text-lg">
+          There are no ping records in past
+          {rangeTime}
+        </div>
+      )}
       className="h-[355px]"
     >
       {() => (
@@ -182,7 +193,7 @@ export const ErrorChart: React.VFC<ErrorChartProps> = React.memo((props) => {
   const tagClass = (upPercentage < 0.8)
     ? gStyles.error
     : (upPercentage < 0.9)
-      ? gStyles.warning
+      ? gStyles.warn
       : gStyles.info;
 
   return (
@@ -228,21 +239,17 @@ export const ErrorTable: React.VFC<ErrorTableProps> = React.memo((props) => {
     websiteId,
   } = props;
 
-  const [afterId, setAfterId] = useState<number | undefined>(2 ** 31 - 1);
-  const [beforeId, setBeforeId] = useState<number | undefined>(undefined);
+  const [currentTrace, setCurrentTrace] = useState<number>();
+  const [cursor, setCursor] = useState(REVERSE_INITIAL_CURSOR);
 
   useEffect(() => {
-    unstable_batchedUpdates(() => {
-      setAfterId(2 ** 31 - 1);
-      setBeforeId(undefined);
-    });
+    resetCursor();
   }, [websiteId, rangeTime]);
 
   const traces = useTracesQuery({
     variables: {
       query: {
-        afterId,
-        beforeId,
+        ...cursor,
         websiteId,
         rangeTime,
         isError: true,
@@ -251,9 +258,21 @@ export const ErrorTable: React.VFC<ErrorTableProps> = React.memo((props) => {
     fetchPolicy: 'cache-and-network',
   });
 
-  const renderRow = (row: TracesQuery['traces']['results'][number]) => {
+  const {
+    hasMoreBefore,
+    hasMoreAfter,
+    nextPage,
+    previousPage,
+    resetCursor,
+  } = useCursor({
+    cursor,
+    onCursorChange: setCursor,
+    data: traces.data?.traces,
+  });
+
+  const renderRow = (row: TracesQuery['traces']['results'][number], index: number) => {
     return (
-      <tr key={row.id}>
+      <tr key={index}>
         <td>
           <Link
             href={url('/monitoring/websiteStatus/[id]').replace('[id]', String(row.website.id))}
@@ -268,7 +287,10 @@ export const ErrorTable: React.VFC<ErrorTableProps> = React.memo((props) => {
           {row.duration}
         </td>
         <td>
-          <a>
+          {dayjs(row.createdAt).format('YYYY-MM-DD HH:mm:ss')}
+        </td>
+        <td>
+          <a onClick={() => setCurrentTrace(row.id)}>
             More
           </a>
         </td>
@@ -291,21 +313,21 @@ export const ErrorTable: React.VFC<ErrorTableProps> = React.memo((props) => {
               Duration
             </th>
             <th>
+              Time
+            </th>
+            <th>
               {' '}
             </th>
           </tr>
         </thead>
         <tbody>
-          {traces.data?.traces.results.map((row) => renderRow(row))}
+          {traces.data?.traces.results.map(renderRow)}
         </tbody>
       </table>
     );
   };
 
   const renderBottom = () => {
-    const currentMinId = Math.min(...traces.data?.traces.results.map((t) => t.id) ?? []);
-    const currentMaxId = Math.max(...traces.data?.traces.results.map((t) => t.id) ?? []);
-
     return (
       <div className="flex justify-between">
         <Button
@@ -315,21 +337,11 @@ export const ErrorTable: React.VFC<ErrorTableProps> = React.memo((props) => {
           All
         </Button>
 
-        <BidirectionalPagination
-          hasMoreBefore={(traces.data?.traces?.maxId ?? 0) > currentMaxId}
-          hasMoreAfter={(traces.data?.traces?.minId ?? 0) < currentMinId}
-          onClickAfter={() => {
-            unstable_batchedUpdates(() => {
-              setBeforeId(undefined);
-              setAfterId(currentMinId);
-            });
-          }}
-          onClickBefore={() => {
-            unstable_batchedUpdates(() => {
-              setBeforeId(currentMaxId);
-              setAfterId(undefined);
-            });
-          }}
+        <CursorPagination
+          hasMoreBefore={hasMoreBefore}
+          hasMoreAfter={hasMoreAfter}
+          onClickAfter={nextPage}
+          onClickBefore={previousPage}
         />
       </div>
     );
@@ -341,16 +353,89 @@ export const ErrorTable: React.VFC<ErrorTableProps> = React.memo((props) => {
       queries={[traces]}
     >
       {() => (
-        <div className="h-full flex flex-col justify-between">
-          {renderTable()}
-          {renderBottom()}
-        </div>
+        <>
+          <TraceDataModal
+            id={currentTrace}
+            onClose={() => setCurrentTrace(undefined)}
+            visible={currentTrace !== undefined}
+          />
+          <div className="h-full flex flex-col">
+            <div className="flex-1">
+              {renderTable()}
+            </div>
+            {renderBottom()}
+          </div>
+        </>
       )}
     </QueryContainer>
   );
 });
 
-export const EventTable: React.VFC = React.memo(() => {
+export interface EventTableProps {
+  rangeTime: string;
+  websiteId?: number;
+}
+
+export const EventTable: React.VFC<EventTableProps> = React.memo((props) => {
+  const {
+    rangeTime,
+    websiteId,
+  } = props;
+
+  const [cursor, setCursor] = useState(REVERSE_INITIAL_CURSOR);
+  const [currentTrace, setCurrentTrace] = useState<number>();
+
+  const events = useEventsQuery({
+    variables: {
+      query: {
+        ...cursor,
+        rangeTime,
+        websiteId,
+      },
+    },
+    fetchPolicy: 'cache-and-network',
+  });
+
+  const data = events.data?.events;
+
+  const {
+    hasMoreBefore,
+    hasMoreAfter,
+    nextPage,
+    previousPage,
+    resetCursor,
+  } = useCursor({
+    cursor,
+    onCursorChange: setCursor,
+    data,
+  });
+
+  useEffect(() => {
+    resetCursor();
+  }, [websiteId, rangeTime]);
+
+  const renderRow = (row: EventsQuery['events']['results'][number]) => {
+    return (
+      <tr key={row.id}>
+        <td>
+          <span className={classNames(gStyles.tag, gStyles.error, 'mr-2')}>
+            {row.status.toLowerCase()}
+          </span>
+
+          {websiteEventTypeToDescription[row.type as WebsiteEventSource]?.(row.website.name, row.website.id)}
+        </td>
+        <td>
+          {dayjs(row.createdAt).format('YYYY-MM-DD HH:mm:ss')}
+        </td>
+        <td>
+          <a onClick={() => setCurrentTrace(row.traceId)}>
+            Trace
+          </a>
+        </td>
+      </tr>
+    );
+  };
+
   const renderTable = () => {
     return (
       <table className={tableStyles.simpleTable}>
@@ -368,27 +453,7 @@ export const EventTable: React.VFC = React.memo(() => {
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>
-              <span className={classNames(gStyles.tag, gStyles.error, 'mr-2')}>
-                error
-              </span>
-
-              <a>
-                Google Home
-              </a>
-              {' '}
-              is down.
-            </td>
-            <td>
-              2021-09-11 11:30:01
-            </td>
-            <td>
-              <a>
-                Trace
-              </a>
-            </td>
-          </tr>
+          {events.data?.events?.results.map(renderRow)}
         </tbody>
       </table>
     );
@@ -404,19 +469,35 @@ export const EventTable: React.VFC = React.memo(() => {
           All
         </Button>
 
-        <Pagination
-          current={1}
-          pageSize={10}
-          total={50}
+        <CursorPagination
+          hasMoreBefore={hasMoreBefore}
+          hasMoreAfter={hasMoreAfter}
+          onClickAfter={nextPage}
+          onClickBefore={previousPage}
         />
       </div>
     );
   };
 
   return (
-    <div className="h-full flex flex-col justify-between">
-      {renderTable()}
-      {renderBottom()}
-    </div>
+    <QueryContainer
+      className="h-full"
+      queries={[events]}
+    >
+      {() => (
+        <>
+          <TraceDataModal
+            id={currentTrace}
+            onClose={() => setCurrentTrace(undefined)}
+            visible={currentTrace !== undefined}
+          />
+          <div className="h-full flex flex-col justify-between">
+            {renderTable()}
+            {renderBottom()}
+          </div>
+        </>
+      )}
+    </QueryContainer>
+
   );
 });

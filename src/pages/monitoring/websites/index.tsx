@@ -8,6 +8,7 @@ import {
   Form,
   Input,
 } from 'antd';
+import { StatusArray } from 'app/components/StatusArray';
 import { gStyles } from 'app/styles';
 import classNames from 'classnames';
 import { useGetWebsitesQuery } from 'graphql/client/generated';
@@ -39,13 +40,7 @@ export default function Page() {
   const websitesData = websites.data?.websites;
 
   const websiteItems = websitesData?.results?.map((website) => ({
-    id: website!.id,
-    name: website!.name,
-    url: website!.url,
-    pingInterval: website!.pingInterval,
-    enabled: website!.enabled,
-    userId: website!.userId,
-    status: [null, null, null, 'OK', 'OK', 'OK', 'OK', 'TIMEOUT', 'TIMEOUT', 'TIMEOUT', 'TIMEOUT', 'TIMEOUT'],
+    ...website,
   }));
 
   // const pageCount = 10;
@@ -119,23 +114,9 @@ export default function Page() {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
-      render: (statusArray: (string | null | undefined)[]) => (
+      render: (status: any[]) => (
         <div className="flex justify-start space-x-1">
-          {statusArray.map((status) => {
-            if (!status) {
-              return (
-                <div className="w-1.5 h-4 bg-gray-500" />
-              );
-            }
-            if (status === 'OK') {
-              return (
-                <div className="w-1.5 h-4 bg-green-400" />
-              );
-            }
-            return (
-              <div className="w-1.5 h-4 bg-red-600" />
-            );
-          })}
+          <StatusArray status={status} />
         </div>
       ),
     },

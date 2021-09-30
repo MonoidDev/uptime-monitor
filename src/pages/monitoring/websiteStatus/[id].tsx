@@ -52,9 +52,7 @@ export default function Page() {
         </Typography.Title>
 
         <StatusArray
-          status={[
-            'UNKNOWN', 'UNKNOWN', 'UNKNOWN', 'ERROR', 'ERROR', 'ERROR', 'OK', 'OK', 'OK', 'ERROR', 'ERROR',
-          ]}
+          status={website.data?.website?.status ?? []}
         />
 
         <div className="flex-1" />
@@ -126,13 +124,13 @@ export default function Page() {
       <Row gutter={32}>
         <Col span={12}>
           <div className={classNames(gStyles.paper)}>
-            <ResponseTimeChart rangeTime={rangeTime!} />
+            <ResponseTimeChart rangeTime={rangeTime!} websiteId={id} />
           </div>
         </Col>
 
         <Col span={12}>
           <div className={classNames(gStyles.paper, 'h-full')}>
-            <EventTable />
+            <EventTable rangeTime={rangeTime!} websiteId={id} />
           </div>
         </Col>
       </Row>

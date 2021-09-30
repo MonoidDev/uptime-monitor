@@ -3,7 +3,6 @@ export type Urls =
   | "/auth/login"
   | "/"
   | "/monitoring/events"
-  | "/monitoring"
   | "/monitoring/traces"
   | "/monitoring/websiteStatus/[id]"
   | "/monitoring/websites/[id]"
@@ -15,7 +14,6 @@ export const urls = [
   "/auth/login",
   "/",
   "/monitoring/events",
-  "/monitoring",
   "/monitoring/traces",
   "/monitoring/websiteStatus/[id]",
   "/monitoring/websites/[id]",

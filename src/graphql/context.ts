@@ -1,9 +1,9 @@
 import { ServerResponse } from 'http';
 
 import { PrismaClient } from '@prisma/client';
-import { EventService } from 'app/services/EventService';
 
 import { prisma } from '../lib/prisma';
+import { EventService } from '../services/EventService';
 import { TraceService } from '../services/TraceService';
 import { UserService } from '../services/UserService';
 import { WebsiteService } from '../services/WebsiteService';

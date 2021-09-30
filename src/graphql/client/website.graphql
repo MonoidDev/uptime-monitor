@@ -1,12 +1,18 @@
+
+fragment WebsiteFrag on Website {
+  id
+  name
+  url
+  pingInterval
+  enabled
+  userId
+  emails
+  status
+}
+
 query GetWebsiteById($id: Int!) {
   website(id: $id) {
-    id
-    name
-    url
-    pingInterval
-    enabled
-    userId
-    emails
+    ...WebsiteFrag
   }
 }
 
@@ -20,12 +26,7 @@ query GetWebsites($page: Int!, $keyword: String) {
   websites(page: $page, keyword: $keyword) {
     count
     results {
-      id
-      name
-      url
-      pingInterval
-      enabled
-      userId
+      ...WebsiteFrag
     }
   }
 }

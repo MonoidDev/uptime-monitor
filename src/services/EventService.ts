@@ -1,15 +1,18 @@
 import { EventQuery } from '../../graphql/client/generated';
 import { getStartFromRangeTime } from '../utils/date';
 import { BaseService } from './BaseService';
+import { createCursorQuery } from './helpers/cursorQuery';
 
 export class EventService extends BaseService {
   async findEvents(query: EventQuery) {
     const {
-      beforeId,
-      afterId,
       websiteId,
       rangeTime,
+      timeAfter,
+      timeBefore,
     } = query;
+
+    const { cursorWhere, orderBy } = createCursorQuery(query);
 
     const where = {
       ...websiteId && {
@@ -18,6 +21,16 @@ export class EventService extends BaseService {
       ...rangeTime && {
         createdAt: {
           gt: getStartFromRangeTime(rangeTime),
+        },
+      },
+      ...timeAfter && {
+        createdAt: {
+          gt: timeAfter,
+        },
+      },
+      ...timeBefore && {
+        createdAt: {
+          lt: timeBefore,
         },
       },
     } as const;
@@ -37,16 +50,7 @@ export class EventService extends BaseService {
     }))?.id;
 
     const whereWithId = {
-      ...afterId && {
-        id: {
-          lt: afterId,
-        },
-      },
-      ...beforeId && {
-        id: {
-          gt: beforeId,
-        },
-      },
+      ...cursorWhere,
       ...where,
       website: {
         userId: this.ctx.authInfo!.id,
@@ -55,11 +59,10 @@ export class EventService extends BaseService {
 
     const results = await this.ctx.prisma.event.findMany({
       where: whereWithId,
-      orderBy: {
-        id: afterId ? 'desc' : 'asc',
-      },
+      orderBy,
       include: {
         website: true,
+        trace: true,
       },
       take: 8,
     });
@@ -67,7 +70,7 @@ export class EventService extends BaseService {
     return {
       minId,
       maxId,
-      results: results.sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime()),
+      results: results.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime()),
     };
   }
 }

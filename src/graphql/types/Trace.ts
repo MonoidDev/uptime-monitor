@@ -78,5 +78,7 @@ export const TraceQuery = inputObjectType({
     t.boolean('isError');
     t.int('websiteId');
     t.string('rangeTime');
+    t.string('timeBefore');
+    t.string('timeAfter');
   },
 });

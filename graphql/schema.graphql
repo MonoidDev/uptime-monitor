@@ -31,6 +31,7 @@ type Event {
   createdAt: DateTime!
   data: String!
   id: Int!
+  status: SeverityType!
   traceId: Int!
   type: String!
   website: Website!
@@ -41,6 +42,8 @@ input EventQuery {
   afterId: Int
   beforeId: Int
   rangeTime: String
+  timeAfter: String
+  timeBefore: String
   websiteId: Int
 }
 
@@ -72,7 +75,7 @@ type PaginatedTraces {
 
 type PaginatedWebsite {
   count: Int!
-  results: [Website]!
+  results: [Website!]!
 }
 
 type Query {
@@ -87,6 +90,13 @@ type Query {
   user(id: Int!): User
   website(id: Int!): Website
   websites(keyword: String, page: Int!): PaginatedWebsite
+}
+
+enum SeverityType {
+  ERROR
+  FATAL
+  LOG
+  WARN
 }
 
 type Trace {
@@ -119,6 +129,8 @@ input TraceQuery {
   beforeId: Int
   isError: Boolean
   rangeTime: String
+  timeAfter: String
+  timeBefore: String
   websiteId: Int
 }
 
@@ -159,7 +171,7 @@ type Website {
   id: Int!
   name: String!
   pingInterval: Int!
-  status: [WebsiteStatusType]
+  status: [WebsiteStatusType!]
   url: String!
   userId: Int!
 }

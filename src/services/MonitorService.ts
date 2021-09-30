@@ -1,3 +1,4 @@
+import { WebsiteEventSource } from '../graphql/types/EventSchema';
 import { PingResult } from '../lib/monitor-fetch';
 import { prisma } from '../lib/prisma';
 import {
@@ -7,11 +8,6 @@ import {
   TraceStatus,
   SeverityType,
 } from '.prisma/client';
-
-export enum WebsiteEventSource {
-  NotAvailable,
-  HighLatency,
-}
 
 export type WebsiteEventParams = {
   source: WebsiteEventSource,

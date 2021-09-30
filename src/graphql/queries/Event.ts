@@ -4,7 +4,7 @@ import {
 
 import { loginRequired } from '../auth';
 
-export const evnets = queryField('events', {
+export const events = queryField('events', {
   type: nonNull('PaginatedEvents'),
   args: {
     query: nonNull('EventQuery'),

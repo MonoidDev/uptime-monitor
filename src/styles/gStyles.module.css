@@ -16,7 +16,7 @@
   @apply bg-blue-600;
 }
 
-.tag.warning {
+.tag.warn {
   @apply bg-yellow-400;
 }
 
