@@ -53,7 +53,7 @@ export class WebsiteService extends BaseService {
     const queryResult = await this.ctx.prisma.$queryRaw`
       SELECT
         groupId "groupId",
-        SUM(CASE WHEN status = 'HTTP_ERROR' THEN 1 ELSE 0 END) "httpErrorCount"
+        SUM(CASE WHEN status != 'OK' THEN 1 ELSE 0 END) "httpErrorCount"
       FROM (
         SELECT
         (11 - floor((EXTRACT(epoch FROM current_timestamp) - EXTRACT(epoch FROM "createdAt")) / 7200)) groupId, status
