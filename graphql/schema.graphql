@@ -4,6 +4,7 @@
 
 input CreateTrace {
   duration: Int!
+  httpStatusCode: Int!
   requestHeaders: String!
   responseData: String!
   responseHeaders: String!
@@ -102,6 +103,7 @@ enum SeverityType {
 type Trace {
   createdAt: DateTime!
   duration: Int!
+  httpStatusCode: Int!
   id: Int!
   requestHeaders: String
   responseData: String

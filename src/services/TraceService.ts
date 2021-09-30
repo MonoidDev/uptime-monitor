@@ -220,6 +220,7 @@ export class TraceService extends BaseService {
         websiteId: trace!.websiteId,
         duration: trace!.duration,
         status: trace!.status,
+        httpStatusCode: trace!.httpStatusCode,
         requestHeaders: trace!.requestHeaders,
         responseHeaders: trace!.responseHeaders,
         responseData: trace!.responseData,

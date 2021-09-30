@@ -73,6 +73,7 @@ export class MonitorService {
         websiteId: website.id,
         userId: website.userId,
         status: traceStatus,
+        httpStatusCode: result.statusCode,
         duration: result.latency,
         requestHeaders: result.reqHeaders?.join('\n'),
         responseHeaders: result.resHeaders?.join('\n'),

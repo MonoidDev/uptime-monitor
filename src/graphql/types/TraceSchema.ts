@@ -12,6 +12,7 @@ export const CreateTraceSchema = defineSchema(
     websiteId: requiredNumberField('websiteId'),
     duration: requiredNumberField('duration'),
     status: traceStatusField,
+    httpStatusCode: requiredNumberField('httpStatusCode'),
     requestHeaders: requiredStringField('requestHeaders'),
     responseHeaders: requiredStringField('responseHeaders'),
     responseData: requiredStringField('responseData'),

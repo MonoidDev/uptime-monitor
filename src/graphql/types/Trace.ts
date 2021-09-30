@@ -11,6 +11,7 @@ export const Trace = objectType({
     t.model.websiteId();
     t.model.duration();
     t.model.status();
+    t.model.httpStatusCode();
     t.model.requestHeaders();
     t.model.responseHeaders();
     t.model.responseData();
@@ -53,6 +54,7 @@ export const CreateTrace = inputObjectType({
     t.nonNull.int('websiteId');
     t.nonNull.int('duration');
     t.nonNull.field('status', { type: TraceStatusChoices });
+    t.nonNull.int('httpStatusCode');
     t.nonNull.string('requestHeaders');
     t.nonNull.string('responseHeaders');
     t.nonNull.string('responseData');
