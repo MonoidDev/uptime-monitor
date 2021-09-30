@@ -198,7 +198,15 @@ export default function Page() {
 
   const renderBottom = () => {
     return (
-      <div className="flex justify-between">
+      <div className="flex justify-start">
+        <Button
+          type="primary"
+          shape="round"
+          onClick={() => resetCursor()}
+          className="mr-5"
+        >
+          Page 1
+        </Button>
         <CursorPagination
           hasMoreBefore={hasMoreBefore}
           hasMoreAfter={hasMoreAfter}
