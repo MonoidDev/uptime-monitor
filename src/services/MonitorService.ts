@@ -66,16 +66,17 @@ export class MonitorService {
   }
 
   async addTrace(website: Website, result: PingResult) {
+    const traceStatus = getTraceStatus(result);
     return prisma.trace.create({
       data: {
         traceType: TraceType.PING,
         websiteId: website.id,
         userId: website.userId,
-        status: getTraceStatus(result),
+        status: traceStatus,
         duration: result.latency,
         requestHeaders: result.reqHeaders?.join('\n'),
         responseHeaders: result.resHeaders?.join('\n'),
-        responseData: result.resBody,
+        responseData: traceStatus === TraceStatus.OK ? '' : result.resBody,
       },
     });
   }
