@@ -1,5 +1,5 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
-import * as esbuild from 'esbuild';
+const esbuild = require('esbuild');
 
 esbuild.build({
   entryPoints: [

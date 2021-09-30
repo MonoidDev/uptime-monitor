@@ -99,6 +99,12 @@ export const ResponseTimeChart: React.VFC<ResponseTimeChartProps> = React.memo((
     <QueryContainer
       queries={[traces]}
       isNotFound={traces.data?.traceOfResponseTime?.length === 0}
+      renderNotFound={() => (
+        <div className="flex justify-center items-center h-[355px] text-gray-500 text-lg">
+          There are no ping records in past
+          {rangeTime}
+        </div>
+      )}
       className="h-[355px]"
     >
       {() => (

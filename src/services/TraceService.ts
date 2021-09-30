@@ -144,6 +144,8 @@ export class TraceService extends BaseService {
       isError,
       websiteId,
       rangeTime,
+      timeAfter,
+      timeBefore,
     } = query;
 
     const where = {
@@ -158,6 +160,16 @@ export class TraceService extends BaseService {
       ...rangeTime && {
         createdAt: {
           gt: getStartFromRangeTime(rangeTime),
+        },
+      },
+      ...timeAfter && {
+        createdAt: {
+          gt: timeAfter,
+        },
+      },
+      ...timeBefore && {
+        createdAt: {
+          lt: timeBefore,
         },
       },
     } as const;

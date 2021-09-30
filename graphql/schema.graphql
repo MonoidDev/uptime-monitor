@@ -119,6 +119,8 @@ input TraceQuery {
   beforeId: Int
   isError: Boolean
   rangeTime: String
+  timeAfter: String
+  timeBefore: String
   websiteId: Int
 }
 

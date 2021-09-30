@@ -6,11 +6,11 @@ import {
   Table,
   Button,
   Form,
-  DatePicker,
   Modal,
 } from 'antd';
 import { BidirectionalPagination } from 'app/components/BidirectionalPagination';
-import dayjs from 'dayjs';
+import { DatePicker } from 'app/components/DatePicker';
+import dayjs, { Dayjs } from 'dayjs';
 import { useGetTraceByIdQuery, useTracesQuery } from 'graphql/client/generated';
 import * as t from 'io-ts';
 import { unstable_batchedUpdates } from 'react-dom';
@@ -34,6 +34,11 @@ interface TraceItem {
   duration: number;
 }
 
+interface FilterValues {
+  timeAfter?: Dayjs;
+  timeBefore?: Dayjs;
+}
+
 export default function Page() {
   const { search, updateSearch } = useSearch(
     useMemo(() => t.type({
@@ -54,6 +59,8 @@ export default function Page() {
         afterId,
         beforeId,
         rangeTime: undefined,
+        timeAfter: search?.timeAfter,
+        timeBefore: search?.timeBefore,
       },
     },
   });
@@ -148,9 +155,16 @@ export default function Page() {
   };
 
   const renderSearch = () => {
-    const onFinish = async (values: any) => {
+    const onFinish = async (values: FilterValues) => {
+      if (values.timeAfter && values.timeBefore && (values.timeAfter.toISOString() > values.timeBefore.toISOString())) {
+        // eslint-disable-next-line no-alert
+        window.alert('Cannot set the end time later than before time. ');
+        return;
+      }
+
       updateSearch({
-        ...values,
+        timeAfter: values.timeAfter?.toISOString(),
+        timeBefore: values.timeBefore?.toISOString(),
       });
     };
     return (
@@ -158,20 +172,28 @@ export default function Page() {
         <Form
           layout="inline"
           name="websiteSearch"
-          initialValues={search}
+          initialValues={{
+            timeAfter: search?.timeAfter && dayjs(search?.timeAfter),
+            timeBefore: search?.timeBefore && dayjs(search?.timeBefore),
+          }}
           onFinish={onFinish}
         >
-          <Form.Item name="timeAfter">
+          <Form.Item
+            name="timeAfter"
+          >
             <DatePicker showTime placeholder="Start Time" />
           </Form.Item>
           <span className="pr-3 pt-2"> to </span>
-          <Form.Item name="timeBefore">
+          <Form.Item
+            name="timeBefore"
+          >
             <DatePicker showTime placeholder="End Time" />
           </Form.Item>
           <Form.Item>
             <Button
               type="primary"
               shape="round"
+              htmlType="submit"
             >
               Search
             </Button>

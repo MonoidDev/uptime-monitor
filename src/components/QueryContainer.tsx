@@ -8,6 +8,7 @@ export interface QueryContainerProps {
   queries?: QueryResult<any, any>[];
   children: React.ReactNode | (() => React.ReactNode);
   renderError?: () => React.ReactNode;
+  renderNotFound?: () => React.ReactNode;
   className?: string;
   isNotFound?: boolean;
 }
@@ -17,6 +18,7 @@ export const QueryContainer: React.FC<QueryContainerProps> = (props) => {
     queries = [],
     children,
     renderError,
+    renderNotFound,
     className,
     isNotFound = false,
   } = props;
@@ -34,7 +36,7 @@ export const QueryContainer: React.FC<QueryContainerProps> = (props) => {
 
   return (
     <>
-      {isSuccessfull && renderChildren()}
+      {isSuccessfull && !isNotFound && renderChildren()}
       {isFailed && (
         renderError?.() ?? (
           <div className={divClass}>
@@ -48,9 +50,11 @@ export const QueryContainer: React.FC<QueryContainerProps> = (props) => {
         </div>
       )}
       {isNotFound && (
-        <div className={divClass}>
-          Sorry, nothing to show here!
-        </div>
+        renderNotFound?.() ?? (
+          <div className={divClass}>
+            Sorry, nothing to show here!
+          </div>
+        )
       )}
     </>
   );
