@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
 import useSearch from '@monoid-dev/use-search';
 import {
@@ -13,11 +13,11 @@ import { BidirectionalPagination } from 'app/components/BidirectionalPagination'
 import dayjs from 'dayjs';
 import { useGetTraceByIdQuery, useTracesQuery } from 'graphql/client/generated';
 import * as t from 'io-ts';
-import { unstable_batchedUpdates } from 'react-dom';
 import * as h from 'tyrann-io';
 
 import { Layout } from '../../components/Layout';
 import { TraceDataCell } from '../../components/TraceDataCell';
+import { usePagination } from '../../hooks/usePagination';
 
 interface Website {
   name: string,
@@ -45,14 +45,13 @@ export default function Page() {
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [traceId, setTraceId] = useState<number>(0);
 
-  const [afterId, setAfterId] = useState<number | undefined>(2 ** 31 - 1);
-  const [beforeId, setBeforeId] = useState<number | undefined>(undefined);
+  const page = usePagination();
 
   const tracesResponse = useTracesQuery({
     variables: {
       query: {
-        afterId,
-        beforeId,
+        afterId: page.afterId,
+        beforeId: page.beforeId,
         rangeTime: undefined,
       },
     },
@@ -80,6 +79,11 @@ export default function Page() {
     duration: trace.duration,
     status: trace.status,
   }));
+
+  useEffect(() => {
+    page.updatePagination(tracesData);
+  },
+  [tracesResponse]);
 
   const columns = [
     {
@@ -223,26 +227,17 @@ export default function Page() {
   };
 
   const renderBottom = () => {
-    const currentMinId = Math.min(...tracesData?.results.map((trace) => trace.id) ?? []);
-    const currentMaxId = Math.max(...tracesData?.results.map((trace) => trace.id) ?? []);
-
     return (
       <div className="flex justify-between">
+        <Button
+          type="primary"
+          shape="round"
+          onClick={page.onReset}
+        >
+          Page 1
+        </Button>
         <BidirectionalPagination
-          hasMoreBefore={(tracesData?.maxId ?? 0) > currentMaxId}
-          hasMoreAfter={(tracesData?.minId ?? 0) < currentMinId}
-          onClickAfter={() => {
-            unstable_batchedUpdates(() => {
-              setBeforeId(undefined);
-              setAfterId(currentMinId);
-            });
-          }}
-          onClickBefore={() => {
-            unstable_batchedUpdates(() => {
-              setBeforeId(currentMaxId);
-              setAfterId(undefined);
-            });
-          }}
+          {...page}
         />
       </div>
     );
