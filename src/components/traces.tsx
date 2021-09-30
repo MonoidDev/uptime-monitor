@@ -2,6 +2,7 @@ import React from 'react';
 
 import { Button, Modal } from 'antd';
 import { useGetTraceByIdQuery } from 'app/../graphql/client/generated';
+import { url } from 'app/utils/types';
 import dayjs from 'dayjs';
 
 import { QueryContainer } from './QueryContainer';
@@ -56,28 +57,38 @@ export const TraceDataModal: React.VFC<TraceDataModalProps> = (props) => {
             <TraceDataCell label="Website">
               <a
                 className="underline"
-                href={traceData?.website.url}
+                href={url('/monitoring/websites/[id]').replace('[id]', String(traceData?.website.id))}
               >
-                {traceData?.website.name ?? ' '}
+                {traceData?.website.name}
+              </a>
+            </TraceDataCell>
+            <TraceDataCell label="URL">
+              <a
+                className="underline"
+                href={traceData?.website.url}
+                target="_blank"
+                rel="noreferrer"
+              >
+                {traceData?.website.url}
               </a>
             </TraceDataCell>
             <TraceDataCell label="Time">
-              {traceData?.createdAt ? dayjs(traceData?.createdAt).format('YYYY-MM-DD HH:mm:ss') : ' '}
+              {traceData?.createdAt && dayjs(traceData?.createdAt).format('YYYY-MM-DD HH:mm:ss')}
             </TraceDataCell>
             <TraceDataCell label="Status" className={traceColorMap[traceData?.status!]}>
-              {traceData?.status ?? ' '}
+              {traceData?.status}
             </TraceDataCell>
             <TraceDataCell label="Duration">
-              {traceData?.duration ?? ' '}
+              {traceData?.duration}
             </TraceDataCell>
             <TraceDataCell label="Request Headers" multilines>
-              {traceData?.requestHeaders ?? ' '}
+              {traceData?.requestHeaders}
             </TraceDataCell>
             <TraceDataCell label="Response Headers" multilines>
-              {traceData?.responseHeaders ?? ' '}
+              {traceData?.responseHeaders}
             </TraceDataCell>
             <TraceDataCell label="Response Data" multilines>
-              {traceData?.responseData ?? ' '}
+              {traceData?.responseData}
             </TraceDataCell>
           </>
         )}

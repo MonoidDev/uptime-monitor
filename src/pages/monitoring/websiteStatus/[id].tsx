@@ -52,9 +52,7 @@ export default function Page() {
         </Typography.Title>
 
         <StatusArray
-          status={[
-            'UNKNOWN', 'UNKNOWN', 'UNKNOWN', 'ERROR', 'ERROR', 'ERROR', 'OK', 'OK', 'OK', 'ERROR', 'ERROR',
-          ]}
+          status={website.data?.website?.status ?? []}
         />
 
         <div className="flex-1" />

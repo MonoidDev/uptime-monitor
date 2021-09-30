@@ -221,6 +221,7 @@ export default function Page() {
           href: '/monitoring/events',
         },
       ]}
+      queries={[eventsResponse]}
     >
       {renderTitle()}
       <div className="bg-white p-8 shadow-md">

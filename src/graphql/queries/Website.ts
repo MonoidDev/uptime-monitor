@@ -11,7 +11,11 @@ export const website = queryField('website', {
   },
   authorize: loginRequired,
   async resolve(_, { id }, ctx) {
-    return ctx.websiteService.findWebsiteById(id);
+    const w = await ctx.websiteService.findWebsiteById(id);
+    return w && {
+      ...w,
+      status: await ctx.websiteService.findWebsiteStatus(id),
+    };
   },
 });
 

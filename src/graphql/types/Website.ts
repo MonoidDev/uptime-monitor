@@ -19,7 +19,7 @@ export const Website = objectType({
     t.model.emails();
     t.model.createdAt();
     t.list.field('status', {
-      type: WebsiteStatusType,
+      type: nonNull(WebsiteStatusType),
     });
   },
 });
@@ -29,7 +29,7 @@ export const PaginatedWebsite = objectType({
   definition(t) {
     t.nonNull.int('count');
     t.nonNull.list.field('results', {
-      type: Website,
+      type: nonNull('Website'),
     });
   },
 });

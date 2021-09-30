@@ -6,23 +6,24 @@ import {
   Table,
   Button,
   Form,
-  Modal,
 } from 'antd';
+import { url } from 'app/../.next-urls';
 import { CursorPagination } from 'app/components/CursorPagination';
 import { DatePicker } from 'app/components/DatePicker';
-import { traceColorMap } from 'app/components/traces';
+import { traceColorMap, TraceDataModal } from 'app/components/traces';
 import { useCursor } from 'app/hooks/useCursor';
 import dayjs, { Dayjs } from 'dayjs';
-import { useGetTraceByIdQuery, useTracesQuery } from 'graphql/client/generated';
+import { useTracesQuery } from 'graphql/client/generated';
 import * as t from 'io-ts';
+import Link from 'next/link';
 import * as h from 'tyrann-io';
 
 import { Layout } from '../../components/Layout';
-import { TraceDataCell } from '../../components/TraceDataCell';
 
 interface Website {
   name: string,
   url: string,
+  id: number;
 }
 
 interface FilterValues {
@@ -40,8 +41,7 @@ export default function Page() {
     }), []),
   );
 
-  const [modalVisible, setModalVisible] = useState<boolean>(false);
-  const [traceId, setTraceId] = useState<number>(0);
+  const [currentTrace, setCurrentTrace] = useState<number>();
 
   const tracesResponse = useTracesQuery({
     variables: {
@@ -69,15 +69,7 @@ export default function Page() {
     resetCursor();
   }, [search?.timeAfter, search?.timeBefore]);
 
-  const traceResponse = useGetTraceByIdQuery({
-    variables: {
-      id: traceId,
-    },
-  });
-
   const tracesData = tracesResponse.data?.traces;
-
-  const traceData = traceResponse.data?.trace;
 
   const traceItems = tracesData?.results?.map((trace) => ({
     key: String(trace.id),
@@ -87,17 +79,21 @@ export default function Page() {
   const columns = [
     {
       title: 'Type',
-      dataIndex: 'type',
-      key: 'type',
+      dataIndex: 'traceType',
+      key: 'traceType',
     },
     {
       title: 'Website',
       dataIndex: 'website',
       key: 'website',
       render: (website: Website) => (
-        <a className="underline" href={website.url}>
-          {website.name}
-        </a>
+        <Link
+          href={url('/monitoring/websiteStatus/[id]').replace('[id]', String(website.id))}
+        >
+          <a className="underline">
+            {website.name}
+          </a>
+        </Link>
       ),
     },
     {
@@ -116,7 +112,7 @@ export default function Page() {
       key: 'duration',
       render: (duration: number) => (
         <span>
-          {`${duration}s`}
+          {`${duration}ms`}
         </span>
       ),
     },
@@ -137,18 +133,13 @@ export default function Page() {
         <Button
           type="primary"
           shape="round"
-          onClick={() => showDetails(record.id)}
+          onClick={() => setCurrentTrace(record.id)}
         >
           Details
         </Button>
       ),
     },
   ];
-
-  const showDetails = (id: number) => {
-    setTraceId(id);
-    setModalVisible(true);
-  };
 
   const renderTitle = () => {
     return (
@@ -209,47 +200,6 @@ export default function Page() {
     );
   };
 
-  const renderTraceDataModal = () => {
-    return (
-      <Modal
-        title={`Trace #${traceData?.id}`}
-        visible={modalVisible}
-        onOk={() => setModalVisible(false)}
-        onCancel={() => setModalVisible(false)}
-      >
-        <TraceDataCell label="Type">
-          {traceData?.traceType}
-        </TraceDataCell>
-        <TraceDataCell label="Website">
-          <a
-            className="underline"
-            href={traceData?.website.url}
-          >
-            {traceData?.website.name ?? ' '}
-          </a>
-        </TraceDataCell>
-        <TraceDataCell label="Time">
-          {traceData?.createdAt ? dayjs(traceData?.createdAt).format('YYYY-MM-DD HH:mm:ss') : ' '}
-        </TraceDataCell>
-        <TraceDataCell label="Status" className={traceColorMap[traceData?.status!]}>
-          {traceData?.status ?? ' '}
-        </TraceDataCell>
-        <TraceDataCell label="Duration">
-          {traceData?.duration ?? ' '}
-        </TraceDataCell>
-        <TraceDataCell label="Request Headers" multilines>
-          {traceData?.requestHeaders ?? ' '}
-        </TraceDataCell>
-        <TraceDataCell label="Response Headers" multilines>
-          {traceData?.responseHeaders ?? ' '}
-        </TraceDataCell>
-        <TraceDataCell label="Response Data" multilines>
-          {traceData?.responseData ?? ' '}
-        </TraceDataCell>
-      </Modal>
-    );
-  };
-
   const renderBottom = () => {
     return (
       <div className="flex justify-between">
@@ -277,6 +227,11 @@ export default function Page() {
       ]}
       queries={[tracesResponse]}
     >
+      <TraceDataModal
+        id={currentTrace}
+        onClose={() => setCurrentTrace(undefined)}
+        visible={currentTrace !== undefined}
+      />
       {renderTitle()}
       <div className="bg-white p-8 shadow-md">
         {renderSearch()}
@@ -288,7 +243,6 @@ export default function Page() {
           pagination={{ position: [] }}
         />
         {renderBottom()}
-        {renderTraceDataModal()}
       </div>
     </Layout>
   );
