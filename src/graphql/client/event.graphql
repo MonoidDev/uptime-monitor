@@ -1,0 +1,18 @@
+query GetEvents($query: EventQuery!) {
+  events(query: $query) {
+    minId
+    maxId
+    results {
+      id
+      type
+      website {
+        name
+        url
+      }
+      websiteId
+      traceId
+      data
+      createdAt
+    }
+  }
+}
