@@ -21,7 +21,7 @@ import Link from 'next/link';
 
 import { gStyles } from '../styles';
 import tableStyles from '../styles/tableStyles.module.css';
-import { BidirectionalPagination as CursorPagination } from './CursorPagination';
+import { CursorPagination } from './CursorPagination';
 import { QueryContainer } from './QueryContainer';
 import { SingleLineChart } from './SingleLineChart';
 import { TraceDataModal } from './traces';
@@ -64,14 +64,16 @@ export const normalizeTraceGroups = <
 
 export interface ResponseTimeChartProps {
   rangeTime: string;
+  websiteId?: number;
 }
 
 export const ResponseTimeChart: React.VFC<ResponseTimeChartProps> = React.memo((props) => {
-  const { rangeTime } = props;
+  const { rangeTime, websiteId } = props;
 
   const traces = useTraceOfResponseTimeQuery({
     variables: {
       rangeTime,
+      websiteId,
     },
     fetchPolicy: 'cache-and-network',
   });
@@ -388,6 +390,7 @@ export const EventTable: React.VFC<EventTableProps> = React.memo((props) => {
       query: {
         ...cursor,
         rangeTime,
+        websiteId,
       },
     },
     fetchPolicy: 'cache-and-network',

@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
 import useSearch from '@monoid-dev/use-search';
 import {
@@ -8,13 +8,13 @@ import {
   Form,
   Modal,
 } from 'antd';
-import { BidirectionalPagination } from 'app/components/CursorPagination';
+import { CursorPagination } from 'app/components/CursorPagination';
 import { DatePicker } from 'app/components/DatePicker';
 import { traceColorMap } from 'app/components/traces';
+import { useCursor } from 'app/hooks/useCursor';
 import dayjs, { Dayjs } from 'dayjs';
 import { useGetTraceByIdQuery, useTracesQuery } from 'graphql/client/generated';
 import * as t from 'io-ts';
-import { unstable_batchedUpdates } from 'react-dom';
 import * as h from 'tyrann-io';
 
 import { Layout } from '../../components/Layout';
@@ -45,25 +45,43 @@ export default function Page() {
     useMemo(() => t.type({
       timeBefore: h.omittable(t.string),
       timeAfter: h.omittable(t.string),
+      afterId: h.omittable(h.number().cast()),
+      beforeId: h.omittable(h.number().cast()),
     }), []),
   );
 
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [traceId, setTraceId] = useState<number>(0);
 
-  const [afterId, setAfterId] = useState<number | undefined>(2 ** 31 - 1);
-  const [beforeId, setBeforeId] = useState<number | undefined>(undefined);
-
   const tracesResponse = useTracesQuery({
     variables: {
       query: {
-        afterId,
-        beforeId,
+        afterId: search?.afterId,
+        beforeId: search?.beforeId,
         rangeTime: undefined,
         timeAfter: search?.timeAfter,
         timeBefore: search?.timeBefore,
       },
     },
+  });
+
+  useEffect(() => {
+    resetCursor();
+  }, [search?.timeAfter, search?.timeBefore]);
+
+  const {
+    hasMoreBefore,
+    hasMoreAfter,
+    nextPage,
+    previousPage,
+    resetCursor,
+  } = useCursor({
+    cursor: {
+      afterId: search?.afterId,
+      beforeId: search?.beforeId,
+    },
+    onCursorChange: (cursor) => updateSearch(cursor),
+    data: tracesResponse.data?.traces,
   });
 
   const traceResponse = useGetTraceByIdQuery({
@@ -86,6 +104,7 @@ export default function Page() {
     },
     websiteId: trace.websiteId,
     duration: trace.duration,
+    createdAt: trace.createdAt,
     status: trace.status,
   }));
 
@@ -122,6 +141,16 @@ export default function Page() {
       render: (duration: number) => (
         <span>
           {`${duration}s`}
+        </span>
+      ),
+    },
+    {
+      title: 'Time',
+      dataIndex: 'createdAt',
+      key: 'createdAt',
+      render: (createdAt: any) => (
+        <span>
+          {dayjs(createdAt).format('YYYY-MM-DD HH:mm:ss')}
         </span>
       ),
     },
@@ -246,26 +275,13 @@ export default function Page() {
   };
 
   const renderBottom = () => {
-    const currentMinId = Math.min(...tracesData?.results.map((trace) => trace.id) ?? []);
-    const currentMaxId = Math.max(...tracesData?.results.map((trace) => trace.id) ?? []);
-
     return (
       <div className="flex justify-between">
-        <BidirectionalPagination
-          hasMoreBefore={(tracesData?.maxId ?? 0) > currentMaxId}
-          hasMoreAfter={(tracesData?.minId ?? 0) < currentMinId}
-          onClickAfter={() => {
-            unstable_batchedUpdates(() => {
-              setBeforeId(undefined);
-              setAfterId(currentMinId);
-            });
-          }}
-          onClickBefore={() => {
-            unstable_batchedUpdates(() => {
-              setBeforeId(currentMaxId);
-              setAfterId(undefined);
-            });
-          }}
+        <CursorPagination
+          hasMoreBefore={hasMoreBefore}
+          hasMoreAfter={hasMoreAfter}
+          onClickAfter={nextPage}
+          onClickBefore={previousPage}
         />
       </div>
     );

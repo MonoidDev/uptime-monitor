@@ -1,8 +1,8 @@
 import { useMemo } from 'react';
 
 export interface Cursor {
-  afterId?: number
-  beforeId?: number;
+  afterId?: number | null;
+  beforeId?: number | null;
 }
 
 export interface WithId {

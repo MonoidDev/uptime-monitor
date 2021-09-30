@@ -126,13 +126,13 @@ export default function Page() {
       <Row gutter={32}>
         <Col span={12}>
           <div className={classNames(gStyles.paper)}>
-            <ResponseTimeChart rangeTime={rangeTime!} />
+            <ResponseTimeChart rangeTime={rangeTime!} websiteId={id} />
           </div>
         </Col>
 
         <Col span={12}>
           <div className={classNames(gStyles.paper, 'h-full')}>
-            <EventTable rangeTime={rangeTime!} />
+            <EventTable rangeTime={rangeTime!} websiteId={id} />
           </div>
         </Col>
       </Row>

@@ -39,8 +39,8 @@ query TraceOfErrorCount($rangeTime: String!, $websiteId: Int) {
   }
 }
 
-query TraceOfResponseTime($rangeTime: String!) {
-  traceOfResponseTime(rangeTime: $rangeTime) {
+query TraceOfResponseTime($rangeTime: String!, $websiteId: Int) {
+  traceOfResponseTime(rangeTime: $rangeTime, websiteId: $websiteId) {
     time
     groupId
     avgDuration
