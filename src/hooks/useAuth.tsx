@@ -64,11 +64,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = (props) => {
   const router = useRouter();
 
   useEffect(() => {
-    const token = null;
-    if (token && urlNeedsAuth(router.pathname)) {
+    if (state.token === null && urlNeedsAuth(router.pathname)) {
       router.replace(url('/auth/login'));
     }
-  }, []);
+  }, [router.pathname, state.token]);
 
   return (
     <AuthContext.Provider value={value}>
