@@ -1,0 +1,17 @@
+query Events($query: EventQuery!) {
+  events(query: $query) {
+    minId
+    maxId
+    results {
+      id
+      type
+      status
+      website {
+        id
+        name
+      }
+      createdAt
+      traceId
+    }
+  }
+}

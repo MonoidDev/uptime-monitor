@@ -31,6 +31,7 @@ type Event {
   createdAt: DateTime!
   data: String!
   id: Int!
+  status: SeverityType!
   traceId: Int!
   type: String!
   website: Website!
@@ -41,6 +42,8 @@ input EventQuery {
   afterId: Int
   beforeId: Int
   rangeTime: String
+  timeAfter: String
+  timeBefore: String
   websiteId: Int
 }
 
@@ -87,6 +90,13 @@ type Query {
   user(id: Int!): User
   website(id: Int!): Website
   websites(keyword: String, page: Int!): PaginatedWebsite
+}
+
+enum SeverityType {
+  ERROR
+  FATAL
+  LOG
+  WARN
 }
 
 type Trace {

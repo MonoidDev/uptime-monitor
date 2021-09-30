@@ -60,6 +60,7 @@ query Traces($query: TraceQuery!) {
       requestHeaders
       responseHeaders
       responseData
+      createdAt
       website {
         id
         name

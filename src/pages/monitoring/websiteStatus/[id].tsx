@@ -132,7 +132,7 @@ export default function Page() {
 
         <Col span={12}>
           <div className={classNames(gStyles.paper, 'h-full')}>
-            <EventTable />
+            <EventTable rangeTime={rangeTime!} />
           </div>
         </Col>
       </Row>

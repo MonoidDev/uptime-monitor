@@ -1,9 +1,11 @@
-import { EventService } from 'app/services/EventService';
 import dayjs from 'dayjs';
 import range from 'lodash/range';
 
 import { Context } from '../src/graphql/context';
+import { WebsiteEventSource } from '../src/graphql/types/EventSchema';
 import { prisma } from '../src/lib/prisma';
+import { EventService } from '../src/services/EventService';
+import { MonitorService } from '../src/services/MonitorService';
 import { TraceService } from '../src/services/TraceService';
 import { UserService } from '../src/services/UserService';
 import { WebsiteService } from '../src/services/WebsiteService';
@@ -38,6 +40,8 @@ if (process.env.NODE_ENV !== 'development') {
     res: {} as any,
   };
 
+  const monitorService = new MonitorService();
+
   const user = await ctx.userService.createUser({
     email: 'django@gmail.com',
     inputPassword: '123123123',
@@ -64,16 +68,25 @@ if (process.env.NODE_ENV !== 'development') {
 
   for (const i of range(0, n)) {
     const date = dayjs().subtract(((n - i) * ((3600 * 24) * 31)) / n, 'seconds');
-    await prisma.trace.create({
+    const status = Math.random() < 0.3 ? 'HTTP_ERROR' : 'OK';
+
+    const trace = await prisma.trace.create({
       data: {
         traceType: 'PING',
         websiteId: website.id,
-        status: Math.random() < 0.3 ? 'HTTP_ERROR' : 'OK',
+        status,
         duration: Math.floor(Math.random() * 100 + 200),
         createdAt: date.toDate(),
         userId: user.id,
       },
     });
+
+    if (status !== 'OK' && Math.random() < 0.3) {
+      await monitorService.addEvent(website, trace, {
+        source: Math.random() < 0.3 ? WebsiteEventSource.NotAvailable : WebsiteEventSource.HighLatency,
+        data: false,
+      });
+    }
   }
 
   const website2 = await prisma.website.create({
@@ -90,16 +103,25 @@ if (process.env.NODE_ENV !== 'development') {
 
   for (const i of range(0, n)) {
     const date = dayjs().subtract(((n - i) * ((3600 * 24) * 15)) / n, 'seconds');
-    await prisma.trace.create({
+    const status = Math.random() < 0.2 ? 'HTTP_ERROR' : 'OK';
+
+    const trace = await prisma.trace.create({
       data: {
         traceType: 'PING',
         websiteId: website2.id,
-        status: Math.random() < 0.2 ? 'HTTP_ERROR' : 'OK',
+        status,
         duration: Math.floor(Math.random() * 100 + 300),
         createdAt: date.toDate(),
         userId: user.id,
       },
     });
+
+    if (status !== 'OK' && Math.random() < 0.3) {
+      await monitorService.addEvent(website2, trace, {
+        source: Math.random() < 0.3 ? WebsiteEventSource.NotAvailable : WebsiteEventSource.HighLatency,
+        data: false,
+      });
+    }
   }
 
   await prisma.website.create({

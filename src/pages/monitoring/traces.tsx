@@ -8,8 +8,9 @@ import {
   Form,
   Modal,
 } from 'antd';
-import { BidirectionalPagination } from 'app/components/BidirectionalPagination';
+import { BidirectionalPagination } from 'app/components/CursorPagination';
 import { DatePicker } from 'app/components/DatePicker';
+import { traceColorMap } from 'app/components/traces';
 import dayjs, { Dayjs } from 'dayjs';
 import { useGetTraceByIdQuery, useTracesQuery } from 'graphql/client/generated';
 import * as t from 'io-ts';
@@ -109,7 +110,7 @@ export default function Page() {
       dataIndex: 'status',
       key: 'status',
       render: (status: string) => (
-        <div className={colorMap[status]}>
+        <div className={traceColorMap[status]}>
           {status}
         </div>
       ),
@@ -225,7 +226,7 @@ export default function Page() {
         <TraceDataCell label="Time">
           {traceData?.createdAt ? dayjs(traceData?.createdAt).format('YYYY-MM-DD HH:mm:ss') : ' '}
         </TraceDataCell>
-        <TraceDataCell label="Status" className={colorMap[traceData?.status!]}>
+        <TraceDataCell label="Status" className={traceColorMap[traceData?.status!]}>
           {traceData?.status ?? ' '}
         </TraceDataCell>
         <TraceDataCell label="Duration">
@@ -300,10 +301,3 @@ export default function Page() {
     </Layout>
   );
 }
-
-const colorMap: { [key:string]: string } = {
-  OK: 'text-green-400',
-  TIMEOUT: 'text-yellow-400',
-  HTTP_ERROR: 'text-red-600',
-  SSL_ERROR: 'text-red-600',
-};
