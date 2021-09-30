@@ -4,7 +4,7 @@ import {
 
 export const WebsiteStatusType = enumType({
   name: 'WebsiteStatusType',
-  members: ['UNAVAILABLE', 'OK', 'ERROR'],
+  members: ['UNKNOWN', 'OK', 'ERROR'],
 });
 
 export const Website = objectType({

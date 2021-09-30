@@ -179,5 +179,5 @@ type Website {
 enum WebsiteStatusType {
   ERROR
   OK
-  UNAVAILABLE
+  UNKNOWN
 }

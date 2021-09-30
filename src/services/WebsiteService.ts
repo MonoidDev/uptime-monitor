@@ -1,4 +1,5 @@
 import * as t from 'io-ts';
+import { range } from 'lodash';
 
 import { CreateUpdateWebsiteSchema } from '../graphql/types/WebsiteSchema';
 import { BaseService } from './BaseService';
@@ -49,7 +50,8 @@ export class WebsiteService extends BaseService {
   }
 
   async findWebsiteStatus(websiteId: number) {
-    const queryResult = await this.ctx.prisma.$queryRaw`SELECT
+    const queryResult = await this.ctx.prisma.$queryRaw`
+      SELECT
         groupId "groupId",
         SUM(CASE WHEN status = 'HTTP_ERROR' THEN 1 ELSE 0 END) "httpErrorCount"
       FROM (
@@ -58,14 +60,15 @@ export class WebsiteService extends BaseService {
         FROM "Trace" WHERE
           EXTRACT(epoch FROM "createdAt") > (EXTRACT(epoch FROM current_timestamp) - 3600 * 24) and
           "websiteId" = ${websiteId}
-      ) as tmp group by groupId order by groupId;`;
-    const ranges = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
-    return ranges.map((tick) => {
-      const info = queryResult[tick];
-      if (info) {
-        return info.httpErrorCount > 0 ? 'ERROR' : 'OK';
-      }
-      return 'UNAVAILABLE';
+      ) as tmp group by groupId order by groupId;
+    `;
+
+    const groupIdToErrorCount = new Map<number, number>(queryResult.map(({ groupId, httpErrorCount }: any) => [groupId, httpErrorCount]));
+
+    return range(12).map((tick) => {
+      const errorCount = groupIdToErrorCount.get(tick);
+      if (errorCount === undefined) return 'UNKNOWN';
+      return errorCount > 0 ? 'ERROR' : 'OK';
     });
   }
 

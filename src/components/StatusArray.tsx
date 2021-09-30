@@ -3,11 +3,11 @@ import React from 'react';
 import classNames from 'classnames';
 
 export interface StatusArrayProps {
-  status: ('ERROR' | 'OK' | 'UNAVAILABLE')[];
+  status: ('ERROR' | 'OK' | 'UNKNOWN')[];
 }
 
 export const statusToClass = {
-  UNAVAILABLE: 'bg-gray-500',
+  UNKNOWN: 'bg-gray-500',
   OK: 'bg-green-400',
   ERROR: 'bg-red-600',
 };
