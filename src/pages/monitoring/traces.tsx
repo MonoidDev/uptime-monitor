@@ -25,16 +25,6 @@ interface Website {
   url: string,
 }
 
-interface TraceItem {
-  key: string;
-  id: number;
-  type: string;
-  website: Website;
-  websiteId: number;
-  status: string;
-  duration: number;
-}
-
 interface FilterValues {
   timeAfter?: Dayjs;
   timeBefore?: Dayjs;
@@ -55,19 +45,10 @@ export default function Page() {
 
   const tracesResponse = useTracesQuery({
     variables: {
-      query: {
-        afterId: search?.afterId,
-        beforeId: search?.beforeId,
-        rangeTime: undefined,
-        timeAfter: search?.timeAfter,
-        timeBefore: search?.timeBefore,
-      },
+      query: search!,
     },
+    fetchPolicy: 'cache-and-network',
   });
-
-  useEffect(() => {
-    resetCursor();
-  }, [search?.timeAfter, search?.timeBefore]);
 
   const {
     hasMoreBefore,
@@ -84,6 +65,10 @@ export default function Page() {
     data: tracesResponse.data?.traces,
   });
 
+  useEffect(() => {
+    resetCursor();
+  }, [search?.timeAfter, search?.timeBefore]);
+
   const traceResponse = useGetTraceByIdQuery({
     variables: {
       id: traceId,
@@ -96,16 +81,7 @@ export default function Page() {
 
   const traceItems = tracesData?.results?.map((trace) => ({
     key: String(trace.id),
-    id: trace.id,
-    type: trace.traceType,
-    website: {
-      name: trace.website.name,
-      url: trace.website.url,
-    },
-    websiteId: trace.websiteId,
-    duration: trace.duration,
-    createdAt: trace.createdAt,
-    status: trace.status,
+    ...trace,
   }));
 
   const columns = [
@@ -157,7 +133,7 @@ export default function Page() {
     {
       title: 'Action',
       key: 'action',
-      render: (_: any, record: TraceItem) => (
+      render: (_: any, record: Exclude<typeof traceItems, undefined>[number]) => (
         <Button
           type="primary"
           shape="round"

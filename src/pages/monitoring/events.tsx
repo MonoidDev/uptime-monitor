@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
 import useSearch from '@monoid-dev/use-search';
 import {
@@ -7,38 +7,86 @@ import {
   Button,
   Form,
   DatePicker,
-  Tag,
 } from 'antd';
+import { url } from 'app/../.next-urls';
+import { useEventsQuery } from 'app/../graphql/client/generated';
+import { CursorPagination } from 'app/components/CursorPagination';
+import { TraceDataModal } from 'app/components/traces';
+import { websiteEventTypeToDescription } from 'app/data/events';
+import { WebsiteEventSource } from 'app/graphql/types/EventSchema';
+import { useCursor } from 'app/hooks/useCursor';
+import { gStyles } from 'app/styles';
+import classNames from 'classnames';
+import dayjs, { Dayjs } from 'dayjs';
 import * as t from 'io-ts';
+import Link from 'next/link';
 import * as h from 'tyrann-io';
 
 import { Layout } from '../../components/Layout';
 
 interface Website {
-  id: number,
   name: string,
-  url: string,
-  pingInterval: number,
+  id: number,
 }
 
-interface EventItem {
-  key: string;
-  id: number;
-  type: string;
-  severity: string;
-  website: Website;
-  message: string;
-  time: string;
-  trace: number;
+interface FilterValues {
+  timeAfter?: Dayjs;
+  timeBefore?: Dayjs;
 }
 
 export default function Page() {
+  const [currentTrace, setCurrentTrace] = useState<number>();
+
   const { search, updateSearch } = useSearch(
     useMemo(() => t.type({
       timeBefore: h.omittable(t.string),
       timeAfter: h.omittable(t.string),
+      afterId: h.omittable(h.number().cast()),
+      beforeId: h.omittable(h.number().cast()),
     }), []),
   );
+
+  const eventsResponse = useEventsQuery({
+    variables: {
+      query: search!,
+    },
+    fetchPolicy: 'cache-and-network',
+  });
+
+  const eventItems = eventsResponse?.data?.events.results.map((e) => ({
+    ...e,
+    key: String(e.id),
+    message: (
+      <>
+        <span className={classNames(gStyles.tag, gStyles[e.status.toLowerCase()], 'mr-2')}>
+          {e.status.toLowerCase()}
+        </span>
+        {websiteEventTypeToDescription[e.type as WebsiteEventSource](
+          e.website.name,
+          e.website.id,
+        )}
+      </>
+    ),
+  }));
+
+  const {
+    hasMoreBefore,
+    hasMoreAfter,
+    nextPage,
+    previousPage,
+    resetCursor,
+  } = useCursor({
+    cursor: {
+      afterId: search?.afterId,
+      beforeId: search?.beforeId,
+    },
+    onCursorChange: (cursor) => updateSearch(cursor),
+    data: eventsResponse.data?.events,
+  });
+
+  useEffect(() => {
+    resetCursor();
+  }, [search?.timeAfter, search?.timeBefore]);
 
   const columns = [
     {
@@ -51,43 +99,39 @@ export default function Page() {
       dataIndex: 'website',
       key: 'website',
       render: (website: Website) => (
-        <a className="underline" href={website.url}>
-          {website.name}
-        </a>
+        <Link href={url('/monitoring/websiteStatus/[id]').replace('[id]', String(website.id))}>
+          <a className="underline">
+            {website.name}
+          </a>
+        </Link>
       ),
     },
     {
       title: 'Message',
       dataIndex: 'message',
       key: 'message',
-      render: (message: string, record: EventItem) => (
-        <div>
-          <Tag className={`${colorMap[record.severity]} rounded`}>
-            {record.severity}
-          </Tag>
-          <span>
-            {message}
-          </span>
-        </div>
-      ),
+      render: (message: React.ReactNode) => (message),
     },
     {
       title: 'Time',
-      dataIndex: 'time',
-      key: 'time',
+      dataIndex: 'createdAt',
+      key: 'createdAt',
+      render: (createdAt: any) => dayjs(createdAt).format('YYYY-MM-DD HH:mm:ss'),
     },
     {
       title: 'Reason',
       dataIndex: 'reason',
       key: 'reason',
-      render: (_:any, record: EventItem) => (
+      render: (_: any, record: Exclude<typeof eventItems, undefined>[number]) => (
         <Button
           type="primary"
           shape="round"
+          onClick={() => setCurrentTrace(record.traceId)}
         >
-          Trace:
+          Trace
           {' '}
-          {record.trace}
+          #
+          {record.traceId}
         </Button>
       ),
     },
@@ -104,9 +148,16 @@ export default function Page() {
   };
 
   const renderSearch = () => {
-    const onFinish = async (values: any) => {
+    const onFinish = async (values: FilterValues) => {
+      if (values.timeAfter && values.timeBefore && (values.timeAfter.toISOString() > values.timeBefore.toISOString())) {
+        // eslint-disable-next-line no-alert
+        window.alert('Cannot set the end time later than before time. ');
+        return;
+      }
+
       updateSearch({
-        ...values,
+        timeAfter: values.timeAfter?.toISOString(),
+        timeBefore: values.timeBefore?.toISOString(),
       });
     };
     return (
@@ -114,26 +165,47 @@ export default function Page() {
         <Form
           layout="inline"
           name="websiteSearch"
-          initialValues={search}
+          initialValues={{
+            timeAfter: search?.timeAfter && dayjs(search?.timeAfter),
+            timeBefore: search?.timeBefore && dayjs(search?.timeBefore),
+          }}
           onFinish={onFinish}
         >
-          <Form.Item name="timeAfter">
+          <Form.Item
+            name="timeAfter"
+          >
             <DatePicker showTime placeholder="Start Time" />
           </Form.Item>
-          <span className="pr-2 pt-2"> to </span>
-          <Form.Item name="timeBefore">
+          <span className="pr-3 pt-2"> to </span>
+          <Form.Item
+            name="timeBefore"
+          >
             <DatePicker showTime placeholder="End Time" />
           </Form.Item>
           <Form.Item>
             <Button
               type="primary"
               shape="round"
+              htmlType="submit"
             >
               Search
             </Button>
           </Form.Item>
         </Form>
       </>
+    );
+  };
+
+  const renderBottom = () => {
+    return (
+      <div className="flex justify-between">
+        <CursorPagination
+          hasMoreBefore={hasMoreBefore}
+          hasMoreAfter={hasMoreAfter}
+          onClickAfter={nextPage}
+          onClickBefore={previousPage}
+        />
+      </div>
     );
   };
 
@@ -153,41 +225,20 @@ export default function Page() {
       {renderTitle()}
       <div className="bg-white p-8 shadow-md">
         {renderSearch()}
+        <TraceDataModal
+          id={currentTrace}
+          onClose={() => setCurrentTrace(undefined)}
+          visible={currentTrace !== undefined}
+        />
         <Table
           bordered={false}
           className="py-8"
-          dataSource={exampleData}
+          dataSource={eventItems}
           columns={columns}
-          pagination={{
-            className: 'flex justify-end pt-10',
-          }}
+          pagination={{ position: [] }}
         />
+        {renderBottom()}
       </div>
     </Layout>
   );
 }
-
-const colorMap: { [key:string]: string } = {
-  log: 'bg-black text-white',
-  warning: 'bg-yellow-400 text-white',
-  error: 'bg-red-600 text-white',
-  fatal: 'bg=red=600 text-white',
-};
-
-const exampleData = [
-  {
-    key: '1',
-    id: 1,
-    type: 'Status Change',
-    severity: 'error',
-    website: {
-      id: 1,
-      url: 'https://www.google.com',
-      name: 'Google Home',
-      pingInterval: 100,
-    },
-    message: 'This site is down',
-    time: '2021-09-11 11:30:01',
-    trace: 1,
-  },
-];

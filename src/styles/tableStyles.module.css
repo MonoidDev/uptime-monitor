@@ -23,6 +23,6 @@
   @apply text-red-600;
 }
 
-.simpleTable .warning {
+.simpleTable .warn {
   @apply text-yellow-400;
 }

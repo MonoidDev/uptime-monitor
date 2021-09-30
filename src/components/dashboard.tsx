@@ -193,7 +193,7 @@ export const ErrorChart: React.VFC<ErrorChartProps> = React.memo((props) => {
   const tagClass = (upPercentage < 0.8)
     ? gStyles.error
     : (upPercentage < 0.9)
-      ? gStyles.warning
+      ? gStyles.warn
       : gStyles.info;
 
   return (
