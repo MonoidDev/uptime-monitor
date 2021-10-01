@@ -40,6 +40,7 @@ model Trace {
   websiteId Int
   website Website @relation(fields: [websiteId], references: [id])
   status TraceStatus @default(OK)
+  httpStatusCode Int?
   duration Int
   requestHeaders String?
   responseHeaders String?
@@ -55,8 +56,8 @@ model Event {
   websiteId Int
   website Website @relation(fields: [websiteId], references: [id])
   status SeverityType @default(LOG)
-  traceId Int
-  trace Trace @relation(fields: [traceId], references: [id])
+  traceId Int?
+  trace Trace? @relation(fields: [traceId], references: [id])
   data String
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt

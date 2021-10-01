@@ -1,3 +1,4 @@
+import { WebsiteEventSource } from 'app/models/WebsiteEvent';
 import * as t from 'io-ts';
 import { range } from 'lodash';
 
@@ -80,9 +81,9 @@ export class WebsiteService extends BaseService {
     });
   }
 
-  createWebsite(website: t.TypeOf<typeof CreateUpdateWebsiteSchema>) {
+  async createWebsite(website: t.TypeOf<typeof CreateUpdateWebsiteSchema>) {
     const userId = this.ctx.authInfo!.id;
-    return this.ctx.prisma.website.create({
+    const ret = await this.ctx.prisma.website.create({
       data: {
         userId,
         name: website!.name,
@@ -92,10 +93,15 @@ export class WebsiteService extends BaseService {
         emails: website!.emails,
       },
     });
+    await this.ctx.eventService.addEvent({
+      website: ret,
+      source: ret.enabled ? WebsiteEventSource.Enabled : WebsiteEventSource.Disabled,
+    });
+    return ret;
   }
 
-  updateWebsite(websiteId: number, website: t.TypeOf<typeof CreateUpdateWebsiteSchema>) {
-    return this.ctx.prisma.website.update({
+  async updateWebsite(websiteId: number, website: t.TypeOf<typeof CreateUpdateWebsiteSchema>) {
+    const ret = await this.ctx.prisma.website.update({
       where: {
         id: websiteId,
       },
@@ -107,6 +113,11 @@ export class WebsiteService extends BaseService {
         emails: website!.emails,
       },
     });
+    await this.ctx.eventService.addEvent({
+      website: ret,
+      source: ret.enabled ? WebsiteEventSource.Enabled : WebsiteEventSource.Disabled,
+    });
+    return ret;
   }
 
   async deleteWebsite(websiteId: number) {

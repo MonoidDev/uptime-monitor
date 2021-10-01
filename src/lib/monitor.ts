@@ -1,9 +1,7 @@
-import { WebsiteEventSource } from '../graphql/types/EventSchema';
-import {
-  MonitorService,
-  WebsiteEventDataNotAvailable,
-  WebsiteEventParams,
-} from '../services/MonitorService';
+import { WebsiteEventSource } from 'app/graphql/types/EventSchema';
+import { WebsiteEventParams } from 'app/models/WebsiteEvent';
+import { MonitorService } from 'app/services/MonitorService';
+
 import { doPing, PingResult } from './monitor-fetch';
 import { Trace, TraceStatus, Website } from '.prisma/client';
 
@@ -66,7 +64,11 @@ class Monitor {
   }
 
   private checkInterval(website: Website, lastTrace: Trace | null, now: Date) : Boolean {
-    const lastAt = lastTrace ? lastTrace.createdAt.getTime() : website.createdAt.getTime();
+    // const lastAt = lastTrace ? lastTrace.createdAt.getTime() : website.createdAt.getTime();
+    if (lastTrace === null) {
+      return true;
+    }
+    const lastAt = lastTrace.createdAt.getTime();
     const nextAt = lastAt + website.pingInterval * 1000;
     const nowAt = now.getTime();
     // console.log(`[monitor] check ${website.id}: lastAt ${lastAt} nextAt ${nextAt} nowAt ${nowAt}`);
@@ -83,7 +85,7 @@ class Monitor {
 
     const eventAvailability = this.checkEventAvailability(website, lastTrace, trace);
     if (eventAvailability !== null) {
-      await monitorService.addEvent(website, trace, eventAvailability);
+      await monitorService.addEvent(eventAvailability);
     }
   }
 
@@ -91,7 +93,7 @@ class Monitor {
     website: Website,
     lastTrace: Trace | null,
     currentTrace: Trace,
-  ) {
+  ) : WebsiteEventParams | null {
     const lastOk = (lastTrace === null) ? false : (lastTrace.status === TraceStatus.OK);
     const currentOk = currentTrace.status === TraceStatus.OK;
     if (lastOk === currentOk) {
@@ -99,11 +101,19 @@ class Monitor {
       return null;
     }
 
-    const eventData: WebsiteEventDataNotAvailable = !currentOk;
+    if (currentOk) {
+      const params: WebsiteEventParams = {
+        source: WebsiteEventSource.Available,
+        website,
+        trace: currentTrace,
+      };
+      return params;
+    }
 
     const params: WebsiteEventParams = {
       source: WebsiteEventSource.NotAvailable,
-      data: eventData,
+      website,
+      trace: currentTrace,
     };
     return params;
   }

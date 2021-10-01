@@ -9,6 +9,7 @@ import { MonitorService } from '../src/services/MonitorService';
 import { TraceService } from '../src/services/TraceService';
 import { UserService } from '../src/services/UserService';
 import { WebsiteService } from '../src/services/WebsiteService';
+import { TraceStatus } from '.prisma/client';
 
 if (process.env.NODE_ENV !== 'development') {
   throw new Error('seed.ts is only for development!');
@@ -32,10 +33,10 @@ if (process.env.NODE_ENV !== 'development') {
   const ctx: Context = {
     prisma,
     isLoggedIn: false,
+    eventService: new EventService(getContext),
     userService: new UserService(getContext),
     websiteService: new WebsiteService(getContext),
     traceService: new TraceService(getContext),
-    eventService: new EventService(getContext),
     req: {} as any,
     res: {} as any,
   };
@@ -68,23 +69,42 @@ if (process.env.NODE_ENV !== 'development') {
 
   for (const i of range(0, n)) {
     const date = dayjs().subtract(((n - i) * ((3600 * 24) * 31)) / n, 'seconds');
-    const status = Math.random() < 0.3 ? 'HTTP_ERROR' : 'OK';
+    const timeout = Math.random() < 0.2;
+    const sslerror = Math.random() < 0.1;
+    const httperror = Math.random() < 0.2;
+    let status: TraceStatus;
+    let httpStatusCode: number;
+    if (timeout) {
+      status = TraceStatus.TIMEOUT;
+      httpStatusCode = -1;
+    } else if (sslerror) {
+      status = TraceStatus.SSL_ERROR;
+      httpStatusCode = -1;
+    } else if (httperror) {
+      status = TraceStatus.HTTP_ERROR;
+      httpStatusCode = 500;
+    } else {
+      status = TraceStatus.OK;
+      httpStatusCode = 200;
+    }
 
     const trace = await prisma.trace.create({
       data: {
         traceType: 'PING',
+        userId: user.id,
         websiteId: website.id,
         status,
+        httpStatusCode,
         duration: Math.floor(Math.random() * 100 + 200),
         createdAt: date.toDate(),
-        userId: user.id,
       },
     });
 
     if (status !== 'OK' && Math.random() < 0.3) {
-      await monitorService.addEvent(website, trace, {
+      await monitorService.addEvent({
         source: Math.random() < 0.3 ? WebsiteEventSource.NotAvailable : WebsiteEventSource.HighLatency,
-        data: false,
+        website,
+        trace,
       });
     }
   }
@@ -103,23 +123,42 @@ if (process.env.NODE_ENV !== 'development') {
 
   for (const i of range(0, n)) {
     const date = dayjs().subtract(((n - i) * ((3600 * 24) * 15)) / n, 'seconds');
-    const status = Math.random() < 0.2 ? 'HTTP_ERROR' : 'OK';
+    const timeout = Math.random() < 0.2;
+    const sslerror = Math.random() < 0.1;
+    const httperror = Math.random() < 0.2;
+    let status: TraceStatus;
+    let httpStatusCode: number;
+    if (timeout) {
+      status = TraceStatus.TIMEOUT;
+      httpStatusCode = -1;
+    } else if (sslerror) {
+      status = TraceStatus.SSL_ERROR;
+      httpStatusCode = -1;
+    } else if (httperror) {
+      status = TraceStatus.HTTP_ERROR;
+      httpStatusCode = 500;
+    } else {
+      status = TraceStatus.OK;
+      httpStatusCode = 200;
+    }
 
     const trace = await prisma.trace.create({
       data: {
         traceType: 'PING',
+        userId: user.id,
         websiteId: website2.id,
         status,
+        httpStatusCode,
         duration: Math.floor(Math.random() * 100 + 300),
         createdAt: date.toDate(),
-        userId: user.id,
       },
     });
 
     if (status !== 'OK' && Math.random() < 0.3) {
-      await monitorService.addEvent(website2, trace, {
+      await monitorService.addEvent({
         source: Math.random() < 0.3 ? WebsiteEventSource.NotAvailable : WebsiteEventSource.HighLatency,
-        data: false,
+        website: website2,
+        trace,
       });
     }
   }
