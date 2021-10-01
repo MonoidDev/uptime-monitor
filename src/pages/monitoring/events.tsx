@@ -6,11 +6,11 @@ import {
   Table,
   Button,
   Form,
-  DatePicker,
 } from 'antd';
 import { url } from 'app/../.next-urls';
 import { useEventsQuery } from 'app/../graphql/client/generated';
 import { CursorPagination } from 'app/components/CursorPagination';
+import { DatePicker } from 'app/components/DatePicker';
 import { TraceDataModal } from 'app/components/traces';
 import { websiteEventTypeToDescription } from 'app/data/events';
 import { WebsiteEventSource } from 'app/graphql/types/EventSchema';

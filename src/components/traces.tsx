@@ -48,7 +48,9 @@ export const TraceDataModal: React.VFC<TraceDataModalProps> = (props) => {
         </Button>,
       ]}
     >
-      <QueryContainer>
+      <QueryContainer
+        queries={[trace]}
+      >
         {() => (
           <>
             <TraceDataCell label="Type">
