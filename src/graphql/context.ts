@@ -14,6 +14,7 @@ export type Context = {
   authInfo?: AuthInfo;
   prisma: PrismaClient;
   isLoggedIn: boolean;
+  eventService: EventService;
   userService: UserService;
   eventService: EventService;
   websiteService: WebsiteService;
@@ -44,6 +45,7 @@ export const createContext: RequestObjectHandler<Context> = async ({ req, res })
     get isLoggedIn() {
       return Boolean(authInfo);
     },
+    eventService: new EventService(getContext),
     userService: new UserService(getContext),
     websiteService: new WebsiteService(getContext),
     traceService: new TraceService(getContext),

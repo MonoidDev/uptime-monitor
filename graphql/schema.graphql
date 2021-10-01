@@ -33,7 +33,7 @@ type Event {
   data: String!
   id: Int!
   status: SeverityType!
-  traceId: Int!
+  traceId: Int
   type: String!
   website: Website!
   websiteId: Int!
@@ -103,7 +103,7 @@ enum SeverityType {
 type Trace {
   createdAt: DateTime!
   duration: Int!
-  httpStatusCode: Int!
+  httpStatusCode: Int
   id: Int!
   requestHeaders: String
   responseData: String
