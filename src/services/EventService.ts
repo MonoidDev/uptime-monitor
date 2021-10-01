@@ -1,9 +1,21 @@
-import { EventQuery } from '../../graphql/client/generated';
-import { getStartFromRangeTime } from '../utils/date';
+import { EventQuery } from 'app/../graphql/client/generated';
+import { buildEvent, WebsiteEventParams } from 'app/models/WebsiteEvent';
+import { getStartFromRangeTime } from 'app/utils/date';
+
 import { BaseService } from './BaseService';
 import { createCursorQuery } from './helpers/cursorQuery';
 
 export class EventService extends BaseService {
+  async addEvent(params: WebsiteEventParams) {
+    const createInput = buildEvent(params);
+    if (createInput === null) {
+      return Promise.reject();
+    }
+    return this.ctx.prisma.event.create({
+      data: createInput,
+    });
+  }
+
   async findEvents(query: EventQuery) {
     const {
       websiteId,

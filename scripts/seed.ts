@@ -33,10 +33,10 @@ if (process.env.NODE_ENV !== 'development') {
   const ctx: Context = {
     prisma,
     isLoggedIn: false,
+    eventService: new EventService(getContext),
     userService: new UserService(getContext),
     websiteService: new WebsiteService(getContext),
     traceService: new TraceService(getContext),
-    eventService: new EventService(getContext),
     req: {} as any,
     res: {} as any,
   };
@@ -101,9 +101,10 @@ if (process.env.NODE_ENV !== 'development') {
     });
 
     if (status !== 'OK' && Math.random() < 0.3) {
-      await monitorService.addEvent(website, trace, {
+      await monitorService.addEvent({
         source: Math.random() < 0.3 ? WebsiteEventSource.NotAvailable : WebsiteEventSource.HighLatency,
-        data: false,
+        website,
+        trace,
       });
     }
   }
@@ -154,9 +155,10 @@ if (process.env.NODE_ENV !== 'development') {
     });
 
     if (status !== 'OK' && Math.random() < 0.3) {
-      await monitorService.addEvent(website2, trace, {
+      await monitorService.addEvent({
         source: Math.random() < 0.3 ? WebsiteEventSource.NotAvailable : WebsiteEventSource.HighLatency,
-        data: false,
+        website: website2,
+        trace,
       });
     }
   }
