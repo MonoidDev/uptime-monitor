@@ -1,9 +1,9 @@
-import AbortController from 'abort-controller';
-import fetch, { Headers } from 'node-fetch';
-
 import http from 'http';
 import https from 'https';
 import tls from 'tls';
+
+import AbortController from 'abort-controller';
+import fetch, { Headers } from 'node-fetch';
 
 /* eslint-disable @typescript-eslint/lines-between-class-members */
 class PingResult {
@@ -40,13 +40,14 @@ const httpAgent = new http.Agent({
 
 const httpsAgent = new https.Agent({
   keepAlive: false,
-  checkServerIdentity: function(host, cert) {
+  checkServerIdentity: (host, cert) => {
     // Make sure the certificate is issued to the host we are connected to
     const err = tls.checkServerIdentity(host, cert);
     if (err) {
       return new TlsError(err);
     }
-  }
+    return undefined;
+  },
 });
 
 async function doPing(url: string): Promise<PingResult> {
@@ -96,13 +97,12 @@ async function doPing(url: string): Promise<PingResult> {
       signal: controller.signal,
       method: 'GET',
       headers: reqHeaders,
-      agent: function(parsedUrl) {
-        if (parsedUrl.protocol == 'https:') {
+      agent: (parsedUrl) => {
+        if (parsedUrl.protocol === 'https:') {
           return httpsAgent;
-        } else {
-          return httpAgent;
         }
-      }
+        return httpAgent;
+      },
     });
 
     result.statusCode = response.status;
