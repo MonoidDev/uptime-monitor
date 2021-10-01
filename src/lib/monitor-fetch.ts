@@ -1,9 +1,14 @@
 import AbortController from 'abort-controller';
 import fetch, { Headers } from 'node-fetch';
 
+import http from 'http';
+import https from 'https';
+import tls from 'tls';
+
 /* eslint-disable @typescript-eslint/lines-between-class-members */
 class PingResult {
   timeout: boolean = false;
+  tlsError: boolean = false;
   latency: number = 0;
   statusCode: number = 0;
   reqHeaders!: String[];
@@ -11,6 +16,14 @@ class PingResult {
   resBody!: string;
 }
 /* eslint-enable @typescript-eslint/lines-between-class-members */
+
+class TlsError extends Error {
+  constructor(inner: Error) {
+    super(inner.message);
+
+    Object.setPrototypeOf(this, TlsError.prototype);
+  }
+}
 
 function headersToStrings(i: Headers) {
   const o = new Array<String>();
@@ -20,6 +33,22 @@ function headersToStrings(i: Headers) {
   return o;
 }
 
+// A dummy httpAgent for node-fetch
+const httpAgent = new http.Agent({
+  keepAlive: false,
+});
+
+const httpsAgent = new https.Agent({
+  keepAlive: false,
+  checkServerIdentity: function(host, cert) {
+    // Make sure the certificate is issued to the host we are connected to
+    const err = tls.checkServerIdentity(host, cert);
+    if (err) {
+      return new TlsError(err);
+    }
+  }
+});
+
 async function doPing(url: string): Promise<PingResult> {
   const result = new PingResult();
 
@@ -28,6 +57,7 @@ async function doPing(url: string): Promise<PingResult> {
     console.info(`[fetch] mock for ${url}`);
 
     result.timeout = false;
+    result.tlsError = false;
     result.latency = 100;
     result.statusCode = 200;
     result.reqHeaders = [
@@ -56,8 +86,8 @@ async function doPing(url: string): Promise<PingResult> {
   const controller = new AbortController();
   let timeout = false;
   const hTimeout = setTimeout(() => {
-    controller.abort();
     timeout = true;
+    controller.abort();
   }, 5000);
 
   // console.log(`[doPing] pinging ${url}`);
@@ -66,16 +96,25 @@ async function doPing(url: string): Promise<PingResult> {
       signal: controller.signal,
       method: 'GET',
       headers: reqHeaders,
+      agent: function(parsedUrl) {
+        if (parsedUrl.protocol == 'https:') {
+          return httpsAgent;
+        } else {
+          return httpAgent;
+        }
+      }
     });
 
     result.statusCode = response.status;
     result.resHeaders = headersToStrings(response.headers);
     result.resBody = await response.text();
   } catch (error: unknown) {
-    if (timeout) {
+    if (error instanceof TlsError) {
+      result.tlsError = true;
+      // result.resBody = (error as Error).message;
+    } else if (timeout) {
       result.timeout = true;
     } else {
-      result.statusCode = -1;
       result.resBody = (error as Error).message;
     }
   } finally {
