@@ -1,9 +1,13 @@
+import http from 'http';
+import https from 'https';
+
 import AbortController from 'abort-controller';
-import fetch, { Headers } from 'node-fetch';
+import fetch, { FetchError, Headers } from 'node-fetch';
 
 /* eslint-disable @typescript-eslint/lines-between-class-members */
 class PingResult {
   timeout: boolean = false;
+  tlsError: boolean = false;
   latency: number = 0;
   statusCode: number = 0;
   reqHeaders!: String[];
@@ -20,6 +24,48 @@ function headersToStrings(i: Headers) {
   return o;
 }
 
+// A dummy httpAgent for node-fetch
+const httpAgent = new http.Agent({
+  keepAlive: false,
+});
+
+const httpsAgent = new https.Agent({
+  keepAlive: false,
+  rejectUnauthorized: true,
+});
+
+// see: https://nodejs.org/api/tls.html#tls_x509_certificate_error_codes
+const sslErrors = [
+  'UNABLE_TO_GET_ISSUER_CERT',
+  'UNABLE_TO_GET_CRL',
+  'UNABLE_TO_DECRYPT_CERT_SIGNATURE',
+  'UNABLE_TO_DECRYPT_CRL_SIGNATURE',
+  'UNABLE_TO_DECODE_ISSUER_PUBLIC_KEY',
+  'CERT_SIGNATURE_FAILURE',
+  'CRL_SIGNATURE_FAILURE',
+  'CERT_NOT_YET_VALID',
+  'CERT_HAS_EXPIRED',
+  'CRL_NOT_YET_VALID',
+  'CRL_HAS_EXPIRED',
+  'ERROR_IN_CERT_NOT_BEFORE_FIELD',
+  'ERROR_IN_CERT_NOT_AFTER_FIELD',
+  'ERROR_IN_CRL_LAST_UPDATE_FIELD',
+  'ERROR_IN_CRL_NEXT_UPDATE_FIELD',
+  // 'OUT_OF_MEM',
+  'DEPTH_ZERO_SELF_SIGNED_CERT',
+  'SELF_SIGNED_CERT_IN_CHAIN',
+  'UNABLE_TO_GET_ISSUER_CERT_LOCALLY',
+  'UNABLE_TO_VERIFY_LEAF_SIGNATURE',
+  'CERT_CHAIN_TOO_LONG',
+  'CERT_REVOKED',
+  'INVALID_CA',
+  'PATH_LENGTH_EXCEEDED',
+  'INVALID_PURPOSE',
+  'CERT_UNTRUSTED',
+  'CERT_REJECTED',
+  'HOSTNAME_MISMATCH',
+];
+
 async function doPing(url: string): Promise<PingResult> {
   const result = new PingResult();
 
@@ -28,6 +74,7 @@ async function doPing(url: string): Promise<PingResult> {
     console.info(`[fetch] mock for ${url}`);
 
     result.timeout = false;
+    result.tlsError = false;
     result.latency = 100;
     result.statusCode = 200;
     result.reqHeaders = [
@@ -56,8 +103,8 @@ async function doPing(url: string): Promise<PingResult> {
   const controller = new AbortController();
   let timeout = false;
   const hTimeout = setTimeout(() => {
-    controller.abort();
     timeout = true;
+    controller.abort();
   }, 5000);
 
   // console.log(`[doPing] pinging ${url}`);
@@ -66,18 +113,35 @@ async function doPing(url: string): Promise<PingResult> {
       signal: controller.signal,
       method: 'GET',
       headers: reqHeaders,
+      agent: (parsedUrl) => {
+        if (parsedUrl.protocol === 'https:') {
+          return httpsAgent;
+        }
+        return httpAgent;
+      },
     });
 
     result.statusCode = response.status;
     result.resHeaders = headersToStrings(response.headers);
     result.resBody = await response.text();
   } catch (error: unknown) {
+    result.resBody = (error as Error).message;
+    if (process.env.NODE_ENV !== 'production') {
+      console.error(error);
+    }
+
     if (timeout) {
       result.timeout = true;
-    } else {
-      result.statusCode = -1;
-      result.resBody = (error as Error).message;
+      result.resBody = '';
     }
+
+    if (error instanceof FetchError) {
+      if (error.code && sslErrors.includes(error.code)) {
+        result.tlsError = true;
+      }
+    }
+
+    // others are HTTP errors
   } finally {
     clearTimeout(hTimeout);
   }

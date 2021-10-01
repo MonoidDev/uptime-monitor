@@ -12,6 +12,9 @@ function getTraceStatus(result: PingResult) {
   if (result.timeout) {
     return TraceStatus.TIMEOUT;
   }
+  if (result.tlsError) {
+    return TraceStatus.SSL_ERROR;
+  }
   if (result.statusCode >= 200 && result.statusCode < 300) {
     return TraceStatus.HTTP_ERROR;
   }

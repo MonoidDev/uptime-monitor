@@ -1,6 +1,6 @@
 import {
   WebsiteEventDataHighLatency,
-  WebsiteEventSource
+  WebsiteEventSource,
 } from 'app/graphql/types/EventSchema';
 
 import {
@@ -19,6 +19,7 @@ export type WebsiteEventParams = {
 
 function buildEvent(params: WebsiteEventParams) {
   let eventSeverity: SeverityType;
+  // eslint-disable-next-line prefer-const
   let eventDataString: string = '';
   switch (params.source) {
     case WebsiteEventSource.Enabled: {
@@ -47,7 +48,7 @@ function buildEvent(params: WebsiteEventParams) {
     }
     case WebsiteEventSource.HighLatency: {
       const eventData = (params.data as WebsiteEventDataHighLatency);
-      eventSeverity = eventData.isActive ? SeverityType.WARN : SeverityType.WARN;
+      eventSeverity = eventData?.isActive ? SeverityType.WARN : SeverityType.WARN;
       // eventDataString = JSON.stringify(eventData);
       break;
     }
