@@ -66,7 +66,11 @@ class Monitor {
   }
 
   private checkInterval(website: Website, lastTrace: Trace | null, now: Date) : Boolean {
-    const lastAt = lastTrace ? lastTrace.createdAt.getTime() : website.createdAt.getTime();
+    // const lastAt = lastTrace ? lastTrace.createdAt.getTime() : website.createdAt.getTime();
+    if (lastTrace === null) {
+      return true;
+    }
+    const lastAt = lastTrace.createdAt.getTime();
     const nextAt = lastAt + website.pingInterval * 1000;
     const nowAt = now.getTime();
     // console.log(`[monitor] check ${website.id}: lastAt ${lastAt} nextAt ${nextAt} nowAt ${nowAt}`);
