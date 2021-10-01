@@ -48,7 +48,7 @@ function buildEvent(params: WebsiteEventParams) {
     }
     case WebsiteEventSource.HighLatency: {
       const eventData = (params.data as WebsiteEventDataHighLatency);
-      eventSeverity = eventData.isActive ? SeverityType.WARN : SeverityType.WARN;
+      eventSeverity = eventData?.isActive ? SeverityType.WARN : SeverityType.WARN;
       // eventDataString = JSON.stringify(eventData);
       break;
     }
