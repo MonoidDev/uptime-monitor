@@ -140,8 +140,6 @@ async function doPing(url: string): Promise<PingResult> {
         result.tlsError = true;
       }
     }
-
-    // others are HTTP errors
   } finally {
     clearTimeout(hTimeout);
   }
