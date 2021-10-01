@@ -1,4 +1,4 @@
-import { WebsiteEventSource } from 'app/models/WebsiteEvent';
+import { WebsiteEventSource } from 'app/graphql/types/EventSchema';
 import * as t from 'io-ts';
 import { range } from 'lodash';
 

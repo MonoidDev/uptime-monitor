@@ -419,7 +419,7 @@ export const EventTable: React.VFC<EventTableProps> = React.memo((props) => {
     return (
       <tr key={row.id}>
         <td>
-          <span className={classNames(gStyles.tag, gStyles.error, 'mr-2')}>
+          <span className={classNames(gStyles.tag, gStyles[row.status.toLowerCase()], 'mr-2')}>
             {row.status.toLowerCase()}
           </span>
 
@@ -429,9 +429,13 @@ export const EventTable: React.VFC<EventTableProps> = React.memo((props) => {
           {dayjs(row.createdAt).format('YYYY-MM-DD HH:mm:ss')}
         </td>
         <td>
-          <a onClick={() => setCurrentTrace(row.traceId)}>
-            Trace
-          </a>
+          {row.traceId
+            ? (
+              <a onClick={() => setCurrentTrace(row.traceId!)}>
+                Trace
+              </a>
+            )
+            : '-'}
         </td>
       </tr>
     );

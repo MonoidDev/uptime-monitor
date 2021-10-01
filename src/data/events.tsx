@@ -29,4 +29,25 @@ export const websiteEventTypeToDescription: Record<WebsiteEventSource, (websiteN
       becomes not available.
     </>
   ),
+  [WebsiteEventSource.Enabled]: (websiteName: string, id: number) => (
+    <>
+      {getLink(websiteName, id)}
+      {' '}
+      is enabled.
+    </>
+  ),
+  [WebsiteEventSource.Disabled]: (websiteName: string, id: number) => (
+    <>
+      {getLink(websiteName, id)}
+      {' '}
+      is disabled.
+    </>
+  ),
+  [WebsiteEventSource.Available]: (websiteName: string, id: number) => (
+    <>
+      {getLink(websiteName, id)}
+      {' '}
+      becomes available.
+    </>
+  ),
 };

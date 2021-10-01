@@ -123,16 +123,19 @@ export default function Page() {
       dataIndex: 'reason',
       key: 'reason',
       render: (_: any, record: Exclude<typeof eventItems, undefined>[number]) => (
-        <Button
-          type="primary"
-          shape="round"
-          onClick={() => setCurrentTrace(record.traceId)}
-        >
-          Trace
-          {' '}
-          #
-          {record.traceId}
-        </Button>
+        record.traceId
+          ? (
+            <Button
+              type="primary"
+              shape="round"
+              onClick={() => setCurrentTrace(record.traceId!)}
+            >
+              Trace
+              {' '}
+              #
+              {record.traceId}
+            </Button>
+          ) : '-'
       ),
     },
   ];
