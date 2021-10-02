@@ -1,5 +1,5 @@
 # Uptime Monitor
-[![Heroku](https://heroku-badge.herokuapp.com/?app=uptime-monitor-staging)]
+![Heroku](https://heroku-badge.herokuapp.com/?app=uptime-monitor-staging)
 
 Uptime Monitor provides a website monitoring service, to let users know when their endpoints go down. It is featured by configurable website setting and visualized real-time dashboard. 
 
