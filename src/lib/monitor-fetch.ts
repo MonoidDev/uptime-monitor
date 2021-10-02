@@ -9,10 +9,10 @@ class PingResult {
   timeout: boolean = false;
   tlsError: boolean = false;
   latency: number = 0;
-  statusCode: number = 0;
-  reqHeaders!: String[];
-  resHeaders!: String[];
-  resBody!: string;
+  statusCode?: number;
+  reqHeaders: String[] = [];
+  resHeaders?: String[];
+  resBody?: string;
 }
 /* eslint-enable @typescript-eslint/lines-between-class-members */
 

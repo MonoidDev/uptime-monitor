@@ -79,4 +79,5 @@ enum TraceStatus {
   TIMEOUT
   HTTP_ERROR
   SSL_ERROR
+  INTERNAL_ERROR
 }

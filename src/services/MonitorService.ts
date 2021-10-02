@@ -15,10 +15,13 @@ function getTraceStatus(result: PingResult) {
   if (result.tlsError) {
     return TraceStatus.SSL_ERROR;
   }
-  if (result.statusCode >= 200 && result.statusCode < 300) {
-    return TraceStatus.OK;
+  if (result.statusCode) {
+    if (result.statusCode >= 200 && result.statusCode < 300) {
+      return TraceStatus.OK;
+    }
+    return TraceStatus.HTTP_ERROR;
   }
-  return TraceStatus.HTTP_ERROR;
+  return TraceStatus.INTERNAL_ERROR;
 }
 
 export class MonitorService {
