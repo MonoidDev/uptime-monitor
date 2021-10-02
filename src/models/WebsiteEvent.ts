@@ -62,7 +62,7 @@ function buildEvent(params: WebsiteEventParams) {
     type: params.source.toString(),
     websiteId: params.website.id,
     status: eventSeverity,
-    traceId: params.trace?.id ?? 0,
+    traceId: params.trace?.id,
     data: eventDataString,
   };
   return createInput;
