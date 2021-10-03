@@ -14,7 +14,7 @@ This project uses:
 
 ## Useful Links
 - [Heroku APP](https://dashboard.heroku.com/apps/uptime-monitor-staging)
-- [PaperTail](https://addons-sso.heroku.com/apps/e25b96a2-df9f-4f00-b4d9-cb787af104d5/addons/41ea9244-3968-4c56-9fd3-e33d959daf80/) as Staging Env Log Management
+- [Papertrail](https://addons-sso.heroku.com/apps/e25b96a2-df9f-4f00-b4d9-cb787af104d5/addons/41ea9244-3968-4c56-9fd3-e33d959daf80/) as Staging Env Log Management
 
 ## Requirements
 
