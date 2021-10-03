@@ -78,6 +78,9 @@ function MyApp({ Component, pageProps }: any) {
     <>
       <Head>
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
+        <title>
+          Uptime Monitor
+        </title>
       </Head>
       <SearchConfigProvider
         config={{
