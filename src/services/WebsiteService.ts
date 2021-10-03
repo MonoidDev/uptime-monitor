@@ -101,6 +101,15 @@ export class WebsiteService extends BaseService {
   }
 
   async updateWebsite(websiteId: number, website: t.TypeOf<typeof CreateUpdateWebsiteSchema>) {
+    const existingWebsite = await this.ctx.prisma.website.findFirst({
+      where: {
+        id: websiteId,
+      },
+    });
+    if (!existingWebsite) {
+      return Promise.reject();
+    }
+
     const ret = await this.ctx.prisma.website.update({
       where: {
         id: websiteId,
@@ -113,10 +122,14 @@ export class WebsiteService extends BaseService {
         emails: website!.emails,
       },
     });
-    await this.ctx.eventService.addEvent({
-      website: ret,
-      source: ret.enabled ? WebsiteEventSource.Enabled : WebsiteEventSource.Disabled,
-    });
+
+    if (existingWebsite.enabled !== website!.enabled) {
+      await this.ctx.eventService.addEvent({
+        website: ret,
+        source: ret.enabled ? WebsiteEventSource.Enabled : WebsiteEventSource.Disabled,
+      });
+    }
+
     return ret;
   }
 
