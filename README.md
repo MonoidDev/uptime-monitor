@@ -30,31 +30,52 @@ yarn
 yarn install
 ```
 
+## Configuration
+- create a `.env.development` file and a `.env.production` file, and set environment variables for development and production respectively.
+	- `DATABASE_URL`: your database URL
+	- `NEXT_PUBLIC_SERVER`: address of Next server
+- You can also configure your own email service in `src/services/EmailServices.tsx`
 ## Usage
-- create a `.env.development` file and a `.env.production` file, and set your own environment variables for development and production respectively.
-- Generate Prisma client
+### For development
 
+- Generate Prisma client
 	```bash
 	yarn db-types
 	```
 - Synchronize the Prisma schema and your database schema
-
 	```bash
 	yarn dev:db-push
 	```
-- Seed the database
-
+- Seed the development database
 	```bash
 	yarn dev:seed
 	```
 	Alternatively, you can also create the data from scratch.
 - Start the development server
-
 	```
 	yarn dev
 	```
+- Start monitoring service
+	```
+	yarn dev:start-monitor
+	```
+
 Finally, open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
 Also, you can visit [http://localhost:3000/api/graphql](http://localhost:3000/api/graphql) to explore the API document.
 
 Notice that you need to re-run the `yarn db-types` and `yarn dev:db-push` command after every change that's made to your Prisma schema to update the generated Prisma Client code.
+
+### For Production
+- Build Next application
+	```
+	yarn build
+	```
+- Synchronize the database if necessary
+	```
+	yarn prod:db-push
+	```
+- Start the server and the monitoring service
+	```
+	yarn start
+	```

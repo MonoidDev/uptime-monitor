@@ -138,6 +138,7 @@ input TraceQuery {
 
 enum TraceStatus {
   HTTP_ERROR
+  INTERNAL_ERROR
   OK
   SSL_ERROR
   TIMEOUT
