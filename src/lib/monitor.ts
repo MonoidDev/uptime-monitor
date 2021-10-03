@@ -8,6 +8,8 @@ import { Trace, TraceStatus, Website } from '.prisma/client';
 const monitorService = new MonitorService();
 
 class Monitor {
+  private activeWebsiteIds = new Set<number>();
+
   public async run() {
     return this.scanWebsites();
   }
@@ -43,10 +45,17 @@ class Monitor {
 
       // eslint-disable-next-line @typescript-eslint/no-loop-func
       websites.forEach(async (website) => {
+        if (this.activeWebsiteIds.has(website.id)) {
+          return;
+        }
+        this.activeWebsiteIds.add(website.id);
+
         const trace = await monitorService.findLatestTraceByWebsite(website.id);
         if (this.checkInterval(website, trace, startAt)) {
           futures.push(this.processWebsite(website, trace));
         }
+
+        this.activeWebsiteIds.delete(website.id);
       });
     }
 
