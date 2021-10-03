@@ -12,6 +12,10 @@ This project uses:
 - [Nexus](https://nexusjs.org/) to write the GraphQL schemas in Typescript
 - [Prisma](https://www.prisma.io/) as Typescript ORM
 
+## Useful Links
+- [Heroku APP](https://dashboard.heroku.com/apps/uptime-monitor-staging)
+- [Papertrail](https://addons-sso.heroku.com/apps/e25b96a2-df9f-4f00-b4d9-cb787af104d5/addons/41ea9244-3968-4c56-9fd3-e33d959daf80/) as Staging Env Log Management
+
 ## Requirements
 
 - `node >= 14.0.0`
