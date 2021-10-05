@@ -87,7 +87,7 @@ class Monitor {
     }
 
     if (process.env.NODE_ENV !== 'production') {
-      console.info(`[monitor] process ${website.id}`);
+      console.info(`[monitor] processing ${website.id}`);
     }
     this.activeWebsiteIds.add(website.id);
 
@@ -99,6 +99,9 @@ class Monitor {
       await monitorService.addEvent(eventAvailability);
     }
 
+    if (process.env.NODE_ENV !== 'production') {
+      console.info(`[monitor] processed ${website.id}`);
+    }
     this.activeWebsiteIds.delete(website.id);
   }
 
