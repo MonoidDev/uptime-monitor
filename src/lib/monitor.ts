@@ -107,11 +107,13 @@ class Monitor {
     lastTrace: Trace | null,
     currentTrace: Trace,
   ) : WebsiteEventParams | null {
-    const lastOk = (lastTrace === null) ? false : (lastTrace.status === TraceStatus.OK);
     const currentOk = currentTrace.status === TraceStatus.OK;
-    if (lastOk === currentOk) {
-      // no status changed
-      return null;
+    if (lastTrace) {
+      const lastOk = lastTrace.status === TraceStatus.OK;
+      if (lastOk === currentOk) {
+        // no status changed
+        return null;
+      }
     }
 
     if (currentOk) {
