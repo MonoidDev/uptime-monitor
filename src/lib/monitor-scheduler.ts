@@ -14,6 +14,8 @@ class Scheduler {
 
   private runningJob?: schedule.Job;
 
+  private monitor = new Monitor();
+
   private constructor() {
     this.enabled = false;
   }
@@ -23,8 +25,7 @@ class Scheduler {
 
     this.runningJob = schedule.scheduleJob('* * * * * *', async () => {
       try {
-        const monitor = new Monitor();
-        await monitor.run();
+        await this.monitor.run();
       } catch (error) {
         console.error(error);
       }
