@@ -8,22 +8,6 @@ import {
   TraceStatus,
 } from '.prisma/client';
 
-function getTraceStatus(result: PingResult) {
-  if (result.timeout) {
-    return TraceStatus.TIMEOUT;
-  }
-  if (result.tlsError) {
-    return TraceStatus.SSL_ERROR;
-  }
-  if (result.statusCode) {
-    if (result.statusCode >= 200 && result.statusCode < 300) {
-      return TraceStatus.OK;
-    }
-    return TraceStatus.HTTP_ERROR;
-  }
-  return TraceStatus.INTERNAL_ERROR;
-}
-
 export class MonitorService {
   async findEnabledWebsites(count: number, lastId: number | null) {
     let args : any = {
@@ -59,18 +43,17 @@ export class MonitorService {
   }
 
   async addTrace(website: Website, result: PingResult) {
-    const traceStatus = getTraceStatus(result);
     return prisma.trace.create({
       data: {
         traceType: TraceType.PING,
         websiteId: website.id,
         userId: website.userId,
-        status: traceStatus,
+        status: result.traceStatus,
         httpStatusCode: result.statusCode,
         duration: result.latency,
         requestHeaders: result.reqHeaders?.join('\n'),
         responseHeaders: result.resHeaders?.join('\n'),
-        responseData: traceStatus === TraceStatus.OK ? '' : result.resBody,
+        responseData: result.traceStatus === TraceStatus.OK ? '' : result.resBody,
       },
     });
   }
