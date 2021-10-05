@@ -45,17 +45,10 @@ class Monitor {
 
       // eslint-disable-next-line @typescript-eslint/no-loop-func
       websites.forEach(async (website) => {
-        if (this.activeWebsiteIds.has(website.id)) {
-          return;
-        }
-        this.activeWebsiteIds.add(website.id);
-
         const trace = await monitorService.findLatestTraceByWebsite(website.id);
         if (this.checkInterval(website, trace, startAt)) {
           futures.push(this.processWebsite(website, trace));
         }
-
-        this.activeWebsiteIds.delete(website.id);
       });
     }
 
@@ -85,9 +78,18 @@ class Monitor {
   }
 
   private async processWebsite(website: Website, lastTrace: Trace | null) {
+    if (this.activeWebsiteIds.has(website.id)) {
+      if (process.env.NODE_ENV !== 'production') {
+        console.info(`[monitor] already processing ${website.id}`);
+      }
+
+      return;
+    }
+
     if (process.env.NODE_ENV !== 'production') {
       console.info(`[monitor] process ${website.id}`);
     }
+    this.activeWebsiteIds.add(website.id);
 
     const result: PingResult = await doPing(website.url);
     const trace = await monitorService.addTrace(website, result);
@@ -96,6 +98,8 @@ class Monitor {
     if (eventAvailability !== null) {
       await monitorService.addEvent(eventAvailability);
     }
+
+    this.activeWebsiteIds.delete(website.id);
   }
 
   private checkEventAvailability(
