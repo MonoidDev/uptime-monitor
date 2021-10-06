@@ -16,6 +16,10 @@
 }
 
 .simpleTable a {
+  @apply text-secondary underline;
+}
+
+.simpleTable a:hover {
   @apply text-primary underline;
 }
 

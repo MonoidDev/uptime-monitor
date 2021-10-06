@@ -1,5 +1,5 @@
 .layout :global(.ant-menu-sub):global(.ant-menu-inline) {
-  @apply bg-[#38514C] text-white;
+  @apply bg-[#464650] text-white;
 }
 
 .layout :global(.ant-menu-submenu-arrow) {
