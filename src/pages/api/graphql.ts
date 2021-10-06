@@ -16,16 +16,21 @@ const apolloServer = new ApolloServer({
 
 const startServer = apolloServer.start();
 
+const ALLOWED_HOSTS = [
+  'localhost:3000',
+  'studio.apollographql.com',
+  'uptime-monitor-staging.herokuapp.com',
+];
+
 export default (async (req, res) => {
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
-  res.setHeader(
-    'Access-Control-Allow-Origin',
-    'https://studio.apollographql.com',
-  );
-  res.setHeader(
-    'Access-Control-Allow-Headers',
-    'Origin, X-Requested-With, Content-Type, Accept, Auth, Authorization',
-  );
+  if (ALLOWED_HOSTS.includes(req.headers?.host ?? '')) {
+    res.setHeader('Access-Control-Allow-Origin', req.headers!.origin!);
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    res.setHeader(
+      'Access-Control-Allow-Headers',
+      'Origin, X-Requested-With, Content-Type, Accept, Auth, Authorization',
+    );
+  }
   if (req.method === 'OPTIONS') {
     res.end();
     return false;
