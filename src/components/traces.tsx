@@ -50,6 +50,7 @@ export const TraceDataModal: React.VFC<TraceDataModalProps> = (props) => {
     >
       <QueryContainer
         queries={[trace]}
+        className="h-96"
       >
         {() => (
           <>
@@ -82,6 +83,9 @@ export const TraceDataModal: React.VFC<TraceDataModalProps> = (props) => {
             </TraceDataCell>
             <TraceDataCell label="Duration">
               {traceData?.duration}
+            </TraceDataCell>
+            <TraceDataCell label="HTTP Status Code">
+              {traceData?.httpStatusCode}
             </TraceDataCell>
             <TraceDataCell label="Request Headers" multilines>
               {traceData?.requestHeaders}

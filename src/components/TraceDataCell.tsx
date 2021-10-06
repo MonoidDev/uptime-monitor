@@ -32,7 +32,7 @@ export const TraceDataCell: React.FC<TraceDataCellProps> = (props) => {
         )}
       </div>
       {multilines && (
-        <div className={classNames('bg-gray-200 px-2 py-0.5 w-full overflow-y-auto h-20 rounded-md', className)}>
+        <div className={classNames('bg-gray-200 px-2 py-0.5 w-full overflow-y-auto h-20 rounded-md whitespace-pre', className)}>
           {children}
         </div>
       )}
