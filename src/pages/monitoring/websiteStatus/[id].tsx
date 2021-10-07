@@ -16,6 +16,7 @@ import { gStyles } from 'app/styles';
 import descriptionsStyles from 'app/styles/descriptionsStyles.module.css';
 import classNames from 'classnames';
 import * as t from 'io-ts';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
 import * as h from 'tyrann-io';
 
@@ -99,6 +100,19 @@ export default function Page() {
             {website.data?.website?.pingInterval}
           </Descriptions.Item>
         </Descriptions>
+
+        <Link
+          href={url('/monitoring/websites/[id]').replace('[id]', String(website.data?.website?.id))}
+        >
+          <a>
+            <Button
+              type="primary"
+              shape="round"
+            >
+              Modify
+            </Button>
+          </a>
+        </Link>
       </div>
     );
   };

@@ -14,7 +14,8 @@
     "build:gql": "ts-node --transpile-only scripts/emitGqlSchema.ts",
     "build:config": "node config/build.js",
     "build:cg": "graphql-codegen --config codegen.yml",
-    "start": "yarn ts-node --transpile-only -r tsconfig-paths/register scripts/startMonitor.ts & next start",
+    "start:monitor": "yarn ts-node --transpile-only -r tsconfig-paths/register scripts/startMonitor.ts",
+    "start": "yarn concurrently --kill-others -n web,mon 'next start' 'yarn start:monitor'",
     "lint": "eslint . --ext .ts,.tsx",
     "db-types": "yarn prisma generate",
     "dev:env": "dotenv -e .env.development --",
@@ -68,7 +69,8 @@
     "tailwindcss": "^2.2.15",
     "tsconfig-paths": "^3.11.0",
     "tyrann-io": "^0.8.0",
-    "webpack-bundle-analyzer": "^4.4.2"
+    "webpack-bundle-analyzer": "^4.4.2",
+    "concurrently": "^6.3.0"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "2.0.1",
@@ -90,7 +92,6 @@
     "@typescript-eslint/parser": "^4.29.3",
     "apollo-cli": "^0.4.0",
     "chokidar": "^3.5.2",
-    "concurrently": "^6.2.1",
     "cz-conventional-changelog": "^3.3.0",
     "debounce": "^1.2.1",
     "dotenv-cli": "^4.0.0",
