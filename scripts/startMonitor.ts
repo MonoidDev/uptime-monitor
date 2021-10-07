@@ -5,7 +5,7 @@ process.once('SIGINT', async () => {
 });
 
 process.once('exit', () => {
-  console.info('[monitor] process exiting');
+  console.info('process exiting');
 });
 
 Scheduler.start();

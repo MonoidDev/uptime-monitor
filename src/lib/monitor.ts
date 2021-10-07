@@ -18,7 +18,7 @@ class Monitor {
     const startAt = new Date();
 
     if (process.env.NODE_ENV !== 'production') {
-      console.info(`[monitor] scanning at ${startAt.toISOString()}`);
+      console.info(`scanning at ${startAt.toISOString()}`);
     }
 
     let pagingCount: number = 0;
@@ -41,7 +41,7 @@ class Monitor {
       nWebsites += websites.length;
       lastId = websites[websites.length - 1].id;
 
-      // console.log(`[monitor] found ${websites.length} in ${nWebsites}, lastId=${lastId}`);
+      // console.log(`found ${websites.length} in ${nWebsites}, lastId=${lastId}`);
 
       // eslint-disable-next-line @typescript-eslint/no-loop-func
       websites.forEach(async (website) => {
@@ -53,7 +53,7 @@ class Monitor {
     }
 
     if (process.env.NODE_ENV !== 'production') {
-      console.info(`[monitor] scheduled / found = ${futures.length} / ${nWebsites}`);
+      console.info(`scheduled / found = ${futures.length} / ${nWebsites}`);
     }
 
     await Promise.all(futures);
@@ -61,7 +61,7 @@ class Monitor {
     if (process.env.NODE_ENV !== 'production') {
       const endAt = new Date();
       const duration = endAt.getTime() - startAt.getTime();
-      console.info(`[monitor] done in ${duration}ms`);
+      console.info(`done in ${duration}ms`);
     }
   }
 
@@ -73,21 +73,21 @@ class Monitor {
     const lastAt = lastTrace.createdAt.getTime();
     const nextAt = lastAt + website.pingInterval * 1000;
     const nowAt = now.getTime();
-    // console.log(`[monitor] check ${website.id}: lastAt ${lastAt} nextAt ${nextAt} nowAt ${nowAt}`);
+    // console.log(`check ${website.id}: lastAt ${lastAt} nextAt ${nextAt} nowAt ${nowAt}`);
     return nextAt < nowAt;
   }
 
   private async processWebsite(website: Website, lastTrace: Trace | null) {
     if (this.activeWebsiteIds.has(website.id)) {
       if (process.env.NODE_ENV !== 'production') {
-        console.info(`[monitor] already processing ${website.id}`);
+        console.info(`already processing ${website.id}`);
       }
 
       return;
     }
 
     if (process.env.NODE_ENV !== 'production') {
-      console.info(`[monitor] processing ${website.id}`);
+      console.info(`processing ${website.id}`);
     }
     this.activeWebsiteIds.add(website.id);
 
@@ -100,7 +100,7 @@ class Monitor {
     }
 
     if (process.env.NODE_ENV !== 'production') {
-      console.info(`[monitor] processed ${website.id}`);
+      console.info(`processed ${website.id}`);
     }
     this.activeWebsiteIds.delete(website.id);
   }

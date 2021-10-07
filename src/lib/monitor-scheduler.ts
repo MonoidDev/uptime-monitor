@@ -32,7 +32,7 @@ class Scheduler {
     });
 
     this.enabled = true;
-    console.info('[monitor] scheduler started');
+    console.info('scheduler started');
     return true;
   }
 
@@ -41,7 +41,7 @@ class Scheduler {
 
     this.runningJob?.cancel();
     this.enabled = false;
-    console.info('[monitor] scheduler stopped');
+    console.info('scheduler stopped');
     return true;
   }
 }
