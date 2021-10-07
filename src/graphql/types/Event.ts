@@ -4,7 +4,7 @@ import {
 
 export const SeverityType = enumType({
   name: 'SeverityType',
-  members: ['LOG', 'WARN', 'ERROR', 'FATAL'],
+  members: ['LOG', 'INFO', 'WARN', 'ERROR', 'FATAL'],
 });
 
 export const Event = objectType({

@@ -96,6 +96,7 @@ type Query {
 enum SeverityType {
   ERROR
   FATAL
+  INFO
   LOG
   WARN
 }
