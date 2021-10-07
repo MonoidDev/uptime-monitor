@@ -65,6 +65,7 @@ model Event {
 
 enum SeverityType {
   LOG
+  INFO
   WARN
   ERROR
   FATAL

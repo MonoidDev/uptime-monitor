@@ -36,7 +36,7 @@ function buildEvent(params: WebsiteEventParams) {
     }
     case WebsiteEventSource.Available: {
       // const eventData = (params.data as WebsiteEventDataAvailable);
-      eventSeverity = SeverityType.LOG;
+      eventSeverity = SeverityType.INFO;
       // eventDataString = JSON.stringify(eventData);
       break;
     }
