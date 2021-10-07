@@ -3,6 +3,8 @@ import https from 'https';
 
 import AbortController from 'abort-controller';
 import fetch, { FetchError, Headers } from 'node-fetch';
+// @ts-expect-error
+import SslRootCAs from 'ssl-root-cas';
 
 import { TraceStatus } from '.prisma/client';
 
@@ -31,8 +33,7 @@ const httpAgent = new http.Agent({
   keepAlive: false,
 });
 
-// eslint-disable-next-line import/newline-after-import
-const rootCAs = require('ssl-root-cas').create();
+const rootCAs = SslRootCAs.create();
 rootCAs.addFile(require.resolve('node_extra_ca_certs_mozilla_bundle/ca_bundle/ca_intermediate_bundle.pem'));
 rootCAs.addFile(require.resolve('node_extra_ca_certs_mozilla_bundle/ca_bundle/ca_intermediate_root_bundle.pem'));
 rootCAs.addFile(require.resolve('node_extra_ca_certs_mozilla_bundle/ca_bundle/ca_root_bundle.pem'));
