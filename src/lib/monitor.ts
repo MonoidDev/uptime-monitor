@@ -2,7 +2,7 @@ import { WebsiteEventSource } from 'app/graphql/types/EventSchema';
 import { WebsiteEventParams } from 'app/models/WebsiteEvent';
 import { MonitorService } from 'app/services/MonitorService';
 
-import { doPing, PingResult } from './monitor-fetch';
+import { doPing } from './monitor-fetch';
 import { Trace, TraceStatus, Website } from '.prisma/client';
 
 const monitorService = new MonitorService();
@@ -21,7 +21,7 @@ class Monitor {
       console.info(`scanning at ${startAt.toISOString()}`);
     }
 
-    let pagingCount: number = 0;
+    let pagingCount = 0;
     if (process.env.NODE_ENV === 'production') {
       pagingCount = 100;
     } else {
@@ -34,12 +34,12 @@ class Monitor {
     let lastId: number | null = null;
     // eslint-disable-next-line no-constant-condition
     while (true) {
-      const websites: Website[] = await monitorService.findEnabledWebsites(pagingCount, lastId);
+      const websites = await monitorService.findEnabledWebsites(pagingCount, lastId);
       if (websites.length === 0) {
         break;
       }
       nWebsites += websites.length;
-      lastId = websites[websites.length - 1].id;
+      lastId = websites[websites.length - 1].id as number;
 
       // console.log(`found ${websites.length} in ${nWebsites}, lastId=${lastId}`);
 
@@ -89,20 +89,24 @@ class Monitor {
     if (process.env.NODE_ENV !== 'production') {
       console.info(`processing ${website.id}`);
     }
+
     this.activeWebsiteIds.add(website.id);
 
-    const result: PingResult = await doPing(website.url);
-    const trace = await monitorService.addTrace(website, result);
+    try {
+      const result = await doPing(website.url);
+      const trace = await monitorService.addTrace(website, result);
 
-    const eventAvailability = this.checkEventAvailability(website, lastTrace, trace);
-    if (eventAvailability !== null) {
-      await monitorService.addEvent(eventAvailability);
-    }
+      const eventAvailability = this.checkEventAvailability(website, lastTrace, trace);
+      if (eventAvailability !== null) {
+        await monitorService.addEvent(eventAvailability);
+      }
 
-    if (process.env.NODE_ENV !== 'production') {
-      console.info(`processed ${website.id}`);
+      if (process.env.NODE_ENV !== 'production') {
+        console.info(`processed ${website.id}`);
+      }
+    } finally {
+      this.activeWebsiteIds.delete(website.id);
     }
-    this.activeWebsiteIds.delete(website.id);
   }
 
   private checkEventAvailability(

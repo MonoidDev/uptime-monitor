@@ -84,24 +84,22 @@ const sslErrors = [
 async function doPing(url: string): Promise<PingResult> {
   const result = new PingResult();
 
-  if (process.env.NODE_ENV !== 'production') {
-    if (process.env.FETCH_MOCK !== 'false') {
-      // mock
-      console.info(`[fetch] mock for ${url}`);
+  if (process.env.NODE_ENV !== 'production' && process.env.FETCH_MOCK !== 'false') {
+    // mock
+    console.info(`[fetch] mock for ${url}`);
 
-      result.traceStatus = TraceStatus.OK;
-      result.errorCode = undefined;
-      result.latency = 100;
-      result.statusCode = 200;
-      result.reqHeaders = [
-        'User-Agent: mock',
-      ];
-      result.resHeaders = [
-        'Content-Length: 0',
-      ];
-      result.resBody = 'MOCK!!!';
-      return result;
-    }
+    result.traceStatus = TraceStatus.OK;
+    result.errorCode = undefined;
+    result.latency = 100;
+    result.statusCode = 200;
+    result.reqHeaders = [
+      'User-Agent: mock',
+    ];
+    result.resHeaders = [
+      'Content-Length: 0',
+    ];
+    result.resBody = 'MOCK!!!';
+    return result;
   }
 
   const reqHeadersDefault: { [key: string]: string } = {
