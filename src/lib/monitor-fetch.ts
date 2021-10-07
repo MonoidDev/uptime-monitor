@@ -31,9 +31,17 @@ const httpAgent = new http.Agent({
   keepAlive: false,
 });
 
+// eslint-disable-next-line import/newline-after-import
+const rootCAs = require('ssl-root-cas').create();
+rootCAs.addFile(require.resolve('node_extra_ca_certs_mozilla_bundle/ca_bundle/ca_intermediate_bundle.pem'));
+rootCAs.addFile(require.resolve('node_extra_ca_certs_mozilla_bundle/ca_bundle/ca_intermediate_root_bundle.pem'));
+rootCAs.addFile(require.resolve('node_extra_ca_certs_mozilla_bundle/ca_bundle/ca_root_bundle.pem'));
+// https.globalAgent.options.ca = rootCAs;
+
 const httpsAgent = new https.Agent({
   keepAlive: false,
   rejectUnauthorized: true,
+  ca: rootCAs,
 });
 
 // see: https://nodejs.org/api/errors.html#errors_common_system_errors
