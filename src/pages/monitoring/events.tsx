@@ -11,8 +11,10 @@ import { url } from 'app/../.next-urls';
 import { useEventsQuery, useGetUserWebsitesQuery } from 'app/../graphql/client/generated';
 import { CursorPagination } from 'app/components/CursorPagination';
 import { DatePicker } from 'app/components/DatePicker';
+import { Layout } from 'app/components/Layout';
 import { TraceDataModal } from 'app/components/traces';
 import { websiteEventTypeToDescription } from 'app/data/events';
+import { traceStatusToColor } from 'app/data/traces';
 import { WebsiteEventSource } from 'app/graphql/types/EventSchema';
 import { useCursor } from 'app/hooks/useCursor';
 import { gStyles } from 'app/styles';
@@ -22,8 +24,6 @@ import * as t from 'io-ts';
 import omit from 'lodash/omit';
 import Link from 'next/link';
 import * as h from 'tyrann-io';
-
-import { Layout } from '../../components/Layout';
 
 interface Website {
   name: string,
@@ -78,6 +78,16 @@ export default function Page() {
         {websiteEventTypeToDescription[e.type as WebsiteEventSource](
           e.website.name,
           e.website.id,
+        )}
+        {' '}
+        {e.trace?.status && (
+          <>
+            Reason:
+            {' '}
+            <span className={traceStatusToColor[e.trace.status]}>
+              {e.trace.status}
+            </span>
+          </>
         )}
       </>
     ),
@@ -140,7 +150,7 @@ export default function Page() {
       title: 'Message',
       dataIndex: 'message',
       key: 'message',
-      render: (message: React.ReactNode) => (message),
+      render: (message: React.ReactNode) => message,
     },
     {
       title: 'Time',

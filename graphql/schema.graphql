@@ -33,6 +33,7 @@ type Event {
   data: String!
   id: Int!
   status: SeverityType!
+  trace: Trace
   traceId: Int
   type: String!
   website: Website!

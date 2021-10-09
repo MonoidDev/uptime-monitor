@@ -45,6 +45,9 @@ export class EventService extends BaseService {
           lt: timeBefore,
         },
       },
+      website: {
+        userId: this.ctx.authInfo!.id,
+      },
     } as const;
 
     const minId = (await this.ctx.prisma.event.findFirst({
@@ -64,18 +67,11 @@ export class EventService extends BaseService {
     const whereWithId = {
       ...cursorWhere,
       ...where,
-      website: {
-        userId: this.ctx.authInfo!.id,
-      },
     } as const;
 
     const results = await this.ctx.prisma.event.findMany({
       where: whereWithId,
       orderBy,
-      include: {
-        website: true,
-        trace: true,
-      },
       take: 8,
     });
 

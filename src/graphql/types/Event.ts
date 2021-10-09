@@ -18,6 +18,7 @@ export const Event = objectType({
     t.model.traceId();
     t.model.data();
     t.model.createdAt();
+    t.model.trace();
   },
 });
 

@@ -7,6 +7,7 @@ declare global {
       EMAIL_SERVER: string;
       EMAIL_PORT: string;
       EMAIL_FROM: string;
+      LOG_SQL: string;
     }
   }
 }

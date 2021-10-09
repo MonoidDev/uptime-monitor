@@ -12,6 +12,9 @@ query Events($query: EventQuery!) {
       }
       createdAt
       traceId
+      trace {
+        status
+      }
     }
   }
 }

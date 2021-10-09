@@ -39,12 +39,12 @@ export const QueryContainer: React.FC<QueryContainerProps> = (props) => {
       {isSuccessfull && !isNotFound && renderChildren()}
       {isFailed && (
         renderError?.() ?? (
-          <div className={divClass}>
+          <div className={classNames(divClass, 'text-red-500')}>
             Sorry, there is an error!
           </div>
         )
       )}
-      {isLoading && (
+      {isLoading && !isSuccessfull && (
         <div className={divClass}>
           <Spin />
         </div>

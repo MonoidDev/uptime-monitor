@@ -12,6 +12,7 @@ import {
   useTracesQuery,
 } from 'app/../graphql/client/generated';
 import { websiteEventTypeToDescription } from 'app/data/events';
+import { traceStatusToColor } from 'app/data/traces';
 import { WebsiteEventSource } from 'app/graphql/types/EventSchema';
 import { REVERSE_INITIAL_CURSOR, useCursor } from 'app/hooks/useCursor';
 import { getTickCountFromRangeTime, getTickFromRangeTime } from 'app/utils/date';
@@ -432,6 +433,16 @@ export const EventTable: React.VFC<EventTableProps> = React.memo((props) => {
           </span>
 
           {websiteEventTypeToDescription[row.type as WebsiteEventSource]?.(row.website.name, row.website.id)}
+          {' '}
+          {row.trace?.status && (
+            <>
+              Reason:
+              {' '}
+              <span className={traceStatusToColor[row.trace.status]}>
+                {row.trace.status}
+              </span>
+            </>
+          )}
         </td>
         <td>
           {dayjs(row.createdAt).format('YYYY-MM-DD HH:mm:ss')}
