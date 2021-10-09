@@ -34,7 +34,8 @@ yarn install
 - create a `.env.development` file and a `.env.production` file, and set environment variables for development and production respectively.
 	- `DATABASE_URL`: your database URL
 	- `NEXT_PUBLIC_SERVER`: address of Next server
-- You can also configure your own email service in `src/services/EmailServices.tsx`
+	- `EMAIL_*`: variables to set up your email service
+
 ## Usage
 ### For development
 
