@@ -11,15 +11,18 @@ export class EmailService {
 
   user: string;
 
+  from: string;
+
   constructor() {
-    this.user = 'postmaster@sandbox8044a2a4ed9e4ffe9994a18596e368ac.mailgun.org';
+    this.user = 'AKIAWLBW2KN6N3ZPRSI3';
+    this.from = 'no-reply@codeberater.com';
 
     this.mailer = nodemailer.createTransport({
-      host: 'smtp.mailgun.org',
+      host: 'email-smtp.us-east-1.amazonaws.com',
       port: 587,
       auth: {
         user: this.user,
-        pass: '332e21a05396eac1b9d5c5bdd86df6cf-45f7aa85-0c31b7f8',
+        pass: 'BGwUBdtzlk/0o9lP2CMyq2ymgry7tES3/tabxc+iTydF',
       },
     });
 
@@ -58,12 +61,12 @@ export class EmailService {
     };
   }
 
-  async sendWebsiteAlert(webiste: Website, to: string) {
+  async sendWebsiteAlert(webiste: Website, _to: string) {
     const { subject, html } = this.getWebsiteAlertContent(webiste);
 
     return this.mailer.sendMail({
-      from: this.user,
-      to,
+      from: 'no-reply@codeberater.com',
+      to: 'no-reply@codeberater.com',
       subject,
       text: subject,
       html,

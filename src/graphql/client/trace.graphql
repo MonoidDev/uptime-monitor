@@ -19,20 +19,6 @@ query GetTraceById($id: Int!) {
   }
 }
 
-mutation CreateTrace($trace: CreateTrace!) {
-  createTrace(trace: $trace) {
-    id
-    traceType
-    websiteId
-    duration
-    status
-    httpStatusCode
-    requestHeaders
-    responseHeaders
-    responseData
-  }
-}
-
 query TraceOfErrorCount($rangeTime: String!, $websiteId: Int) {
   traceOfErrorCount(rangeTime: $rangeTime, websiteId: $websiteId) {
     time
