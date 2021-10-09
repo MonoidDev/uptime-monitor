@@ -33,7 +33,7 @@ export interface TimeDataPoint {
 
 export const normalizeTraceGroups = <
   T extends { groupId: number },
->(
+  >(
     rangeTime: string,
     groups: T[],
     getPlaceholder: ((id: number) => T),
@@ -329,14 +329,22 @@ export const ErrorTable: React.VFC<ErrorTableProps> = React.memo((props) => {
   };
 
   const renderBottom = () => {
+    const href = websiteId
+      ? `${url('/monitoring/traces')}?websiteIds[]=${websiteId}`
+      : url('/monitoring/traces');
+
     return (
       <div className="flex justify-between">
-        <Button
-          type="primary"
-          shape="round"
-        >
-          All
-        </Button>
+        <Link href={href}>
+          <a>
+            <Button
+              type="primary"
+              shape="round"
+            >
+              All
+            </Button>
+          </a>
+        </Link>
 
         <CursorPagination
           hasMoreBefore={hasMoreBefore}
@@ -467,12 +475,19 @@ export const EventTable: React.VFC<EventTableProps> = React.memo((props) => {
   const renderBottom = () => {
     return (
       <div className="flex justify-between">
-        <Button
-          type="primary"
-          shape="round"
+        <Link href={(websiteId
+          ? `${url('/monitoring/events')}?websiteIds[]=${websiteId}`
+          : url('/monitoring/events'))}
         >
-          All
-        </Button>
+          <a>
+            <Button
+              type="primary"
+              shape="round"
+            >
+              All
+            </Button>
+          </a>
+        </Link>
 
         <CursorPagination
           hasMoreBefore={hasMoreBefore}

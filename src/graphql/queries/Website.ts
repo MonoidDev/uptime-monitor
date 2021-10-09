@@ -1,5 +1,5 @@
 import {
-  queryField, nonNull, intArg, stringArg,
+  queryField, nonNull, intArg, stringArg, list,
 } from 'nexus';
 
 import { loginRequired } from '../auth';
@@ -37,6 +37,15 @@ export const websites = queryField('websites', {
       count,
       results,
     };
+  },
+});
+
+export const userWebsites = queryField('userWebsites', {
+  type: nonNull(list(nonNull('Website'))),
+  args: {},
+  authorize: loginRequired,
+  async resolve(_, __, ctx) {
+    return ctx.websiteService.findUserWebsites();
   },
 });
 

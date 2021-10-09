@@ -2,6 +2,7 @@ import React from 'react';
 
 import { Button, Modal } from 'antd';
 import { useGetTraceByIdQuery } from 'app/../graphql/client/generated';
+import { traceStatusToColor } from 'app/data/traces';
 import { url } from 'app/utils/types';
 import dayjs from 'dayjs';
 
@@ -13,13 +14,6 @@ export interface TraceDataModalProps {
   onClose: () => void;
   id?: number;
 }
-
-export const traceColorMap: { [key:string]: string } = {
-  OK: 'text-green-400',
-  TIMEOUT: 'text-yellow-400',
-  HTTP_ERROR: 'text-red-600',
-  SSL_ERROR: 'text-red-600',
-};
 
 export const TraceDataModal: React.VFC<TraceDataModalProps> = (props) => {
   const {
@@ -78,7 +72,7 @@ export const TraceDataModal: React.VFC<TraceDataModalProps> = (props) => {
             <TraceDataCell label="Time">
               {traceData?.createdAt && dayjs(traceData?.createdAt).format('YYYY-MM-DD HH:mm:ss')}
             </TraceDataCell>
-            <TraceDataCell label="Status" className={traceColorMap[traceData?.status!]}>
+            <TraceDataCell label="Status" className={traceStatusToColor[traceData?.status!]}>
               {traceData?.status}
             </TraceDataCell>
             <TraceDataCell label="Duration">

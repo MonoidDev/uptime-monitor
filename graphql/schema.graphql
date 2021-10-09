@@ -54,7 +54,6 @@ input Login {
 }
 
 type Mutation {
-  createTrace(trace: CreateTrace!): Trace
   createUser(user: CreateUser!): User
   createWebsite(website: CreateUpdateWebsite!): Website
   deleteWebsite(websiteId: Int!): Website
@@ -89,6 +88,7 @@ type Query {
   traceOfResponseTime(rangeTime: String!, websiteId: Int): [TraceOfResponseTime!]
   traces(query: TraceQuery!): PaginatedTraces!
   user(id: Int!): User
+  userWebsites: [Website!]!
   website(id: Int!): Website
   websites(keyword: String, page: Int!): PaginatedWebsite
 }
@@ -132,9 +132,11 @@ input TraceQuery {
   beforeId: Int
   isError: Boolean
   rangeTime: String
+  status: [String!]
   timeAfter: String
   timeBefore: String
   websiteId: Int
+  websiteIds: [Int!]
 }
 
 enum TraceStatus {
@@ -148,7 +150,10 @@ enum TraceStatus {
 }
 
 enum TraceStatusChoices {
+  DNS_ERROR
   HTTP_ERROR
+  INTERNAL_ERROR
+  IO_ERROR
   OK
   SSL_ERROR
   TIMEOUT

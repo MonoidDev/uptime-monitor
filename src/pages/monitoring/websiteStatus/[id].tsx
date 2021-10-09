@@ -58,14 +58,18 @@ export default function Page() {
 
         <div className="flex-1" />
 
-        <Button
-          type="primary"
-          shape="round"
-          className="mr-4"
-          onClick={() => router.push(url('/monitoring/websites'))}
-        >
-          All Sites
-        </Button>
+        <Link href={url('/monitoring/websites')}>
+          <a>
+            <Button
+              type="primary"
+              shape="round"
+              className="mr-4"
+              onClick={() => router.push(url('/monitoring/websites'))}
+            >
+              All Sites
+            </Button>
+          </a>
+        </Link>
 
         <Select
           value={rangeTime!}

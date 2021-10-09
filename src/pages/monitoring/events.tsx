@@ -8,7 +8,7 @@ import {
   Form,
 } from 'antd';
 import { url } from 'app/../.next-urls';
-import { useEventsQuery } from 'app/../graphql/client/generated';
+import { useEventsQuery, useGetUserWebsitesQuery } from 'app/../graphql/client/generated';
 import { CursorPagination } from 'app/components/CursorPagination';
 import { DatePicker } from 'app/components/DatePicker';
 import { TraceDataModal } from 'app/components/traces';
@@ -19,6 +19,7 @@ import { gStyles } from 'app/styles';
 import classNames from 'classnames';
 import dayjs, { Dayjs } from 'dayjs';
 import * as t from 'io-ts';
+import omit from 'lodash/omit';
 import Link from 'next/link';
 import * as h from 'tyrann-io';
 
@@ -43,12 +44,25 @@ export default function Page() {
       timeAfter: h.omittable(t.string),
       afterId: h.omittable(h.number().cast()),
       beforeId: h.omittable(h.number().cast()),
+      websiteIds: h.omittable(t.array(h.number().cast())),
     }), []),
   );
 
+  const finalSearch = {
+    ...search,
+    websiteIds: search?.websiteIds ?? [-1],
+  };
+
+  const userWebsitesResponse = useGetUserWebsitesQuery({
+    fetchPolicy: 'cache-and-network',
+  });
+
   const eventsResponse = useEventsQuery({
     variables: {
-      query: search!,
+      query: {
+        ...omit(finalSearch, ['websiteIds']),
+        websiteId: finalSearch.websiteIds[0] === -1 ? undefined : finalSearch.websiteIds[0],
+      },
     },
     fetchPolicy: 'cache-and-network',
   });
@@ -86,7 +100,11 @@ export default function Page() {
 
   useEffect(() => {
     resetCursor();
-  }, [search?.timeAfter, search?.timeBefore]);
+  }, [
+    finalSearch?.timeAfter,
+    finalSearch?.timeBefore,
+    finalSearch.websiteIds.toString(),
+  ]);
 
   const columns = [
     {
@@ -97,7 +115,7 @@ export default function Page() {
     {
       title: 'Website',
       dataIndex: 'website',
-      key: 'website',
+      key: 'websiteIds',
       render: (website: Website) => (
         <Link href={url('/monitoring/websiteStatus/[id]').replace('[id]', String(website.id))}>
           <a className="underline">
@@ -105,6 +123,18 @@ export default function Page() {
           </a>
         </Link>
       ),
+      filters: [
+        {
+          text: 'All',
+          value: -1,
+        },
+        ...userWebsitesResponse.data?.userWebsites.map((w) => ({
+          text: w.name,
+          value: w.id,
+        })) ?? [],
+      ],
+      filteredValue: finalSearch.websiteIds,
+      filterMultiple: false,
     },
     {
       title: 'Message',
@@ -248,6 +278,9 @@ export default function Page() {
           dataSource={eventItems}
           columns={columns}
           pagination={{ position: [] }}
+          onChange={(_, filters) => {
+            updateSearch(filters);
+          }}
         />
         {renderBottom()}
       </div>

@@ -1,13 +1,11 @@
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
-import * as t from 'io-ts';
 
 import { TraceQuery } from '../../graphql/client/generated';
-import { CreateTraceSchema } from '../graphql/types/TraceSchema';
 import { getStartFromRangeTime, getTickFromRangeTime } from '../utils/date';
 import { BaseService } from './BaseService';
 import { createCursorQuery } from './helpers/cursorQuery';
-import { Prisma } from '.prisma/client';
+import { Prisma, TraceStatus } from '.prisma/client';
 
 dayjs.extend(duration);
 
@@ -142,9 +140,11 @@ export class TraceService extends BaseService {
     const {
       isError,
       websiteId,
+      websiteIds,
       rangeTime,
       timeAfter,
       timeBefore,
+      status,
     } = query;
 
     const { cursorWhere, orderBy } = createCursorQuery(query);
@@ -155,8 +155,18 @@ export class TraceService extends BaseService {
           not: 'OK' as const,
         },
       },
+      ...status && {
+        status: {
+          in: status as TraceStatus[],
+        },
+      },
       ...websiteId && {
         websiteId,
+      },
+      ...websiteIds && {
+        websiteId: {
+          in: websiteIds,
+        },
       },
       ...rangeTime && {
         createdAt: {
@@ -209,22 +219,5 @@ export class TraceService extends BaseService {
       maxId,
       results: results.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime()),
     };
-  }
-
-  createTrace(trace: t.TypeOf<typeof CreateTraceSchema>) {
-    const userId = this.ctx.authInfo!.id;
-    return this.ctx.prisma.trace.create({
-      data: {
-        userId,
-        traceType: trace!.traceType,
-        websiteId: trace!.websiteId,
-        duration: trace!.duration,
-        status: trace!.status,
-        httpStatusCode: trace!.httpStatusCode,
-        requestHeaders: trace!.requestHeaders,
-        responseHeaders: trace!.responseHeaders,
-        responseData: trace!.responseData,
-      },
-    });
   }
 }

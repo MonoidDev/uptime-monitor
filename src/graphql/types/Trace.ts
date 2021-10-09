@@ -1,3 +1,4 @@
+import { TraceStatus } from '@prisma/client';
 import {
   objectType, inputObjectType, enumType, nonNull,
 } from 'nexus';
@@ -42,9 +43,19 @@ const TraceTypeChoices = enumType({
   members: ['PING'],
 });
 
+export const allTraceStatus: TraceStatus[] = [
+  'OK',
+  'TIMEOUT',
+  'HTTP_ERROR',
+  'SSL_ERROR',
+  'DNS_ERROR',
+  'IO_ERROR',
+  'INTERNAL_ERROR',
+];
+
 const TraceStatusChoices = enumType({
   name: 'TraceStatusChoices',
-  members: ['OK', 'TIMEOUT', 'HTTP_ERROR', 'SSL_ERROR'],
+  members: allTraceStatus,
 });
 
 export const CreateTrace = inputObjectType({
@@ -82,5 +93,11 @@ export const TraceQuery = inputObjectType({
     t.string('rangeTime');
     t.string('timeBefore');
     t.string('timeAfter');
+    t.list.field('status', {
+      type: nonNull('String'),
+    });
+    t.list.field('websiteIds', {
+      type: nonNull('Int'),
+    });
   },
 });

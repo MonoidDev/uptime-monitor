@@ -177,7 +177,7 @@ export const Layout: React.FC<LayoutProps> = (props) => {
                 <div className="h-full flex justify-center items-center">
                   <ErrorView
                     message={queries.map(
-                      (m) => m.error!.message,
+                      (m) => m.error?.message ?? '',
                     ).join('\n')}
                   />
                 </div>

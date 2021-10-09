@@ -10,15 +10,17 @@ import {
 import { url } from 'app/../.next-urls';
 import { CursorPagination } from 'app/components/CursorPagination';
 import { DatePicker } from 'app/components/DatePicker';
-import { traceColorMap, TraceDataModal } from 'app/components/traces';
+import { TraceDataModal } from 'app/components/traces';
+import { allTraceStatus, traceStatusToColor } from 'app/data/traces';
 import { useCursor } from 'app/hooks/useCursor';
 import dayjs, { Dayjs } from 'dayjs';
-import { useTracesQuery } from 'graphql/client/generated';
+import { useGetUserWebsitesQuery, useTracesQuery } from 'graphql/client/generated';
 import * as t from 'io-ts';
 import Link from 'next/link';
 import * as h from 'tyrann-io';
 
 import { Layout } from '../../components/Layout';
+import type { TraceStatus } from '.prisma/client';
 
 interface Website {
   name: string,
@@ -38,14 +40,29 @@ export default function Page() {
       timeAfter: h.omittable(t.string),
       afterId: h.omittable(h.number().cast()),
       beforeId: h.omittable(h.number().cast()),
+      status: h.omittable(t.array(t.string)),
+      websiteIds: h.omittable(t.array(h.number().cast())),
     }), []),
   );
+
+  const userWebsitesResponse = useGetUserWebsitesQuery({
+    fetchPolicy: 'cache-and-network',
+  });
+
+  const finalSearch = {
+    ...search,
+    status: allTraceStatus.filter((s) => s !== 'OK'),
+    websiteIds: search?.websiteIds ?? [-1],
+  };
 
   const [currentTrace, setCurrentTrace] = useState<number>();
 
   const tracesResponse = useTracesQuery({
     variables: {
-      query: search!,
+      query: {
+        ...finalSearch,
+        websiteIds: finalSearch.websiteIds[0] === -1 ? undefined : finalSearch.websiteIds,
+      },
     },
     fetchPolicy: 'cache-and-network',
   });
@@ -67,7 +84,12 @@ export default function Page() {
 
   useEffect(() => {
     resetCursor();
-  }, [search?.timeAfter, search?.timeBefore]);
+  }, [
+    finalSearch?.timeAfter,
+    finalSearch?.timeBefore,
+    finalSearch?.status?.toString(),
+    finalSearch?.websiteIds?.toString(),
+  ]);
 
   const tracesData = tracesResponse.data?.traces;
 
@@ -85,7 +107,7 @@ export default function Page() {
     {
       title: 'Website',
       dataIndex: 'website',
-      key: 'website',
+      key: 'websiteIds',
       render: (website: Website) => (
         <Link
           href={url('/monitoring/websiteStatus/[id]').replace('[id]', String(website.id))}
@@ -95,16 +117,33 @@ export default function Page() {
           </a>
         </Link>
       ),
+      filters: [
+        {
+          text: 'All',
+          value: -1,
+        },
+        ...userWebsitesResponse.data?.userWebsites.map((w) => ({
+          text: w.name,
+          value: w.id,
+        })) ?? [],
+      ],
+      filteredValue: finalSearch.websiteIds,
+      filterMultiple: false,
     },
     {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
-      render: (status: string) => (
-        <div className={traceColorMap[status]}>
+      render: (status: TraceStatus) => (
+        <div className={traceStatusToColor[status]}>
           {status}
         </div>
       ),
+      filters: allTraceStatus.map((s) => ({
+        text: s,
+        value: s,
+      })),
+      filteredValue: finalSearch.status,
     },
     {
       title: 'Duration',
@@ -164,6 +203,7 @@ export default function Page() {
         timeBefore: values.timeBefore?.toISOString(),
       });
     };
+
     return (
       <>
         <Form
@@ -233,7 +273,7 @@ export default function Page() {
           href: '/monitoring/traces',
         },
       ]}
-      queries={[tracesResponse]}
+      queries={[tracesResponse, userWebsitesResponse]}
     >
       <TraceDataModal
         id={currentTrace}
@@ -249,6 +289,9 @@ export default function Page() {
           dataSource={traceItems}
           columns={columns}
           pagination={{ position: [] }}
+          onChange={(_, filters) => {
+            updateSearch(filters);
+          }}
         />
         {renderBottom()}
       </div>

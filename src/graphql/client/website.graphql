@@ -31,6 +31,13 @@ query GetWebsites($page: Int!, $keyword: String) {
   }
 }
 
+query GetUserWebsites {
+  userWebsites {
+    name
+    id
+  }
+}
+
 mutation CreateWebsite($website: CreateUpdateWebsite!) {
   createWebsite(website: $website) {
     id
