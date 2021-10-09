@@ -16,6 +16,8 @@
     "build:cg": "graphql-codegen --config codegen.yml",
     "start:monitor": "yarn ts scripts/startMonitor.ts",
     "start": "yarn concurrently --kill-others -n web,mon 'next start' 'yarn start:monitor'",
+    "dev:start": "yarn dev:env concurrently --kill-others -n web,mon 'next start' 'yarn start:monitor'",
+    "prod:start": "yarn prod:env concurrently --kill-others -n web,mon 'next start' 'yarn start:monitor'",
     "lint": "eslint . --ext .ts,.tsx",
     "db-types": "yarn prisma generate",
     "dev:env": "dotenv -e .env.development --",
