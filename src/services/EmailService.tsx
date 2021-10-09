@@ -19,7 +19,7 @@ export class EmailService {
 
     this.mailer = nodemailer.createTransport({
       host: process.env.EMAIL_SERVER,
-      port: 587,
+      port: Number(process.env.EMAIL_PORT),
       auth: {
         user: this.user,
         pass: process.env.EMAIL_PASSWORD,
