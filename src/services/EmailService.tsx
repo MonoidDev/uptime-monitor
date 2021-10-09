@@ -14,15 +14,15 @@ export class EmailService {
   from: string;
 
   constructor() {
-    this.user = 'AKIAWLBW2KN6N3ZPRSI3';
-    this.from = 'no-reply@codeberater.com';
+    this.user = process.env.EMAIL_USER;
+    this.from = process.env.EMAIL_FROM;
 
     this.mailer = nodemailer.createTransport({
-      host: 'email-smtp.us-east-1.amazonaws.com',
+      host: process.env.EMAIL_SERVER,
       port: 587,
       auth: {
         user: this.user,
-        pass: 'BGwUBdtzlk/0o9lP2CMyq2ymgry7tES3/tabxc+iTydF',
+        pass: process.env.EMAIL_PASSWORD,
       },
     });
 
@@ -61,12 +61,12 @@ export class EmailService {
     };
   }
 
-  async sendWebsiteAlert(webiste: Website, _to: string) {
+  async sendWebsiteAlert(webiste: Website, to: string) {
     const { subject, html } = this.getWebsiteAlertContent(webiste);
 
     return this.mailer.sendMail({
-      from: 'no-reply@codeberater.com',
-      to: 'no-reply@codeberater.com',
+      from: this.from,
+      to,
       subject,
       text: subject,
       html,
