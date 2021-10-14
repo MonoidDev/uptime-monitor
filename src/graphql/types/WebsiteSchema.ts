@@ -11,7 +11,7 @@ export const CreateUpdateWebsiteSchema = defineSchema(
     name: requiredStringField('Name'),
     url: requiredStringField('Url'),
     pingInterval: requiredNumberField('Ping Interval (s)'),
-    enabled: booleanField('Enabled'),
+    enabled: booleanField('Enable Monitoring'),
     emails: emailArrayField('Emails'),
   }),
 );
