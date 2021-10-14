@@ -14,11 +14,11 @@ export class WebsiteService extends BaseService {
     });
   }
 
-  async findWebsites(page: number, keyword?: string | null) {
-    const skip = (page - 1) * 8;
+  async findWebsites(page: number, pageSize: number, keyword?: string | null) {
+    const skip = (page - 1) * pageSize;
     return this.ctx.prisma.website.findMany({
       skip,
-      take: 8,
+      take: pageSize,
       where: {
         ...this.getFilterWebsiteWhere(keyword),
       },

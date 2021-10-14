@@ -35,6 +35,7 @@ export default function Page() {
   const websites = useGetWebsitesQuery({
     variables: {
       page: (search?.page ?? 0) + 1,
+      pageSize: search?.pageSize ?? 10,
       keyword: search?.keyword,
     },
     fetchPolicy: 'cache-and-network',
@@ -50,7 +51,7 @@ export default function Page() {
 
   const needGotoPrevPage = () => {
     const page = search?.page ?? 0;
-    const pageSize = search?.pageSize ?? 8;
+    const pageSize = search?.pageSize ?? 10;
     const itemNum = (websitesData?.count ?? 0) % pageSize;
     return itemNum === 1 && page !== 0;
   };
@@ -219,11 +220,16 @@ export default function Page() {
             },
           })}
           pagination={{
+            showSizeChanger: true,
             className: 'flex justify-end pt-10',
-            pageSize: (search?.pageSize ?? 8),
+            pageSize: (search?.pageSize ?? 10),
+            pageSizeOptions: ['10', '20', '50'],
             total: websitesData?.count!,
             current: (search?.page ?? 0) + 1,
-            onChange: (page) => updateSearch({ page: page - 1 }),
+            onChange: (page, pageSize) => updateSearch({
+              page: page - 1,
+              pageSize,
+            }),
           }}
         />
       </div>

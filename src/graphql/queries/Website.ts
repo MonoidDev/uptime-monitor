@@ -23,12 +23,13 @@ export const websites = queryField('websites', {
   type: 'PaginatedWebsite',
   args: {
     page: nonNull(intArg()),
+    pageSize: nonNull(intArg()),
     keyword: stringArg(),
   },
   authorize: loginRequired,
-  async resolve(_, { page, keyword }, ctx) {
+  async resolve(_, { page, pageSize, keyword }, ctx) {
     const count = await ctx.websiteService.total(keyword);
-    const queryResult = await ctx.websiteService.findWebsites(page, keyword);
+    const queryResult = await ctx.websiteService.findWebsites(page, pageSize, keyword);
     const results = await Promise.all(queryResult.map((w) => ({
       status: ctx.websiteService.findWebsiteStatus(w.id),
       ...w,

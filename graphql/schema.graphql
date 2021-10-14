@@ -91,7 +91,7 @@ type Query {
   user(id: Int!): User
   userWebsites: [Website!]!
   website(id: Int!): Website
-  websites(keyword: String, page: Int!): PaginatedWebsite
+  websites(keyword: String, page: Int!, pageSize: Int!): PaginatedWebsite
 }
 
 enum SeverityType {
