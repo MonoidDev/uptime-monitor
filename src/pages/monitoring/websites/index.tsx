@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 
 import useSearch from '@monoid-dev/use-search';
 import {
+  message,
   Typography,
   Table,
   Button,
@@ -11,9 +12,10 @@ import {
 import { StatusArray } from 'app/components/StatusArray';
 import { gStyles } from 'app/styles';
 import classNames from 'classnames';
-import { useGetWebsitesQuery } from 'graphql/client/generated';
+import { useDeleteWebsiteMutation, useGetWebsitesQuery } from 'graphql/client/generated';
 import * as t from 'io-ts';
 import { useRouter } from 'next/router';
+import sleep from 'sleep-promise';
 import * as h from 'tyrann-io';
 
 import { url } from '../../../../.next-urls';
@@ -24,6 +26,7 @@ export default function Page() {
     useMemo(() => t.type({
       keyword: h.omittable(t.string),
       page: h.omittable(h.number().castString()),
+      pageSize: h.omittable(h.number().castString()),
     }), []),
   );
 
@@ -37,13 +40,20 @@ export default function Page() {
     fetchPolicy: 'cache-and-network',
   });
 
+  const [deleteWebsite, { loading }] = useDeleteWebsiteMutation();
+
   const websitesData = websites.data?.websites;
 
   const websiteItems = websitesData?.results?.map((website) => ({
     ...website,
   }));
 
-  // const pageCount = 10;
+  const needGotoPrevPage = () => {
+    const page = search?.page ?? 0;
+    const pageSize = search?.pageSize ?? 8;
+    const itemNum = (websitesData?.count ?? 0) % pageSize;
+    return itemNum === 1 && page !== 0;
+  };
 
   const renderTitle = () => {
     return (
@@ -79,6 +89,7 @@ export default function Page() {
                   setSearch({
                     keyword: undefined,
                     page: undefined,
+                    pageSize: undefined,
                   });
                 }
               }}
@@ -121,19 +132,47 @@ export default function Page() {
       ),
     },
     {
-      title: 'Action',
-      key: 'action',
+      title: 'Actions',
+      key: 'actions',
       render: (_: any, record: WebsiteItem) => (
-        <Button
-          type="primary"
-          shape="round"
-          onClick={(e) => {
-            e.stopPropagation();
-            router.push(`${'/monitoring/websites/'}${record.id}`);
-          }}
-        >
-          Modify
-        </Button>
+        <div className="flex justify-start space-x-5">
+          <Button
+            type="primary"
+            shape="round"
+            onClick={(e) => {
+              e.stopPropagation();
+              router.push({
+                pathname: `${url('/monitoring/websites/[id]')}`,
+                query: `id=${record.id}`,
+              });
+            }}
+          >
+            Modify
+          </Button>
+          <Button
+            type="primary"
+            shape="round"
+            onClick={async (e) => {
+              e.stopPropagation();
+              await deleteWebsite({
+                variables: {
+                  websiteId: record.id,
+                },
+              }).then(async () => {
+                message.success(`Successfully deleted site ${record.name}`);
+                if (needGotoPrevPage()) {
+                  updateSearch({ page: search?.page! - 1 });
+                } else {
+                  await sleep(100);
+                  router.reload();
+                }
+              });
+            }}
+            loading={loading}
+          >
+            Delete
+          </Button>
+        </div>
       ),
     },
   ];
@@ -181,7 +220,7 @@ export default function Page() {
           })}
           pagination={{
             className: 'flex justify-end pt-10',
-            pageSize: 10,
+            pageSize: (search?.pageSize ?? 8),
             total: websitesData?.count!,
             current: (search?.page ?? 0) + 1,
             onChange: (page) => updateSearch({ page: page - 1 }),
