@@ -1,7 +1,7 @@
 /* eslint-disable no-alert */
 import React, { useMemo } from 'react';
 
-import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
+import { MinusCircleOutlined, PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import {
   message,
   Typography,
@@ -206,6 +206,7 @@ export default function Page() {
             <Button
               type="primary"
               shape="round"
+              icon={<DeleteOutlined />}
               htmlType="button"
               className="ml-5 bg-red-600 border-red-600 hover:bg-red-500 hover:border-red-500"
               onClick={onDeleteWebsite}
