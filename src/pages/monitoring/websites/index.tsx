@@ -154,7 +154,7 @@ export default function Page() {
           <Button
             type="primary"
             shape="round"
-            icon={<DeleteOutlined />}
+            icon={<DeleteOutlined className="align-text-top" />}
             onClick={async (e) => {
               e.stopPropagation();
               await deleteWebsite({
