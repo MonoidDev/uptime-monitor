@@ -95,7 +95,9 @@ export const ResponseTimeChart: React.VFC<ResponseTimeChartProps> = React.memo((
     );
 
     return normalized.map((n) => ({
-      time: rangeTime === '24h' ? dayjs(n.time).format('hh:mm') : dayjs(n.time).format('M-D'),
+      time: rangeTime === '24h'
+        ? `${dayjs(n.time).subtract(1, 'hours').format('HH:mm')} - ${dayjs(n.time).format('HH:mm')}`
+        : dayjs(n.time).format('M-D'),
       iso: n.time,
       avgDuration: n.avgDuration,
     }));
@@ -124,6 +126,7 @@ export const ResponseTimeChart: React.VFC<ResponseTimeChartProps> = React.memo((
             unit: 'ms',
             width: 60,
           }}
+          tickFormatter={rangeTime === '24h' ? (tick) => tick.slice(7) : undefined}
         />
       )}
     </QueryContainer>
@@ -164,7 +167,9 @@ export const ErrorChart: React.VFC<ErrorChartProps> = React.memo((props) => {
     );
 
     return normalized.map((n) => ({
-      time: rangeTime === '24h' ? dayjs(n.time).format('hh:mm') : dayjs(n.time).format('M-D'),
+      time: rangeTime === '24h'
+        ? `${dayjs(n.time).subtract(1, 'hours').format('HH:mm')} - ${dayjs(n.time).format('HH:mm')}`
+        : dayjs(n.time).format('M-D'),
       iso: n.time,
       count: n.count,
     }));
@@ -224,6 +229,7 @@ export const ErrorChart: React.VFC<ErrorChartProps> = React.memo((props) => {
               </span>
             ),
           }}
+          tickFormatter={rangeTime === '24h' ? (tick) => tick.slice(7) : undefined}
         />
       )}
     </QueryContainer>
