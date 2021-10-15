@@ -206,9 +206,9 @@ export default function Page() {
             <Button
               type="primary"
               shape="round"
-              icon={<DeleteOutlined />}
+              icon={<DeleteOutlined className="align-text-top" />}
               htmlType="button"
-              className="ml-5 bg-red-600 border-red-600 hover:bg-red-500 hover:border-red-500"
+              className="ml-5 bg-white border-primary text-primary"
               onClick={onDeleteWebsite}
             >
               Delete

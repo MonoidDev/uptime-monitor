@@ -1,6 +1,5 @@
 import React, { useMemo } from 'react';
 
-import { DeleteOutlined } from '@ant-design/icons';
 import useSearch from '@monoid-dev/use-search';
 import {
   message,
@@ -10,13 +9,13 @@ import {
   Form,
   Input,
 } from 'antd';
+import { DeleteButton } from 'app/components/DeleteButton';
 import { StatusArray } from 'app/components/StatusArray';
 import { gStyles } from 'app/styles';
 import classNames from 'classnames';
 import { useDeleteWebsiteMutation, useGetWebsitesQuery } from 'graphql/client/generated';
 import * as t from 'io-ts';
 import { useRouter } from 'next/router';
-import sleep from 'sleep-promise';
 import * as h from 'tyrann-io';
 
 import { url } from '../../../../.next-urls';
@@ -42,7 +41,7 @@ export default function Page() {
     fetchPolicy: 'cache-and-network',
   });
 
-  const [deleteWebsite, { loading }] = useDeleteWebsiteMutation();
+  const [deleteWebsite] = useDeleteWebsiteMutation();
 
   const websitesData = websites.data?.websites;
 
@@ -55,6 +54,23 @@ export default function Page() {
     const pageSize = search?.pageSize ?? 10;
     const itemNum = (websitesData?.count ?? 0) % pageSize;
     return itemNum === 1 && page !== 0;
+  };
+
+  const getOnDelete = (record:WebsiteItem) => {
+    return async () => {
+      await deleteWebsite({
+        variables: {
+          websiteId: record.id,
+        },
+      }).then(async () => {
+        message.success(`Successfully deleted site ${record.name}`);
+        if (needGotoPrevPage()) {
+          updateSearch({ page: search?.page! - 1 });
+        } else {
+          router.reload();
+        }
+      });
+    };
   };
 
   const renderTitle = () => {
@@ -151,30 +167,9 @@ export default function Page() {
           >
             Modify
           </Button>
-          <Button
-            type="primary"
-            shape="round"
-            icon={<DeleteOutlined className="align-text-top" />}
-            onClick={async (e) => {
-              e.stopPropagation();
-              await deleteWebsite({
-                variables: {
-                  websiteId: record.id,
-                },
-              }).then(async () => {
-                message.success(`Successfully deleted site ${record.name}`);
-                if (needGotoPrevPage()) {
-                  updateSearch({ page: search?.page! - 1 });
-                } else {
-                  await sleep(100);
-                  router.reload();
-                }
-              });
-            }}
-            loading={loading}
-          >
-            Delete
-          </Button>
+          <DeleteButton
+            onDelete={getOnDelete(record)}
+          />
         </div>
       ),
     },
