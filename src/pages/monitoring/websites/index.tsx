@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 
+import { DeleteOutlined } from '@ant-design/icons';
 import useSearch from '@monoid-dev/use-search';
 import {
   message,
@@ -153,6 +154,7 @@ export default function Page() {
           <Button
             type="primary"
             shape="round"
+            icon={<DeleteOutlined />}
             onClick={async (e) => {
               e.stopPropagation();
               await deleteWebsite({
