@@ -51,7 +51,7 @@ export default function Page() {
 
   const finalSearch = {
     ...search,
-    status: allTraceStatus.filter((s) => s !== 'OK'),
+    status: search?.status ?? allTraceStatus.filter((s) => s !== 'OK'),
     websiteIds: search?.websiteIds ?? [-1],
   };
 
