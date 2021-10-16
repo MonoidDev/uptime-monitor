@@ -23,8 +23,8 @@ query GetFirstWebsite {
   }
 }
 
-query GetWebsites($page: Int!, $pageSize: Int!, $keyword: String) {
-  websites(page: $page, pageSize: $pageSize, keyword: $keyword) {
+query GetWebsites($page: Int!, $pageSize: Int!, $sortByName: String, $keyword: String) {
+  websites(page: $page, pageSize: $pageSize, sortByName: $sortByName, keyword: $keyword) {
     count
     results {
       ...WebsiteFrag

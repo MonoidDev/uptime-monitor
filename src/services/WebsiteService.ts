@@ -1,4 +1,5 @@
 import { WebsiteEventSource } from 'app/graphql/types/EventSchema';
+import { mapSortOrder } from 'app/utils/types';
 import * as t from 'io-ts';
 import { range } from 'lodash';
 
@@ -14,7 +15,12 @@ export class WebsiteService extends BaseService {
     });
   }
 
-  async findWebsites(page: number, pageSize: number, keyword?: string | null) {
+  async findWebsites(
+    page: number,
+    pageSize: number,
+    keyword?: string | null,
+    sortByName?: string | null,
+  ) {
     const skip = (page - 1) * pageSize;
     return this.ctx.prisma.website.findMany({
       skip,
@@ -23,7 +29,12 @@ export class WebsiteService extends BaseService {
         ...this.getFilterWebsiteWhere(keyword),
       },
       orderBy: {
-        createdAt: 'desc',
+        ...!sortByName && {
+          createdAt: 'desc',
+        },
+        ...sortByName && {
+          name: mapSortOrder(sortByName),
+        },
       },
     });
   }

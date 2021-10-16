@@ -27,6 +27,7 @@ export default function Page() {
       keyword: h.omittable(t.string),
       page: h.omittable(h.number().castString()),
       pageSize: h.omittable(h.number().castString()),
+      sortByName: h.omittable(h.string()),
     }), []),
   );
 
@@ -37,6 +38,7 @@ export default function Page() {
       page: (search?.page ?? 0) + 1,
       pageSize: search?.pageSize ?? 10,
       keyword: search?.keyword,
+      sortByName: search?.sortByName,
     },
     fetchPolicy: 'cache-and-network',
   });
@@ -108,6 +110,7 @@ export default function Page() {
                     keyword: undefined,
                     page: undefined,
                     pageSize: undefined,
+                    sortByName: undefined,
                   });
                 }
               }}
@@ -132,6 +135,7 @@ export default function Page() {
       title: 'Name',
       dataIndex: 'name',
       key: 'name',
+      sorter: true,
     },
     {
       title: 'Url',
@@ -227,6 +231,15 @@ export default function Page() {
               page: page - 1,
               pageSize,
             }),
+          }}
+          onChange={(_, __, sorter) => {
+            if (!Array.isArray(sorter)) {
+              updateSearch({
+                sortByName: sorter.order,
+              });
+            } else {
+              throw new Error('Not handling multiple sorters');
+            }
           }}
         />
       </div>
