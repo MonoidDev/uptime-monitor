@@ -27,6 +27,8 @@
     "prod:start-monitor": "yarn prod:env yarn ts scripts/startMonitor.ts",
     "prod:env": "dotenv -e .env.production --",
     "prod:db-push": "yarn prod:env prisma db push",
+    "staging:env": "dotenv -e .env.staging --",
+    "staging:db-push": "yarn staging:env prisma db push",
     "ts": "ts-node --transpile-only -r tsconfig-paths/register",
     "dev:ts": "ts-node-dev --transpile-only -r tsconfig-paths/register"
   },
