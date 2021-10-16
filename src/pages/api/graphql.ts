@@ -24,7 +24,7 @@ const ALLOWED_HOSTS = [
 
 export default (async (req, res) => {
   if (ALLOWED_HOSTS.includes(req.headers?.host ?? '')) {
-    res.setHeader('Access-Control-Allow-Origin', req.headers!.origin!);
+    res.setHeader('Access-Control-Allow-Origin', req.headers!.origin! ?? '');
     res.setHeader('Access-Control-Allow-Credentials', 'true');
     res.setHeader(
       'Access-Control-Allow-Headers',

@@ -9,10 +9,13 @@ import {
   InMemoryCache,
   ApolloProvider,
   createHttpLink,
+  from,
 } from '@apollo/client';
+import { onError } from '@apollo/client/link/error';
 import {
   SearchConfigProvider,
 } from '@monoid-dev/use-search';
+import { url } from 'app/../.next-urls';
 import Head from 'next/head';
 import { useRouter as useNextRouter } from 'next/router';
 
@@ -25,16 +28,28 @@ const WithApollo: React.FC = ({ children }) => {
     uri: endpoint,
     cache: new InMemoryCache(),
   }), []);
+  const router = useNextRouter();
 
   const auth = useAuth();
 
+  const createLink = () => {
+    return from([
+      onError(({ graphQLErrors }) => {
+        if (graphQLErrors?.some((e) => e.message === 'Not authorized')) {
+          router.push(url('/auth/login'));
+        }
+      }),
+      createHttpLink({
+        uri: endpoint,
+        headers: auth.state.token ? {
+          Authorization: `Bearer ${auth.state.token}`,
+        } : {},
+      }),
+    ]);
+  };
+
   useMemo(() => {
-    client.setLink(createHttpLink({
-      uri: endpoint,
-      headers: auth.state.token ? {
-        Authorization: `Bearer ${auth.state.token}`,
-      } : {},
-    }));
+    client.setLink(createLink());
 
     if (!auth.state.token) {
       client.clearStore();
