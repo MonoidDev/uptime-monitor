@@ -135,6 +135,7 @@ export default function Page() {
       title: 'Name',
       dataIndex: 'name',
       key: 'name',
+      defaultSortOrder: search?.sortByName as any,
       sorter: true,
     },
     {
@@ -232,13 +233,16 @@ export default function Page() {
               pageSize,
             }),
           }}
-          onChange={(_, __, sorter) => {
-            if (!Array.isArray(sorter)) {
-              updateSearch({
-                sortByName: sorter.order,
-              });
-            } else {
-              throw new Error('Not handling multiple sorters');
+          onChange={(_, __, sorter, extra) => {
+            if (extra.action === 'sort') {
+              if (!Array.isArray(sorter)) {
+                updateSearch({
+                  sortByName: sorter.order,
+                  page: 0,
+                });
+              } else {
+                throw new Error('Not handling multiple sorters');
+              }
             }
           }}
         />
