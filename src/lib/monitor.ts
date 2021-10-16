@@ -3,7 +3,12 @@ import { WebsiteEventParams } from 'app/models/WebsiteEvent';
 import { MonitorService } from 'app/services/MonitorService';
 
 import { doPing } from './monitor-fetch';
-import { Trace, TraceStatus, Website } from '.prisma/client';
+import {
+  ErrorPredicate,
+  Trace,
+  TraceStatus,
+  Website,
+} from '.prisma/client';
 
 const monitorService = new MonitorService();
 
@@ -93,7 +98,23 @@ class Monitor {
     this.activeWebsiteIds.add(website.id);
 
     try {
-      const result = await doPing(website.url);
+      const result = await doPing(website.url, 2); // 3 times
+      if (result.statusCode) {
+        if (website.errorPredicate === ErrorPredicate.HTTP_NOT_5XX) {
+          if (result.statusCode >= 500 && result.statusCode < 600) {
+            result.traceStatus = TraceStatus.HTTP_ERROR;
+          } else {
+            result.traceStatus = TraceStatus.OK;
+          }
+        } else {
+          // ErrorPredicate.HTTP_2XX_ONLY is default
+          if (result.statusCode >= 200 && result.statusCode < 300) {
+            result.traceStatus = TraceStatus.OK;
+          } else {
+            result.traceStatus = TraceStatus.HTTP_ERROR;
+          }
+        }
+      }
       const trace = await monitorService.addTrace(website, result);
 
       const eventAvailability = this.checkEventAvailability(website, lastTrace, trace);
