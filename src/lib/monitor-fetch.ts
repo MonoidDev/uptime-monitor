@@ -98,7 +98,7 @@ async function doPing(url: string, retries: number): Promise<PingResult> {
     // mock
     console.info(`[fetch] mock for ${url}`);
 
-    result.traceStatus = TraceStatus.OK;
+    result.traceStatus = TraceStatus.INTERNAL_ERROR;
     result.errorCode = undefined;
     result.latency = 100;
     result.statusCode = 200;
@@ -123,72 +123,76 @@ async function doPing(url: string, retries: number): Promise<PingResult> {
   Object.keys(reqHeadersDefault).forEach((key) => reqHeaders.set(key, reqHeadersDefault[key]));
   result.reqHeaders = headersToStrings(reqHeaders);
 
-  const retryOp = Retry.operation({
-    retries,
-    minTimeout: 5 * 1000,
-    maxTimeout: 5 * 1000,
-  });
+  await new Promise((resolve, reject) => {
+    const retryOp = Retry.operation({
+      retries,
+      minTimeout: Infinity,
+      maxTimeout: Infinity,
+    });
 
-  retryOp.attempt(async () => {
-    const startAt = new Date();
+    retryOp.attempt(async () => {
+      const startAt = new Date();
 
-    const controller = new AbortController();
-    let timeout = false;
-    const hTimeout = setTimeout(() => {
-      timeout = true;
-      controller.abort();
-    }, 5000);
+      const controller = new AbortController();
+      let timeout = false;
+      const hTimeout = setTimeout(() => {
+        timeout = true;
+        controller.abort();
+      }, 5000);
 
-    // console.log(`[doPing] pinging ${url}`);
-    try {
-      const response = await fetch(url, {
-        signal: controller.signal,
-        method: 'GET',
-        headers: reqHeaders,
-        agent: (parsedUrl) => {
-          if (parsedUrl.protocol === 'https:') {
-            return httpsAgent;
+      // console.log(`[doPing] pinging ${url}`);
+      try {
+        const response = await fetch(url, {
+          signal: controller.signal,
+          method: 'GET',
+          headers: reqHeaders,
+          agent: (parsedUrl) => {
+            if (parsedUrl.protocol === 'https:') {
+              return httpsAgent;
+            }
+            return httpAgent;
+          },
+        });
+
+        result.statusCode = response.status;
+        // HTTP_ERROR depends on website policy later
+        result.traceStatus = TraceStatus.OK;
+        result.resHeaders = headersToStrings(response.headers);
+        result.resBody = await response.text();
+      } catch (error: unknown) {
+        result.traceStatus = TraceStatus.INTERNAL_ERROR;
+        result.resBody = (error as Error).message;
+        if (process.env.NODE_ENV !== 'production') {
+          console.error(error);
+        }
+
+        if (timeout) {
+          if (retryOp.retry(error as Error)) {
+            return;
           }
-          return httpAgent;
-        },
-      });
-
-      result.statusCode = response.status;
-      // HTTP_ERROR depends on website policy later
-      result.traceStatus = TraceStatus.OK;
-      result.resHeaders = headersToStrings(response.headers);
-      result.resBody = await response.text();
-    } catch (error: unknown) {
-      result.traceStatus = TraceStatus.INTERNAL_ERROR;
-      result.resBody = (error as Error).message;
-      if (process.env.NODE_ENV !== 'production') {
-        console.error(error);
+          result.traceStatus = TraceStatus.TIMEOUT;
+          result.resBody = '';
+        } else if (error instanceof FetchError) {
+          if (error.code) {
+            if (ioErrors.includes(error.code)) {
+              result.traceStatus = TraceStatus.IO_ERROR;
+            } else if (dnsErrors.includes(error.code)) {
+              result.traceStatus = TraceStatus.DNS_ERROR;
+            } else if (sslErrors.includes(error.code)) {
+              result.traceStatus = TraceStatus.SSL_ERROR;
+            }
+          }
+        }
+      } finally {
+        clearTimeout(hTimeout);
       }
 
-      if (timeout) {
-        if (retryOp.retry(error as Error)) {
-          return;
-        }
-        result.traceStatus = TraceStatus.TIMEOUT;
-        result.resBody = '';
-      } else if (error instanceof FetchError) {
-        if (error.code) {
-          if (ioErrors.includes(error.code)) {
-            result.traceStatus = TraceStatus.IO_ERROR;
-          } else if (dnsErrors.includes(error.code)) {
-            result.traceStatus = TraceStatus.DNS_ERROR;
-          } else if (sslErrors.includes(error.code)) {
-            result.traceStatus = TraceStatus.SSL_ERROR;
-          }
-        }
-      }
-    } finally {
-      clearTimeout(hTimeout);
-    }
+      const endAt = new Date();
+      result.latency = endAt.getTime() - startAt.getTime();
+      // console.log(`[doPing] pinged ${url} in ${result.latency}ms.`);
 
-    const endAt = new Date();
-    result.latency = endAt.getTime() - startAt.getTime();
-    // console.log(`[doPing] pinged ${url} in ${result.latency}ms.`);
+      Promise.resolve().then(resolve).catch(reject);
+    });
   });
 
   return result;

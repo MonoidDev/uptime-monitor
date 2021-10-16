@@ -99,7 +99,7 @@ class Monitor {
 
     try {
       const result = await doPing(website.url, 2); // 3 times
-      if (result.statusCode) {
+      if (result.statusCode && result.statusCode > 0) {
         if (website.errorPredicate === ErrorPredicate.HTTP_NOT_5XX) {
           if (result.statusCode >= 500 && result.statusCode < 600) {
             result.traceStatus = TraceStatus.HTTP_ERROR;
