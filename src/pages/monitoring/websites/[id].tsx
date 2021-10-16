@@ -209,7 +209,7 @@ export default function Page() {
             <Radio.Group className="py-1">
               <Space direction="vertical">
                 {Object.values(ErrorPredicate).map((e) => (
-                  <Radio value={e}>
+                  <Radio value={e} key={e}>
                     <span>
                       {e}
                     </span>
