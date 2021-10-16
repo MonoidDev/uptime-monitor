@@ -23,8 +23,8 @@ export default function Page() {
     type: LoginSchema,
     error,
     initialValues: {
-      email: 'django@gmail.com',
-      inputPassword: '123123123',
+      email: process.env.DEFAULT_USER_EMAIL ?? '',
+      inputPassword: process.env.DEFAULT_USER_PASSWORD ?? '',
     },
     onSubmit: async (auth) => {
       const result = await login({
