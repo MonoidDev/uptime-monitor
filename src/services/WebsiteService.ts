@@ -1,3 +1,4 @@
+import { ErrorPredicate } from '@prisma/client';
 import { WebsiteEventSource } from 'app/graphql/types/EventSchema';
 import * as t from 'io-ts';
 import { range } from 'lodash';
@@ -144,6 +145,7 @@ export class WebsiteService extends BaseService {
         pingInterval: website!.pingInterval,
         enabled: website!.enabled,
         emails: website!.emails,
+        errorPredicate: website!.errorPredicate as ErrorPredicate,
       },
     });
 
