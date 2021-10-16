@@ -1,10 +1,10 @@
 import { WebsiteEventSource } from 'app/graphql/types/EventSchema';
-import { mapSortOrder } from 'app/utils/types';
 import * as t from 'io-ts';
 import { range } from 'lodash';
 
 import { CreateUpdateWebsiteSchema } from '../graphql/types/WebsiteSchema';
 import { BaseService } from './BaseService';
+import { mapSortOrder } from './helpers/mapSortOrder';
 
 export class WebsiteService extends BaseService {
   async findWebsiteById(id: number) {
