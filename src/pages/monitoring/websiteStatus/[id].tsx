@@ -104,7 +104,7 @@ export default function Page() {
           <Descriptions.Item label="Ping Interval (s)">
             {website.data?.website?.pingInterval}
           </Descriptions.Item>
-          <Descriptions.Item label="Error Predicated">
+          <Descriptions.Item label="Error Predicate">
             <span title={mapErrorPredicateExplanation(website.data?.website?.errorPredicate ?? '')}>
               {website.data?.website?.errorPredicate}
             </span>
