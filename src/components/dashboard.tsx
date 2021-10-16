@@ -15,7 +15,7 @@ import { websiteEventTypeToDescription } from 'app/data/events';
 import { traceStatusToColor } from 'app/data/traces';
 import { WebsiteEventSource } from 'app/graphql/types/EventSchema';
 import { REVERSE_INITIAL_CURSOR, useCursor } from 'app/hooks/useCursor';
-import { getTickCountFromRangeTime, getTickFromRangeTime } from 'app/utils/date';
+import { getTickCountFromRangeTime, getTickFromRangeTime, getTimeRangeFromEndTime } from 'app/utils/date';
 import classNames from 'classnames';
 import dayjs from 'dayjs';
 import Link from 'next/link';
@@ -95,9 +95,8 @@ export const ResponseTimeChart: React.VFC<ResponseTimeChartProps> = React.memo((
     );
 
     return normalized.map((n) => ({
-      time: rangeTime === '24h'
-        ? `${dayjs(n.time).subtract(1, 'hours').format('HH:mm')} - ${dayjs(n.time).format('HH:mm')}`
-        : dayjs(n.time).format('M-D'),
+      time: getTimeRangeFromEndTime(rangeTime, n.time),
+
       iso: n.time,
       avgDuration: n.avgDuration,
     }));
@@ -126,7 +125,7 @@ export const ResponseTimeChart: React.VFC<ResponseTimeChartProps> = React.memo((
             unit: 'ms',
             width: 60,
           }}
-          tickFormatter={rangeTime === '24h' ? (tick) => tick.slice(7) : undefined}
+          tickFormatter={(tick) => (rangeTime === '24h' ? tick.slice(-5) : tick.slice(-11, -6))}
         />
       )}
     </QueryContainer>
@@ -167,9 +166,7 @@ export const ErrorChart: React.VFC<ErrorChartProps> = React.memo((props) => {
     );
 
     return normalized.map((n) => ({
-      time: rangeTime === '24h'
-        ? `${dayjs(n.time).subtract(1, 'hours').format('HH:mm')} - ${dayjs(n.time).format('HH:mm')}`
-        : dayjs(n.time).format('M-D'),
+      time: getTimeRangeFromEndTime(rangeTime, n.time),
       iso: n.time,
       count: n.count,
     }));
@@ -229,7 +226,7 @@ export const ErrorChart: React.VFC<ErrorChartProps> = React.memo((props) => {
               </span>
             ),
           }}
-          tickFormatter={rangeTime === '24h' ? (tick) => tick.slice(7) : undefined}
+          tickFormatter={(tick) => (rangeTime === '24h' ? tick.slice(-5) : tick.slice(-11, -6))}
         />
       )}
     </QueryContainer>
