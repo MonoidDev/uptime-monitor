@@ -13,10 +13,15 @@ import {
   Col,
   Alert,
   InputNumber,
+  Radio,
+  Space,
 } from 'antd';
 import { url } from 'app/../.next-urls';
+import { mapErrorPredicateExplanation } from 'app/data/websites';
 import { usePageQuery } from 'app/hooks/usePageQuery';
-import { useUpdateWebsiteMutation, useGetWebsiteByIdQuery, useDeleteWebsiteMutation } from 'graphql/client/generated';
+import {
+  useUpdateWebsiteMutation, useGetWebsiteByIdQuery, useDeleteWebsiteMutation, ErrorPredicate,
+} from 'graphql/client/generated';
 import * as t from 'io-ts';
 import { useRouter } from 'next/router';
 import sleep from 'sleep-promise';
@@ -42,11 +47,12 @@ export default function Page() {
   });
 
   const websiteDetailsData = {
-    name: websiteDetails.data?.website?.name!,
-    url: websiteDetails.data?.website?.url!,
-    pingInterval: websiteDetails.data?.website?.pingInterval!,
-    enabled: websiteDetails.data?.website?.enabled!,
-    emails: websiteDetails.data?.website?.emails!,
+    name: websiteDetails.data?.website?.name ?? '',
+    url: websiteDetails.data?.website?.url ?? '',
+    pingInterval: websiteDetails.data?.website?.pingInterval ?? 600,
+    enabled: websiteDetails.data?.website?.enabled ?? false,
+    emails: websiteDetails.data?.website?.emails ?? [],
+    errorPredicate: websiteDetails.data?.website?.errorPredicate ?? ErrorPredicate.Http_2XxOnly,
   };
 
   const [updateWebsite, { error }] = useUpdateWebsiteMutation();
@@ -195,6 +201,28 @@ export default function Page() {
               </>
             )}
           </Form.List>
+
+          <Form.Item
+            {...validation.item('errorPredicate')}
+            required
+          >
+            <Radio.Group className="py-1">
+              <Space direction="vertical">
+                {Object.values(ErrorPredicate).map((e) => (
+                  <Radio value={e}>
+                    <span>
+                      {e}
+                    </span>
+                    <br />
+                    <span className="text-gray-500">
+                      {mapErrorPredicateExplanation(e)}
+                    </span>
+                  </Radio>
+                ))}
+              </Space>
+            </Radio.Group>
+          </Form.Item>
+
           <Form.Item>
             <Button
               type="primary"

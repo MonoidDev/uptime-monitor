@@ -12,12 +12,15 @@ import {
   Alert,
   InputNumber,
   message,
+  Radio,
+  Space,
 } from 'antd';
 import { url } from 'app/../.next-urls';
 import { Layout } from 'app/components/Layout';
+import { mapErrorPredicateExplanation } from 'app/data/websites';
 import { CreateUpdateWebsiteSchema } from 'app/graphql/types/WebsiteSchema';
 import { useValidation } from 'app/hooks/useValidation';
-import { useCreateWebsiteMutation } from 'graphql/client/generated';
+import { ErrorPredicate, useCreateWebsiteMutation } from 'graphql/client/generated';
 import { useRouter } from 'next/router';
 import sleep from 'sleep-promise';
 
@@ -33,6 +36,7 @@ export default function Page() {
       pingInterval: 600,
       enabled: true,
       emails: [],
+      errorPredicate: '',
     },
     type: CreateUpdateWebsiteSchema,
     error,
@@ -153,6 +157,28 @@ export default function Page() {
               </>
             )}
           </Form.List>
+
+          <Form.Item
+            {...validation.item('errorPredicate')}
+            required
+          >
+            <Radio.Group className="py-1">
+              <Space direction="vertical">
+                {Object.values(ErrorPredicate).map((e) => (
+                  <Radio value={e}>
+                    <span>
+                      {e}
+                    </span>
+                    <br />
+                    <span className="text-gray-500">
+                      {mapErrorPredicateExplanation(e)}
+                    </span>
+                  </Radio>
+                ))}
+              </Space>
+            </Radio.Group>
+          </Form.Item>
+
           <Form.Item>
             <Button
               type="primary"

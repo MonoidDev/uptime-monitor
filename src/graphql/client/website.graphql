@@ -8,6 +8,7 @@ fragment WebsiteFrag on Website {
   userId
   emails
   status
+  errorPredicate
 }
 
 query GetWebsiteById($id: Int!) {

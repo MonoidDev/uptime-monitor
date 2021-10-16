@@ -11,6 +11,7 @@ import {
 } from 'app/components/dashboard';
 import { Layout } from 'app/components/Layout';
 import { StatusArray } from 'app/components/StatusArray';
+import { mapErrorPredicateExplanation } from 'app/data/websites';
 import { usePageQuery } from 'app/hooks/usePageQuery';
 import { gStyles } from 'app/styles';
 import descriptionsStyles from 'app/styles/descriptionsStyles.module.css';
@@ -102,6 +103,11 @@ export default function Page() {
           </Descriptions.Item>
           <Descriptions.Item label="Ping Interval (s)">
             {website.data?.website?.pingInterval}
+          </Descriptions.Item>
+          <Descriptions.Item label="Error Predicated">
+            <span title={mapErrorPredicateExplanation(website.data?.website?.errorPredicate ?? '')}>
+              {website.data?.website?.errorPredicate}
+            </span>
           </Descriptions.Item>
         </Descriptions>
 

@@ -16,6 +16,7 @@ input CreateTrace {
 input CreateUpdateWebsite {
   emails: [String!]!
   enabled: Boolean!
+  errorPredicate: String!
   name: String!
   pingInterval: Int!
   url: String!
@@ -27,6 +28,11 @@ input CreateUser {
 }
 
 scalar DateTime
+
+enum ErrorPredicate {
+  HTTP_2XX_ONLY
+  HTTP_NOT_5XX
+}
 
 type Event {
   createdAt: DateTime!
@@ -180,6 +186,7 @@ type Website {
   createdAt: DateTime!
   emails: [String!]!
   enabled: Boolean!
+  errorPredicate: ErrorPredicate!
   id: Int!
   name: String!
   pingInterval: Int!

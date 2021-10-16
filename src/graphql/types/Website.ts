@@ -17,6 +17,7 @@ export const Website = objectType({
     t.model.enabled();
     t.model.userId();
     t.model.emails();
+    t.model.errorPredicate();
     t.model.createdAt();
     t.list.field('status', {
       type: nonNull(WebsiteStatusType),
@@ -41,6 +42,7 @@ export const CreateUpdateWebsite = inputObjectType({
     t.nonNull.string('url');
     t.nonNull.int('pingInterval');
     t.nonNull.boolean('enabled');
+    t.nonNull.string('errorPredicate');
     t.nonNull.list.field('emails', {
       type: nonNull('String'),
     });
