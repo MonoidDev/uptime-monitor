@@ -17,15 +17,17 @@ import {
 } from 'antd';
 import { url } from 'app/../.next-urls';
 import { Layout } from 'app/components/Layout';
-import { mapErrorPredicateExplanation } from 'app/data/websites';
+import { mapErrorPredicateExplanation, mapErrorPredicateLabel } from 'app/data/websites';
 import { CreateUpdateWebsiteSchema } from 'app/graphql/types/WebsiteSchema';
 import { useValidation } from 'app/hooks/useValidation';
-import { ErrorPredicate, useCreateWebsiteMutation } from 'graphql/client/generated';
+import { ErrorPredicate, useCreateWebsiteMutation, useMeQuery } from 'graphql/client/generated';
 import { useRouter } from 'next/router';
 import sleep from 'sleep-promise';
 
 export default function Page() {
   const router = useRouter();
+
+  const me = useMeQuery();
 
   const [createWebsite, { error, loading }] = useCreateWebsiteMutation();
 
@@ -35,7 +37,7 @@ export default function Page() {
       url: '',
       pingInterval: 600,
       enabled: true,
-      emails: [],
+      emails: [me.data?.me?.email!],
       errorPredicate: '',
     },
     type: CreateUpdateWebsiteSchema,
@@ -135,12 +137,10 @@ export default function Page() {
                     >
                       <Input placeholder="Email" className="w-4/5" />
                     </Form.Item>
-                    {fields.length > 1 ? (
-                      <MinusCircleOutlined
-                        onClick={() => remove(field.name)}
-                        className="relative mx-1"
-                      />
-                    ) : null}
+                    <MinusCircleOutlined
+                      onClick={() => remove(field.name)}
+                      className="relative mx-1"
+                    />
                   </Form.Item>
                 ))}
                 <Form.Item {...formListItemLayoutWithOutLabel}>
@@ -167,7 +167,7 @@ export default function Page() {
                 {Object.values(ErrorPredicate).map((e) => (
                   <Radio value={e} key={e}>
                     <span>
-                      {e}
+                      {mapErrorPredicateLabel(e)}
                     </span>
                     <br />
                     <span className="text-gray-500">

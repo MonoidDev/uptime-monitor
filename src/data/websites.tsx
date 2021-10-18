@@ -10,3 +10,14 @@ export const mapErrorPredicateExplanation = (predicate: string) => {
       return predicate;
   }
 };
+
+export const mapErrorPredicateLabel = (predicate: string) => {
+  switch (predicate as ErrorPredicate) {
+    case ErrorPredicate.Http_2XxOnly:
+      return `${predicate} (for websites)`;
+    case ErrorPredicate.HttpNot_5Xx:
+      return `${predicate} (for APIs)`;
+    default:
+      return predicate;
+  }
+};
