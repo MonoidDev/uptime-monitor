@@ -18,3 +18,11 @@ export const LoginSchema = defineSchema(
     inputPassword: requiredStringField('Password'),
   }),
 );
+
+export const UpdateUserSchema = defineSchema(
+  'UpdateUser',
+  t.interface({
+    email: emailField('Email'),
+    name: requiredStringField('Name'),
+  }),
+);

@@ -26,3 +26,11 @@ export const Login = inputObjectType({
     t.nonNull.string('inputPassword');
   },
 });
+
+export const UpdateUser = inputObjectType({
+  name: 'UpdateUser',
+  definition(t) {
+    t.nonNull.string('email');
+    t.nonNull.string('name');
+  },
+});

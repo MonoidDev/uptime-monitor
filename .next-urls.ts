@@ -8,6 +8,7 @@ export type Urls =
   | "/monitoring/websites/[id]"
   | "/monitoring/websites/add"
   | "/monitoring/websites"
+  | "/settings/user"
   | "/urls";
 export const urls = [
   "/auth/createUser",
@@ -19,6 +20,7 @@ export const urls = [
   "/monitoring/websites/[id]",
   "/monitoring/websites/add",
   "/monitoring/websites",
+  "/settings/user",
   "/urls",
 ];
 export const url = (x: Urls) => x;

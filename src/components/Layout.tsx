@@ -9,6 +9,7 @@ import {
   Avatar, Breadcrumb, Dropdown, Layout as AntdLayout, Menu,
 } from 'antd';
 import classNames from 'classnames';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
 
 import { url, Urls } from '../../.next-urls';
@@ -110,6 +111,11 @@ export const Layout: React.FC<LayoutProps> = (props) => {
   const renderUserMenu = () => {
     const menu = (
       <Menu>
+        <Menu.Item>
+          <Link href={url('/settings/user')}>
+            Edit Profile
+          </Link>
+        </Menu.Item>
         <Menu.Item>
           <a onClick={onLogout}>
             Log out

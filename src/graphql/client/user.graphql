@@ -28,3 +28,10 @@ mutation CreateUser($user: CreateUser!) {
   }
 }
 
+mutation UpdateMe($user: UpdateUser!) {
+  updateMe(user: $user) {
+    id
+    name
+    email
+  }
+}

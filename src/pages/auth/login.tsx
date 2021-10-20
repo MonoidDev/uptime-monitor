@@ -23,8 +23,8 @@ export default function Page() {
     type: LoginSchema,
     error,
     initialValues: {
-      email: process.env.DEFAULT_USER_EMAIL ?? '',
-      inputPassword: process.env.DEFAULT_USER_PASSWORD ?? '',
+      email: process.env.NEXT_PUBLIC_DEFAULT_USER_EMAIL ?? '',
+      inputPassword: process.env.NEXT_PUBLIC_DEFAULT_USER_PASSWORD ?? '',
     },
     onSubmit: async (auth) => {
       const result = await login({
