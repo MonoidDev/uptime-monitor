@@ -16,10 +16,28 @@ const monitorService = new MonitorService();
 const emailService = new EmailService();
 
 class Monitor {
+  private isScanning = false;
+  private pendingNextScan = false;
   private activeWebsiteIds = new Set<number>();
 
   public async run() {
-    return this.scanWebsites();
+    if (this.isScanning) {
+      this.pendingNextScan = true;
+      if (process.env.NODE_ENV !== 'production') {
+        console.info('skip because the last one is still running');
+      }  
+      return;
+    }
+    
+    this.isScanning = true;  
+    while (true) {
+      this.scanWebsites();
+      if (!this.pendingNextScan) {
+        break;
+      }
+      this.pendingNextScan = false;
+    }
+    this.isScanning = false;
   }
 
   public async scanWebsites() {
