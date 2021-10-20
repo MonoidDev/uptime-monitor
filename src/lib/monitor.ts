@@ -17,7 +17,9 @@ const emailService = new EmailService();
 
 class Monitor {
   private isScanning = false;
+
   private pendingNextScan = false;
+
   private activeWebsiteIds = new Set<number>();
 
   public async run() {
@@ -25,17 +27,18 @@ class Monitor {
       this.pendingNextScan = true;
       if (process.env.NODE_ENV !== 'production') {
         console.info('skip because the last one is still running');
-      }  
+      }
       return;
     }
-    
-    this.isScanning = true;  
+
+    this.isScanning = true;
+    // eslint-disable-next-line no-constant-condition
     while (true) {
-      this.scanWebsites();
+      this.pendingNextScan = false;
+      await this.scanWebsites();
       if (!this.pendingNextScan) {
         break;
       }
-      this.pendingNextScan = false;
     }
     this.isScanning = false;
   }
@@ -69,7 +72,6 @@ class Monitor {
 
       // console.log(`found ${websites.length} in ${nWebsites}, lastId=${lastId}`);
 
-      // eslint-disable-next-line @typescript-eslint/no-loop-func
       await Promise.all(websites.map(async (website) => {
         const trace = await monitorService.findLatestTraceByWebsite(website.id);
         if (this.checkInterval(website, trace, startAt)) {
