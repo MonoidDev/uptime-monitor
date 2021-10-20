@@ -52,12 +52,12 @@ class Monitor {
       // console.log(`found ${websites.length} in ${nWebsites}, lastId=${lastId}`);
 
       // eslint-disable-next-line @typescript-eslint/no-loop-func
-      websites.forEach(async (website) => {
+      await Promise.all(websites.map(async (website) => {
         const trace = await monitorService.findLatestTraceByWebsite(website.id);
         if (this.checkInterval(website, trace, startAt)) {
           futures.push(this.processWebsite(website, trace));
         }
-      });
+      }));
     }
 
     if (process.env.NODE_ENV !== 'production') {
