@@ -17,7 +17,7 @@ import {
   Space,
 } from 'antd';
 import { url } from 'app/../.next-urls';
-import { mapErrorPredicateExplanation } from 'app/data/websites';
+import { mapErrorPredicateExplanation, mapErrorPredicateLabel } from 'app/data/websites';
 import { usePageQuery } from 'app/hooks/usePageQuery';
 import {
   useUpdateWebsiteMutation, useGetWebsiteByIdQuery, useDeleteWebsiteMutation, ErrorPredicate,
@@ -179,12 +179,10 @@ export default function Page() {
                     >
                       <Input placeholder="Email" className="w-4/5" />
                     </Form.Item>
-                    {fields.length > 1 ? (
-                      <MinusCircleOutlined
-                        onClick={() => remove(field.name)}
-                        className="relative mx-1"
-                      />
-                    ) : null}
+                    <MinusCircleOutlined
+                      onClick={() => remove(field.name)}
+                      className="relative mx-1"
+                    />
                   </Form.Item>
                 ))}
                 <Form.Item {...formListItemLayoutWithOutLabel}>
@@ -211,7 +209,7 @@ export default function Page() {
                 {Object.values(ErrorPredicate).map((e) => (
                   <Radio value={e} key={e}>
                     <span>
-                      {e}
+                      {mapErrorPredicateLabel(e)}
                     </span>
                     <br />
                     <span className="text-gray-500">
