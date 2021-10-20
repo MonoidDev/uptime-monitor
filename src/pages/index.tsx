@@ -8,6 +8,7 @@ import {
   ErrorChart, ErrorTable, EventTable, ResponseTimeChart,
 } from 'app/components/dashboard';
 import { Layout } from 'app/components/Layout';
+import { ReloadApollo } from 'app/components/ReloadApollo';
 import { gStyles } from 'app/styles';
 import { url } from 'app/utils/types';
 import classNames from 'classnames';
@@ -30,10 +31,14 @@ export default function Page() {
 
   const renderTitle = () => {
     return (
-      <div className="flex justify-between items-center">
+      <div className="flex items-center">
         <Typography.Title className="!text-primary-dark">
           Dashboard
         </Typography.Title>
+
+        <div className="flex-1" />
+
+        <ReloadApollo className="px-3" />
 
         <Select
           value={rangeTime!}

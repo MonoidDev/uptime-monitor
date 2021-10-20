@@ -10,6 +10,7 @@ import {
   ErrorChart, ErrorTable, EventTable, ResponseTimeChart,
 } from 'app/components/dashboard';
 import { Layout } from 'app/components/Layout';
+import { ReloadApollo } from 'app/components/ReloadApollo';
 import { StatusArray } from 'app/components/StatusArray';
 import { mapErrorPredicateExplanation } from 'app/data/websites';
 import { usePageQuery } from 'app/hooks/usePageQuery';
@@ -58,6 +59,8 @@ export default function Page() {
         />
 
         <div className="flex-1" />
+
+        <ReloadApollo className="px-3" />
 
         <Link href={url('/monitoring/websites')}>
           <a>

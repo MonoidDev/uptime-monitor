@@ -139,7 +139,11 @@ export const Layout: React.FC<LayoutProps> = (props) => {
   const renderHeader = () => {
     return (
       <Header className="text-white text-2xl flex items-center">
-        Uptime Monitor
+        <Link href={url('/')}>
+          <a className="hover:text-gray-200">
+            Uptime Monitor
+          </a>
+        </Link>
 
         <div className="flex-1" />
         {me?.data && (
