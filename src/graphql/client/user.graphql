@@ -4,6 +4,7 @@ query GetUserById($id: Int!) {
     name
     email
     createdAt
+    gravatar
   }
 }
 
@@ -13,6 +14,7 @@ query Me {
     name
     email
     createdAt
+    gravatar
   }
 }
 
@@ -33,5 +35,6 @@ mutation UpdateMe($user: UpdateUser!) {
     id
     name
     email
+    gravatar
   }
 }

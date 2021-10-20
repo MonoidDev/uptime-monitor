@@ -1,3 +1,4 @@
+import md5 from 'md5';
 import { objectType, inputObjectType } from 'nexus';
 
 export const User = objectType({
@@ -8,6 +9,12 @@ export const User = objectType({
     t.model.email();
     t.model.createdAt();
     t.string('token');
+    t.nonNull.string('gravatar', {
+      resolve(user) {
+        const hash = md5(user.email.toLowerCase().trim());
+        return `https://www.gravatar.com/avatar/${hash}`;
+      },
+    });
   },
 });
 

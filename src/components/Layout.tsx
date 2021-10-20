@@ -144,7 +144,7 @@ export const Layout: React.FC<LayoutProps> = (props) => {
         <div className="flex-1" />
         {me?.data && (
           <>
-            <Avatar />
+            <Avatar src={me?.data.me?.gravatar} />
             {renderUserMenu()}
           </>
         )}

@@ -183,6 +183,7 @@ input UpdateUser {
 type User {
   createdAt: DateTime!
   email: String!
+  gravatar: String!
   id: Int!
   name: String!
   token: String
