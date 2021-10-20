@@ -1,5 +1,6 @@
 import { WebsiteEventSource } from 'app/graphql/types/EventSchema';
 import { WebsiteEventParams } from 'app/models/WebsiteEvent';
+import { EmailService } from 'app/services/EmailService';
 import { MonitorService } from 'app/services/MonitorService';
 
 import { doPing } from './monitor-fetch';
@@ -11,6 +12,8 @@ import {
 } from '.prisma/client';
 
 const monitorService = new MonitorService();
+
+const emailService = new EmailService();
 
 class Monitor {
   private activeWebsiteIds = new Set<number>();
@@ -120,6 +123,11 @@ class Monitor {
       const eventAvailability = this.checkEventAvailability(website, lastTrace, trace);
       if (eventAvailability !== null) {
         await monitorService.addEvent(eventAvailability);
+        if (eventAvailability.source === WebsiteEventSource.NotAvailable) {
+          for (const email of website.emails) {
+            await emailService.sendWebsiteAlert(website, email);
+          }
+        }
       }
 
       if (process.env.NODE_ENV !== 'production') {

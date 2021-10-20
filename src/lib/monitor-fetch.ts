@@ -123,7 +123,7 @@ async function doPing(url: string, retries: number): Promise<PingResult> {
   Object.keys(reqHeadersDefault).forEach((key) => reqHeaders.set(key, reqHeadersDefault[key]));
   result.reqHeaders = headersToStrings(reqHeaders);
 
-  await new Promise((resolve, reject) => {
+  await new Promise<void>((resolve) => {
     const retryOp = Retry.operation({
       retries,
       minTimeout: Infinity,
@@ -191,7 +191,7 @@ async function doPing(url: string, retries: number): Promise<PingResult> {
       result.latency = endAt.getTime() - startAt.getTime();
       // console.log(`[doPing] pinged ${url} in ${result.latency}ms.`);
 
-      Promise.resolve().then(resolve).catch(reject);
+      resolve();
     });
   });
 

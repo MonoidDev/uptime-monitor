@@ -40,10 +40,11 @@ export class EmailService {
         <br />
         Your website
         {' '}
-        <b>{website.name}</b>
+        <a href={website.url}>
+          <b>{website.name}</b>
+        </a>
         {' '}
-        returns with error:
-        <b>HTTP Status 500</b>
+        has just responded with error.
 
         <br />
 
@@ -61,8 +62,10 @@ export class EmailService {
     };
   }
 
-  async sendWebsiteAlert(webiste: Website, to: string) {
-    const { subject, html } = this.getWebsiteAlertContent(webiste);
+  async sendWebsiteAlert(website: Website, to: string) {
+    const { subject, html } = this.getWebsiteAlertContent(website);
+
+    console.info(`Sending alert to ${to} about ${website.url}...`);
 
     return this.mailer.sendMail({
       from: this.from,
