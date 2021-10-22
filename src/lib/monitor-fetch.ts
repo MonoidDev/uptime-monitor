@@ -126,8 +126,8 @@ async function doPing(url: string, retries: number): Promise<PingResult> {
   await new Promise<void>((resolve) => {
     const retryOp = Retry.operation({
       retries,
-      minTimeout: Infinity,
-      maxTimeout: Infinity,
+      minTimeout: 60 * 1000,
+      maxTimeout: 60 * 1000,
     });
 
     retryOp.attempt(async () => {
