@@ -1,4 +1,5 @@
 import { UserInputError } from 'apollo-server-errors';
+import { createUserInputErrors } from 'app/utils/createUserInputErrors';
 import { mutationField, nonNull } from 'nexus';
 
 import { Auth, loginRequired } from '../auth';
@@ -43,11 +44,12 @@ export const createUser = mutationField('createUser', {
   },
   async resolve(_, { user }, ctx) {
     if (await ctx.userService.findUserByEmail(user.email)) {
-      throw new UserInputError('Invalid args', {
-        errors: {
+      throw createUserInputErrors(
+        CreateUserSchema,
+        {
           email: `${user?.email} is already registered`,
         },
-      });
+      );
     }
 
     const newUser = await ctx.userService.createUser(user);

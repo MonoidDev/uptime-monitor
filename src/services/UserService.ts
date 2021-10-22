@@ -1,7 +1,7 @@
 import { createHash } from 'crypto';
 
 import type { User } from '@prisma/client';
-import { UserInputError } from 'apollo-server';
+import { createUserInputErrors } from 'app/utils/createUserInputErrors';
 import * as t from 'io-ts';
 
 import { CreateUserSchema, UpdateUserPasswordSchema, UpdateUserSchema } from '../graphql/types/UserSchema';
@@ -51,11 +51,12 @@ export class UserService extends BaseService {
     }))?.id;
 
     if (currentId !== id && currentId !== undefined) {
-      throw new UserInputError('Invalid args', {
-        errors: {
+      throw createUserInputErrors(
+        UpdateUserSchema,
+        {
           email: `${user?.email} is already registered`,
         },
-      });
+      );
     }
 
     return this.ctx.prisma.user.update({
@@ -68,20 +69,16 @@ export class UserService extends BaseService {
 
   async updateUserPassword(id: number, updatePassword: t.TypeOf<typeof UpdateUserPasswordSchema>) {
     if (updatePassword.newPassword !== updatePassword.newPasswordRepeated) {
-      throw new UserInputError('Invalid args', {
-        errors: {
-          newPasswordRepeated: 'Sorry, please confirm your password again. ',
-        },
+      throw createUserInputErrors(UpdateUserPasswordSchema, {
+        newPasswordRepeated: 'Sorry, please confirm your password again. ',
       });
     }
 
     const user = await this.findUserById(id);
 
     if (!user || !this.verifyPassword(user, updatePassword.currentPassword)) {
-      throw new UserInputError('Invalid args', {
-        errors: {
-          currentPassword: 'Sorry, your current password is incorrect. ',
-        },
+      throw createUserInputErrors(UpdateUserPasswordSchema, {
+        currentPassword: 'Sorry, your current password is incorrect. ',
       });
     }
 

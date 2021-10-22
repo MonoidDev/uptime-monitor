@@ -7,10 +7,6 @@ export const mapSortOrder = (order?: string) => {
     case 'descend': return 'desc';
     case 'ascend': return 'asc';
     default:
-      throw new UserInputError('Invalid sort order', {
-        errors: {
-          order: `Non-null order must be one of asc, desc, got ${order}`,
-        },
-      });
+      throw new UserInputError(`Non-null order must be one of asc, desc, got ${order}`);
   }
 };
