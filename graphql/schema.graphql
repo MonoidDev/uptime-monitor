@@ -66,6 +66,7 @@ type Mutation {
   deleteWebsite(websiteId: Int!): Website
   login(auth: Login!): User
   updateMe(user: UpdateUser!): User
+  updateMyPassword(updatePassword: UpdateUserPassword!): User
   updateWebsite(website: CreateUpdateWebsite!, websiteId: Int!): Website
 }
 
@@ -178,6 +179,12 @@ enum TraceTypeChoices {
 input UpdateUser {
   email: String!
   name: String!
+}
+
+input UpdateUserPassword {
+  currentPassword: String!
+  newPassword: String!
+  newPasswordRepeated: String!
 }
 
 type User {

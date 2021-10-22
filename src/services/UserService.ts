@@ -4,7 +4,7 @@ import type { User } from '@prisma/client';
 import { UserInputError } from 'apollo-server';
 import * as t from 'io-ts';
 
-import { CreateUserSchema, UpdateUserSchema } from '../graphql/types/UserSchema';
+import { CreateUserSchema, UpdateUserPasswordSchema, UpdateUserSchema } from '../graphql/types/UserSchema';
 import { BaseService } from './BaseService';
 
 export class UserService extends BaseService {
@@ -63,6 +63,33 @@ export class UserService extends BaseService {
         id,
       },
       data: user,
+    });
+  }
+
+  async updateUserPassword(id: number, updatePassword: t.TypeOf<typeof UpdateUserPasswordSchema>) {
+    if (updatePassword.newPassword !== updatePassword.newPasswordRepeated) {
+      throw new UserInputError('Invalid args', {
+        errors: {
+          newPasswordRepeated: 'Sorry, please confirm your password again. ',
+        },
+      });
+    }
+
+    const user = await this.findUserById(id);
+
+    if (!user || !this.verifyPassword(user, updatePassword.currentPassword)) {
+      throw new UserInputError('Invalid args', {
+        errors: {
+          currentPassword: 'Sorry, your current password is incorrect. ',
+        },
+      });
+    }
+
+    return this.ctx.prisma.user.update({
+      where: { id },
+      data: {
+        password: this.hashPassword(updatePassword.newPassword),
+      },
     });
   }
 }

@@ -38,3 +38,9 @@ mutation UpdateMe($user: UpdateUser!) {
     gravatar
   }
 }
+
+mutation UpdateMyPassword($updatePassword: UpdateUserPassword!) {
+  updateMyPassword(updatePassword: $updatePassword) {
+    id
+  }
+}

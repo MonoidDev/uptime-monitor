@@ -26,3 +26,12 @@ export const UpdateUserSchema = defineSchema(
     name: requiredStringField('Name'),
   }),
 );
+
+export const UpdateUserPasswordSchema = defineSchema(
+  'UpdateUserPassword',
+  t.interface({
+    currentPassword: requiredStringField('Current Password'),
+    newPassword: requiredStringField('New Password'),
+    newPasswordRepeated: requiredStringField('Confirm New Password'),
+  }),
+);

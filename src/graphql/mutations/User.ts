@@ -2,8 +2,13 @@ import { UserInputError } from 'apollo-server-errors';
 import { mutationField, nonNull } from 'nexus';
 
 import { Auth, loginRequired } from '../auth';
-import { CreateUser, Login, UpdateUser } from '../types';
-import { CreateUserSchema, UpdateUserSchema } from '../types/UserSchema';
+import {
+  CreateUser,
+  Login,
+  UpdateUser,
+  UpdateUserPassword,
+} from '../types';
+import { CreateUserSchema, UpdateUserPasswordSchema, UpdateUserSchema } from '../types/UserSchema';
 
 export const login = mutationField('login', {
   type: 'User',
@@ -62,5 +67,21 @@ export const updateMe = mutationField('updateMe', {
   async resolve(_, { user }, ctx) {
     const { id } = ctx.authInfo!;
     return ctx.userService.updateUser(id, user);
+  },
+});
+
+export const updateMyPassword = mutationField('updateMyPassword', {
+  type: 'User',
+  args: {
+    updatePassword: nonNull(UpdateUserPassword),
+  },
+  validate: {
+    updatePassword: UpdateUserPasswordSchema,
+  },
+  async resolve(_, { updatePassword }, ctx) {
+    return ctx.userService.updateUserPassword(
+      ctx.authInfo!.id!,
+      updatePassword,
+    );
   },
 });

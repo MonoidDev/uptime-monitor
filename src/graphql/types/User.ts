@@ -41,3 +41,12 @@ export const UpdateUser = inputObjectType({
     t.nonNull.string('name');
   },
 });
+
+export const UpdateUserPassword = inputObjectType({
+  name: 'UpdateUserPassword',
+  definition(t) {
+    t.nonNull.string('currentPassword');
+    t.nonNull.string('newPassword');
+    t.nonNull.string('newPasswordRepeated');
+  },
+});

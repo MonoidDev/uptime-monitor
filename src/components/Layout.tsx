@@ -117,6 +117,11 @@ export const Layout: React.FC<LayoutProps> = (props) => {
           </Link>
         </Menu.Item>
         <Menu.Item>
+          <Link href={url('/settings/changePassword')}>
+            Change Password
+          </Link>
+        </Menu.Item>
+        <Menu.Item>
           <a onClick={onLogout}>
             Log out
           </a>

@@ -27,6 +27,7 @@
     "prod:start-monitor": "yarn prod:env yarn ts scripts/startMonitor.ts",
     "prod:env": "dotenv -e .env.production --",
     "prod:db-push": "yarn prod:env prisma db push",
+    "prod:ssh": "ssh -i \"config/uptime-monitor-keys.pem\" ec2-user@ec2-3-80-73-214.compute-1.amazonaws.com",
     "staging:env": "dotenv -e .env.staging --",
     "staging:db-push": "yarn staging:env prisma db push",
     "ts": "ts-node --transpile-only -r tsconfig-paths/register",
