@@ -69,7 +69,7 @@ export default function Page() {
         if (needGotoPrevPage()) {
           updateSearch({ page: search?.page! - 1 });
         } else {
-          router.reload();
+          websites.refetch();
         }
       });
     };
