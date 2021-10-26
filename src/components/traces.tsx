@@ -3,7 +3,7 @@ import React from 'react';
 import { Button, Modal } from 'antd';
 import { useGetTraceByIdQuery } from 'app/../graphql/client/generated';
 import { traceStatusToColor } from 'app/data/traces';
-import { url } from 'app/utils/types';
+import { dynamicUrl } from 'app/utils/types';
 import dayjs from 'dayjs';
 
 import { QueryContainer } from './QueryContainer';
@@ -54,7 +54,9 @@ export const TraceDataModal: React.VFC<TraceDataModalProps> = (props) => {
             <TraceDataCell label="Website">
               <a
                 className="underline"
-                href={url('/monitoring/websites/[id]').replace('[id]', String(traceData?.website.id))}
+                href={dynamicUrl('/monitoring/websites/[id]', {
+                  id: traceData?.website.id!,
+                })}
               >
                 {traceData?.website.name}
               </a>

@@ -7,7 +7,7 @@ import {
   Button,
   Form,
 } from 'antd';
-import { url } from 'app/../.next-urls';
+import { dynamicUrl } from 'app/../.next-urls';
 import { useEventsQuery, useGetUserWebsitesQuery } from 'app/../graphql/client/generated';
 import { CursorPagination } from 'app/components/CursorPagination';
 import { DatePicker } from 'app/components/DatePicker';
@@ -127,7 +127,11 @@ export default function Page() {
       dataIndex: 'website',
       key: 'websiteIds',
       render: (website: Website) => (
-        <Link href={url('/monitoring/websiteStatus/[id]').replace('[id]', String(website.id))}>
+        <Link
+          href={dynamicUrl('/monitoring/websiteStatus/[id]', {
+            id: website.id,
+          })}
+        >
           <a className="underline">
             {website.name}
           </a>

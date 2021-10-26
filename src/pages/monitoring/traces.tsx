@@ -7,7 +7,7 @@ import {
   Button,
   Form,
 } from 'antd';
-import { url } from 'app/../.next-urls';
+import { dynamicUrl } from 'app/../.next-urls';
 import { CursorPagination } from 'app/components/CursorPagination';
 import { DatePicker } from 'app/components/DatePicker';
 import { TraceDataModal } from 'app/components/traces';
@@ -110,7 +110,9 @@ export default function Page() {
       key: 'websiteIds',
       render: (website: Website) => (
         <Link
-          href={url('/monitoring/websiteStatus/[id]').replace('[id]', String(website.id))}
+          href={dynamicUrl('/monitoring/websiteStatus/[id]', {
+            id: website.id,
+          })}
         >
           <a className="underline">
             {website.name}

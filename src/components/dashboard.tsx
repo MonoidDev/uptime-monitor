@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 
 import { Button } from 'antd';
-import { url } from 'app/../.next-urls';
+import { dynamicUrl, url } from 'app/../.next-urls';
 import {
   EventsQuery,
   TracesQuery,
@@ -280,7 +280,9 @@ export const ErrorTable: React.VFC<ErrorTableProps> = React.memo((props) => {
       <tr key={index}>
         <td>
           <Link
-            href={url('/monitoring/websiteStatus/[id]').replace('[id]', String(row.website.id))}
+            href={dynamicUrl('/monitoring/websiteStatus/[id]', {
+              id: row.website.id,
+            })}
           >
             {row.website.name}
           </Link>

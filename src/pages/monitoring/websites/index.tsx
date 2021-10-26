@@ -18,7 +18,7 @@ import * as t from 'io-ts';
 import { useRouter } from 'next/router';
 import * as h from 'tyrann-io';
 
-import { url } from '../../../../.next-urls';
+import { dynamicUrl, url } from '../../../../.next-urls';
 import { Layout } from '../../../components/Layout';
 
 export default function Page() {
@@ -164,10 +164,12 @@ export default function Page() {
             shape="round"
             onClick={(e) => {
               e.stopPropagation();
-              router.push({
-                pathname: `${url('/monitoring/websites/[id]')}`,
-                query: `id=${record.id}`,
-              });
+              router.push(dynamicUrl(
+                '/monitoring/websites/[id]',
+                {
+                  id: record.id,
+                },
+              ));
             }}
           >
             Modify

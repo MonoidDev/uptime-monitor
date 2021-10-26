@@ -4,7 +4,7 @@ import useSearch from '@monoid-dev/use-search';
 import {
   Select, Typography, Descriptions, Button, Row, Col,
 } from 'antd';
-import { url } from 'app/../.next-urls';
+import { dynamicUrl, url } from 'app/../.next-urls';
 import { useGetWebsiteByIdQuery } from 'app/../graphql/client/generated';
 import {
   ErrorChart, ErrorTable, EventTable, ResponseTimeChart,
@@ -115,7 +115,9 @@ export default function Page() {
         </Descriptions>
 
         <Link
-          href={url('/monitoring/websites/[id]').replace('[id]', String(website.data?.website?.id))}
+          href={dynamicUrl('/monitoring/websites/[id]', {
+            id: website.data?.website?.id!,
+          })}
         >
           <a>
             <Button

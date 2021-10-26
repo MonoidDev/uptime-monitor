@@ -1,13 +1,15 @@
 import React from 'react';
 
 import { WebsiteEventSource } from 'app/graphql/types/EventSchema';
-import { url } from 'app/utils/types';
+import { dynamicUrl } from 'app/utils/types';
 import Link from 'next/link';
 
 const getLink = (websiteName: string, id: number) => {
   return (
     <Link
-      href={url('/monitoring/websiteStatus/[id]').replace('[id]', String(id))}
+      href={dynamicUrl('/monitoring/websiteStatus/[id]', {
+        id,
+      })}
     >
       {websiteName}
     </Link>
