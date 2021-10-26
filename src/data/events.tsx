@@ -7,7 +7,7 @@ import Link from 'next/link';
 const getLink = (websiteName: string, id: number) => {
   return (
     <Link
-      href={url('/monitoring/websites/[id]').replace('[id]', String(id))}
+      href={url('/monitoring/websiteStatus/[id]').replace('[id]', String(id))}
     >
       {websiteName}
     </Link>
