@@ -35,10 +35,8 @@ const httpAgent = new http.Agent({
 });
 
 const rootCAs = SslRootCAs.create();
-rootCAs.addFile(require.resolve('node_extra_ca_certs_mozilla_bundle/ca_bundle/ca_intermediate_bundle.pem'));
-rootCAs.addFile(require.resolve('node_extra_ca_certs_mozilla_bundle/ca_bundle/ca_intermediate_root_bundle.pem'));
 rootCAs.addFile(require.resolve('node_extra_ca_certs_mozilla_bundle/ca_bundle/ca_root_bundle.pem'));
-// https.globalAgent.options.ca = rootCAs;
+https.globalAgent.options.ca = rootCAs;
 
 const httpsAgent = new https.Agent({
   keepAlive: false,
@@ -93,24 +91,6 @@ const sslErrors = [
 
 async function doPing(url: string, retries: number): Promise<PingResult> {
   const result = new PingResult();
-
-  if (process.env.NODE_ENV !== 'production' && process.env.FETCH_MOCK !== 'false') {
-    // mock
-    console.info(`[fetch] mock for ${url}`);
-
-    result.traceStatus = TraceStatus.INTERNAL_ERROR;
-    result.errorCode = undefined;
-    result.latency = 100;
-    result.statusCode = 200;
-    result.reqHeaders = [
-      'User-Agent: mock',
-    ];
-    result.resHeaders = [
-      'Content-Length: 0',
-    ];
-    result.resBody = 'MOCK!!!';
-    return result;
-  }
 
   const reqHeadersDefault: { [key: string]: string } = {
     'Accept-Encoding': 'gzip,deflate,br',
