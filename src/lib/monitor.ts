@@ -31,16 +31,19 @@ class Monitor {
       return;
     }
 
-    this.isScanning = true;
-    // eslint-disable-next-line no-constant-condition
-    while (true) {
-      this.pendingNextScan = false;
-      await this.scanWebsites();
-      if (!this.pendingNextScan) {
-        break;
+    try {
+      this.isScanning = true;
+      // eslint-disable-next-line no-constant-condition
+      while (true) {
+        this.pendingNextScan = false;
+        await this.scanWebsites();
+        if (!this.pendingNextScan) {
+          break;
+        }
       }
+    } finally {
+      this.isScanning = false;
     }
-    this.isScanning = false;
   }
 
   public async scanWebsites() {
@@ -93,7 +96,7 @@ class Monitor {
     }
   }
 
-  private checkInterval(website: Website, lastTrace: Trace | null, now: Date) : Boolean {
+  private checkInterval(website: Website, lastTrace: Trace | null, now: Date): Boolean {
     // const lastAt = lastTrace ? lastTrace.createdAt.getTime() : website.createdAt.getTime();
     if (lastTrace === null) {
       return true;
@@ -162,7 +165,7 @@ class Monitor {
     website: Website,
     lastTrace: Trace | null,
     currentTrace: Trace,
-  ) : WebsiteEventParams | null {
+  ): WebsiteEventParams | null {
     const currentOk = currentTrace.status === TraceStatus.OK;
     if (lastTrace) {
       const lastOk = lastTrace.status === TraceStatus.OK;

@@ -1,5 +1,3 @@
-import * as schedule from 'node-schedule';
-
 import Monitor from './monitor';
 
 class Scheduler {
@@ -12,7 +10,7 @@ class Scheduler {
 
   private enabled: Boolean;
 
-  private runningJob?: schedule.Job;
+  private runningJob?: NodeJS.Timer;
 
   private monitor = new Monitor();
 
@@ -23,13 +21,13 @@ class Scheduler {
   public start(): Boolean {
     if (this.enabled) return false;
 
-    this.runningJob = schedule.scheduleJob('* * * * * *', async () => {
+    this.runningJob = setInterval(async () => {
       try {
         await this.monitor.run();
       } catch (error) {
         console.error(error);
       }
-    });
+    }, 1000);
 
     this.enabled = true;
     console.info('scheduler started');
@@ -39,7 +37,10 @@ class Scheduler {
   public stop(): Boolean {
     if (!this.enabled) return true;
 
-    this.runningJob?.cancel();
+    if (this.runningJob) {
+      clearInterval(this.runningJob);
+    }
+
     this.enabled = false;
     console.info('scheduler stopped');
     return true;
