@@ -8,12 +8,9 @@ import tw from './tailwind.config';
 const nextConfig: NextConfig = {
   experimental: {},
   future: {},
-  webpack(config) {
-    return config;
-  },
 };
 
-export default withLess({
+const finalConfig = withLess({
   lessLoaderOptions: {
     lessOptions: {
       modifyVars: {
@@ -24,3 +21,7 @@ export default withLess({
   },
   ...nextConfig,
 });
+
+export default finalConfig;
+
+module.exports = finalConfig;
