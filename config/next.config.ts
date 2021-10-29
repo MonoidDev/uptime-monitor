@@ -8,6 +8,7 @@ import tw from './tailwind.config';
 const nextConfig: NextConfig = {
   experimental: {},
   future: {},
+  swcMinify: true,
 };
 
 const finalConfig = withLess({
