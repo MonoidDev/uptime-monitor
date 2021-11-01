@@ -35,3 +35,4 @@ next.config.js
 tailwind.config.js
 
 generated/
+tsconfig.tsbuildinfo
