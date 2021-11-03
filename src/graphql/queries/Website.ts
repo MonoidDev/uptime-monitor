@@ -40,8 +40,8 @@ export const websites = queryField('websites', {
   ) {
     const count = await ctx.websiteService.total(keyword);
     const queryResult = await ctx.websiteService.findWebsites(page, pageSize, keyword, sortByName);
-    const results = await Promise.all(queryResult.map((w) => ({
-      status: ctx.websiteService.findWebsiteStatus(w.id),
+    const results = await Promise.all(queryResult.map(async (w) => ({
+      status: await ctx.websiteService.findWebsiteStatus(w.id),
       ...w,
     })));
     return {
