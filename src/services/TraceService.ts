@@ -1,3 +1,4 @@
+import { Prisma, TraceStatus } from '@prisma/client';
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
 
@@ -5,7 +6,6 @@ import { TraceQuery } from '../../graphql/client/generated';
 import { getStartFromRangeTime, getTickFromRangeTime } from '../utils/date';
 import { BaseService } from './BaseService';
 import { createCursorQuery } from './helpers/cursorQuery';
-import { Prisma, TraceStatus } from '.prisma/client';
 
 dayjs.extend(duration);
 

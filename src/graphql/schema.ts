@@ -33,7 +33,7 @@ export const createSchema = (options: CreateSchemaOptions = {}) => {
       modules: [
         {
           // eslint-disable-next-line no-eval
-          module: eval("require.resolve('.prisma/client/index.d.ts')"),
+          module: eval("require.resolve('@prisma/client/index.d.ts')"),
           // Escape webpack from handling it
           alias: 'prisma',
         },

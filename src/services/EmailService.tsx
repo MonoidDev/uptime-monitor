@@ -1,10 +1,9 @@
 import React from 'react';
 
+import { Website } from '@prisma/client';
 // @ts-ignore
 import * as nodemailer from 'nodemailer';
 import ReactDOMServer from 'react-dom/server';
-
-import { Website } from '.prisma/client';
 
 export class EmailService {
   mailer: nodemailer.Transporter;

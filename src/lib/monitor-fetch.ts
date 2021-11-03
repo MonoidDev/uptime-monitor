@@ -1,13 +1,12 @@
 import http from 'http';
 import https from 'https';
 
+import { TraceStatus } from '@prisma/client';
 import AbortController from 'abort-controller';
 import fetch, { FetchError, Headers } from 'node-fetch';
 import Retry from 'retry';
 // @ts-expect-error
 import SslRootCAs from 'ssl-root-cas';
-
-import { TraceStatus } from '.prisma/client';
 
 /* eslint-disable @typescript-eslint/lines-between-class-members */
 class PingResult {

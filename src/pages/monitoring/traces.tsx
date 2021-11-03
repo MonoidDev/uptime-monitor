@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 
 import useSearch from '@monoid-dev/use-search';
+import type { TraceStatus } from '@prisma/client';
 import {
   Typography,
   Table,
@@ -20,7 +21,6 @@ import Link from 'next/link';
 import * as h from 'tyrann-io';
 
 import { Layout } from '../../components/Layout';
-import type { TraceStatus } from '.prisma/client';
 
 interface Website {
   name: string,

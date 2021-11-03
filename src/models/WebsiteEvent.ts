@@ -1,14 +1,13 @@
 import {
-  WebsiteEventDataHighLatency,
-  WebsiteEventSource,
-} from 'app/graphql/types/EventSchema';
-
-import {
   Prisma,
   SeverityType,
   Trace,
   Website,
-} from '.prisma/client';
+} from '@prisma/client';
+import {
+  WebsiteEventDataHighLatency,
+  WebsiteEventSource,
+} from 'app/graphql/types/EventSchema';
 
 export type WebsiteEventParams = {
   website: Website,

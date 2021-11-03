@@ -1,3 +1,4 @@
+import { TraceStatus } from '@prisma/client';
 import dayjs from 'dayjs';
 import range from 'lodash/range';
 
@@ -9,7 +10,6 @@ import { MonitorService } from '../src/services/MonitorService';
 import { TraceService } from '../src/services/TraceService';
 import { UserService } from '../src/services/UserService';
 import { WebsiteService } from '../src/services/WebsiteService';
-import { TraceStatus } from '.prisma/client';
 
 if (process.env.NODE_ENV !== 'development') {
   throw new Error('seed.ts is only for development!');

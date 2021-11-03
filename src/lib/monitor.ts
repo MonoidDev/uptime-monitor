@@ -1,15 +1,15 @@
+import {
+  ErrorPredicate,
+  Trace,
+  TraceStatus,
+  Website,
+} from '@prisma/client';
 import { WebsiteEventSource } from 'app/graphql/types/EventSchema';
 import { WebsiteEventParams } from 'app/models/WebsiteEvent';
 import { EmailService } from 'app/services/EmailService';
 import { MonitorService } from 'app/services/MonitorService';
 
 import { doPing } from './monitor-fetch';
-import {
-  ErrorPredicate,
-  Trace,
-  TraceStatus,
-  Website,
-} from '.prisma/client';
 
 const monitorService = new MonitorService();
 
