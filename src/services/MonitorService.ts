@@ -66,4 +66,16 @@ export class MonitorService {
       data: createInput,
     });
   }
+
+  async updateWebsiteHttpsCertExpiredAt(websiteId: number, expiredAt: number) {
+    return prisma.website.update({
+      where: {
+        id: websiteId,
+      },
+      data: {
+        httpsCertExpiredAt: new Date(expiredAt),
+        httpsCertExpireAlerted: false,
+      },
+    });
+  }
 }
