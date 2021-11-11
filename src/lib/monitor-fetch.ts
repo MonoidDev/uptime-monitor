@@ -8,6 +8,8 @@ import Retry from 'retry';
 // @ts-expect-error
 import SslRootCAs from 'ssl-root-cas';
 
+import { doTlsPing } from './monitor-tlsping';
+
 /* eslint-disable @typescript-eslint/lines-between-class-members */
 class PingResult {
   traceStatus?: TraceStatus;
@@ -17,6 +19,7 @@ class PingResult {
   reqHeaders: String[] = [];
   resHeaders?: String[];
   resBody?: string;
+  tlsExpiredAt?: number;
 }
 /* eslint-enable @typescript-eslint/lines-between-class-members */
 
@@ -88,8 +91,16 @@ const sslErrors = [
   'HOSTNAME_MISMATCH',
 ];
 
-async function doPing(url: string, retries: number): Promise<PingResult> {
+async function doPing(rawUrl: string, retries: number): Promise<PingResult> {
   const result = new PingResult();
+
+  if (rawUrl.startsWith('https://')) {
+    const peercert = await doTlsPing(rawUrl);
+    if (peercert) {
+      const expiredAt = Date.parse(peercert.valid_to);
+      result.tlsExpiredAt = expiredAt;
+    }
+  }
 
   const reqHeadersDefault: { [key: string]: string } = {
     'Accept-Encoding': 'gzip,deflate,br',
@@ -121,7 +132,7 @@ async function doPing(url: string, retries: number): Promise<PingResult> {
 
       // console.log(`[doPing] pinging ${url}`);
       try {
-        const response = await fetch(url, {
+        const response = await fetch(rawUrl, {
           signal: controller.signal,
           method: 'GET',
           headers: reqHeaders,
@@ -168,7 +179,7 @@ async function doPing(url: string, retries: number): Promise<PingResult> {
 
       const endAt = new Date();
       result.latency = endAt.getTime() - startAt.getTime();
-      // console.log(`[doPing] pinged ${url} in ${result.latency}ms.`);
+      // console.log(`[doPing] pinged ${rawUrl} in ${result.latency}ms.`);
 
       resolve();
     });
