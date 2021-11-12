@@ -95,10 +95,14 @@ async function doPing(rawUrl: string, retries: number): Promise<PingResult> {
   const result = new PingResult();
 
   if (rawUrl.startsWith('https://')) {
-    const peercert = await doTlsPing(rawUrl);
-    if (peercert) {
-      const expiredAt = Date.parse(peercert.valid_to);
-      result.tlsExpiredAt = expiredAt;
+    try {
+      const peercert = await doTlsPing(rawUrl);
+      if (peercert) {
+        const expiredAt = Date.parse(peercert.valid_to);
+        result.tlsExpiredAt = expiredAt;
+      }
+    } catch (error: unknown) {
+      console.warn(`Failed to doTlsPing: ${(error as Error).message}`);
     }
   }
 

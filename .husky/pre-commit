@@ -1,4 +1,4 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
-yarn concurrently "yarn tsc" "yarn lint"
+npx yarn concurrently "yarn tsc" "yarn lint"
