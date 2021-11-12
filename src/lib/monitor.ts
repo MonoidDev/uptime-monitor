@@ -141,24 +141,25 @@ class Monitor {
           }
         }
       }
+
+      if (result.tlsExpiredAt) {
+        if (!website.httpsCertExpireAlerted && (result.tlsExpiredAt - new Date().getTime()) <= 7 * 24 * 3600 * 1000) {
+          for (const email of website.emails) {
+            await emailService.sendWebsiteHttpsExpireAlert(website, email);
+          }
+          await monitorService.updateWebsiteHttpsCertExpireAlerted(website.id, true);
+        }
+        if (result.tlsExpiredAt !== website.httpsCertExpiredAt?.getTime()) {
+          await monitorService.updateWebsiteHttpsCertExpiredAt(website.id, result.tlsExpiredAt);
+          await monitorService.updateWebsiteHttpsCertExpireAlerted(website.id, false);
+        }
+      }
+
       const trace = await monitorService.addTrace(website, result);
 
       const eventAvailability = this.checkEventAvailability(website, lastTrace, trace);
       if (eventAvailability !== null) {
         await monitorService.addEvent(eventAvailability);
-        if (result.tlsExpiredAt) {
-          if (result.tlsExpiredAt === website.httpsCertExpiredAt?.getTime()) {
-            if (!website.httpsCertExpireAlerted) {
-              if (result.tlsExpiredAt + 7 * 24 * 3600 * 1000 >= new Date().getTime()) {
-                for (const email of website.emails) {
-                  await emailService.sendWebsiteHttpsExpireAlert(website, email);
-                }
-              }
-            }
-          } else {
-            await monitorService.updateWebsiteHttpsCertExpiredAt(website.id, result.tlsExpiredAt);
-          }
-        }
         if (eventAvailability.source === WebsiteEventSource.NotAvailable) {
           for (const email of website.emails) {
             await emailService.sendWebsiteAlert(website, email);
