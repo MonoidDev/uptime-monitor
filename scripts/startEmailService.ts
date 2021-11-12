@@ -5,7 +5,10 @@ import { EmailService } from '../src/services/EmailService';
   const service = new EmailService();
   const website = await prisma.website.findFirst();
 
-  const result = await service.sendWebsiteAlert(website!, 'wangchenyu2017@gmail.com');
+  let result: any;
+  result = await service.sendWebsiteAlert(website!, 'wangchenyu2017@gmail.com');
+  console.info(result);
 
+  result = await service.sendWebsiteHttpsExpireAlert(website!, 'wangchenyu2017@gmail.com');
   console.info(result);
 })();
