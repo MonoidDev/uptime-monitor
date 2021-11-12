@@ -244,6 +244,7 @@ if (process.env.NODE_ENV !== 'development') {
       enabled: true,
       emails: ['wangchenyu2017@gmail.com'],
       createdAt: dayjs().subtract(((n - 31) * ((3600 * 24) * 15)) / n, 'seconds').toISOString(),
+      httpsCertExpiredAt: dayjs().subtract(1, 'day').toDate(),
     },
   });
 
@@ -256,6 +257,7 @@ if (process.env.NODE_ENV !== 'development') {
       enabled: true,
       emails: ['wangchenyu2017@gmail.com'],
       createdAt: dayjs().subtract(((n - 31) * ((3600 * 24) * 15)) / n, 'seconds').toISOString(),
+      httpsCertExpiredAt: dayjs().add(1, 'day').toDate(),
     },
   });
 
@@ -268,6 +270,7 @@ if (process.env.NODE_ENV !== 'development') {
       enabled: true,
       emails: ['wangchenyu2017@gmail.com'],
       createdAt: dayjs().subtract(((n - 31) * ((3600 * 24) * 15)) / n, 'seconds').toISOString(),
+      httpsCertExpiredAt: dayjs().add(100, 'day').toDate(),
     },
   });
 

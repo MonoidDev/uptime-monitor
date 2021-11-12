@@ -9,6 +9,10 @@ fragment WebsiteFrag on Website {
   emails
   status
   errorPredicate
+  sslMessage {
+    severity
+    message
+  }
 }
 
 query GetWebsiteById($id: Int!) {

@@ -10,6 +10,7 @@ import {
   Input,
 } from 'antd';
 import { DeleteButton } from 'app/components/DeleteButton';
+import { SSLMessage } from 'app/components/SSLMessage';
 import { StatusArray } from 'app/components/StatusArray';
 import { gStyles } from 'app/styles';
 import classNames from 'classnames';
@@ -43,6 +44,8 @@ export default function Page() {
     fetchPolicy: 'cache-and-network',
   });
 
+  type WebsiteItem = NonNullable<NonNullable<(typeof websites)['data']>['websites']>['results'][number];
+
   const [deleteWebsite] = useDeleteWebsiteMutation();
 
   const websitesData = websites.data?.websites;
@@ -58,7 +61,7 @@ export default function Page() {
     return itemNum === 1 && page !== 0;
   };
 
-  const getOnDelete = (record:WebsiteItem) => {
+  const getOnDelete = (record: WebsiteItem) => {
     return async () => {
       await deleteWebsite({
         variables: {
@@ -148,9 +151,14 @@ export default function Page() {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
-      render: (status: any[]) => (
-        <div className="flex justify-start space-x-1">
-          <StatusArray status={status} />
+      render: (status: any[], record: WebsiteItem) => (
+        <div className="flex gap-4 items-center">
+          <div className="flex justify-start space-x-1">
+            <StatusArray status={status} />
+          </div>
+          <div>
+            <SSLMessage sslMessage={record.sslMessage} />
+          </div>
         </div>
       ),
     },
@@ -251,13 +259,4 @@ export default function Page() {
       </div>
     </Layout>
   );
-}
-
-interface WebsiteItem {
-  id: number;
-  name: string;
-  url: string;
-  pingInterval: number;
-  enabled: boolean;
-  userId: number;
 }

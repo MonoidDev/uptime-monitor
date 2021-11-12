@@ -11,6 +11,7 @@ import {
 } from 'app/components/dashboard';
 import { Layout } from 'app/components/Layout';
 import { ReloadApollo } from 'app/components/ReloadApollo';
+import { SSLMessage } from 'app/components/SSLMessage';
 import { StatusArray } from 'app/components/StatusArray';
 import { mapErrorPredicateExplanation } from 'app/data/websites';
 import { usePageQuery } from 'app/hooks/usePageQuery';
@@ -112,6 +113,12 @@ export default function Page() {
               {website.data?.website?.errorPredicate}
             </span>
           </Descriptions.Item>
+          {website.data?.website?.sslMessage && (
+            <Descriptions.Item label="SSL">
+              <SSLMessage sslMessage={website.data?.website?.sslMessage} />
+            </Descriptions.Item>
+          )}
+
         </Descriptions>
 
         <Link

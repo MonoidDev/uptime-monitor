@@ -1,6 +1,9 @@
+import humanizeDuration from 'humanize-duration';
 import {
   objectType, inputObjectType, nonNull, enumType,
 } from 'nexus';
+
+import { SeverityType } from './Event';
 
 export const WebsiteStatusType = enumType({
   name: 'WebsiteStatusType',
@@ -21,6 +24,57 @@ export const Website = objectType({
     t.model.createdAt();
     t.list.field('status', {
       type: nonNull(WebsiteStatusType),
+    });
+    t.model.httpsCertExpiredAt();
+    t.nonNull.field('sslMessage', {
+      type: objectType({
+        name: 'SSLMessage',
+        definition(t2) {
+          t2.field('severity', {
+            type: nonNull(SeverityType),
+          });
+          t2.nonNull.string('message');
+        },
+      }),
+      resolve(source) {
+        if (source.url.startsWith('https://')) {
+          if (source.httpsCertExpiredAt == null) {
+            return {
+              severity: 'INFO',
+              message: 'SSL expiration is unknown. ',
+            };
+          }
+
+          const duration = source.httpsCertExpiredAt.getTime() - Date.now();
+          const humanized = humanizeDuration(duration, {
+            units: ['y', 'mo', 'w', 'd', 'h'],
+            round: true,
+          });
+
+          if (duration > 0 && duration < 7 * 24 * 3600 * 1000) {
+            return {
+              severity: 'WARN',
+              message: `SSL is expiring in ${humanized}. `,
+            };
+          }
+
+          if (duration <= 0) {
+            return {
+              severity: 'ERROR',
+              message: `SSL has expired at ${source.httpsCertExpiredAt.toUTCString()}`,
+            };
+          }
+
+          return {
+            severity: 'LOG',
+            message: `SSL is valid until ${source.httpsCertExpiredAt.toDateString()}`,
+          };
+        }
+        return {
+          severity: 'LOG',
+          message: 'No SSL is configured for this website. ',
+        };
+      },
     });
   },
 });

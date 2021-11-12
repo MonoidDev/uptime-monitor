@@ -102,6 +102,11 @@ type Query {
   websites(keyword: String, page: Int!, pageSize: Int!, sortByName: String): PaginatedWebsite
 }
 
+type SSLMessage {
+  message: String!
+  severity: SeverityType!
+}
+
 enum SeverityType {
   ERROR
   FATAL
@@ -201,9 +206,11 @@ type Website {
   emails: [String!]!
   enabled: Boolean!
   errorPredicate: ErrorPredicate!
+  httpsCertExpiredAt: DateTime
   id: Int!
   name: String!
   pingInterval: Int!
+  sslMessage: SSLMessage!
   status: [WebsiteStatusType!]
   url: String!
   userId: Int!
