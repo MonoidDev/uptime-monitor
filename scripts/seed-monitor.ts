@@ -66,5 +66,17 @@ if (process.env.NODE_ENV !== 'development') {
     },
   });
 
+  await prisma.website.create({
+    data: {
+      userId: user.id,
+      name: 'nodns',
+      url: 'https://blog.chenyu.pw',
+      pingInterval: 15,
+      enabled: true,
+      emails: ['wangchenyu2017@gmail.com'],
+      createdAt: dayjs().toISOString(),
+    },
+  });
+
   await prisma.$disconnect();
 })();

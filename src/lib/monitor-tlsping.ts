@@ -13,6 +13,8 @@ async function doTlsPing(rawUrl: string): Promise<tls.PeerCertificate | undefine
     const socket = tls.connect({
       host: parsedUrl.host,
       port,
+      servername: parsedUrl.host,
+      rejectUnauthorized: false,
     });
     socket.on('secureConnect', () => {
       cert = socket.getPeerCertificate(false);
