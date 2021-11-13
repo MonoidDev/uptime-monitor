@@ -37,9 +37,7 @@ const httpAgent = new http.Agent({
 });
 
 const rootCAs = SslRootCAs.create();
-rootCAs.addFile(require.resolve('node_extra_ca_certs_mozilla_bundle/ca_bundle/ca_intermediate_bundle.pem'));
 rootCAs.addFile(require.resolve('node_extra_ca_certs_mozilla_bundle/ca_bundle/ca_intermediate_root_bundle.pem'));
-rootCAs.addFile(require.resolve('node_extra_ca_certs_mozilla_bundle/ca_bundle/ca_root_bundle.pem'));
 
 https.globalAgent.options.ca = rootCAs;
 
