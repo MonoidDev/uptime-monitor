@@ -145,7 +145,11 @@ class Monitor {
       if (result.tlsExpiredAt) {
         if (!website.httpsCertExpireAlerted && (result.tlsExpiredAt - new Date().getTime()) <= 7 * 24 * 3600 * 1000) {
           for (const email of website.emails) {
-            await emailService.sendWebsiteHttpsExpireAlert(website, email);
+            await emailService.sendWebsiteHttpsExpireAlert(
+              website,
+              new Date(result.tlsExpiredAt),
+              email,
+            );
           }
           await monitorService.updateWebsiteHttpsCertExpireAlerted(website.id, true);
         }

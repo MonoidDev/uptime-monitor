@@ -42,41 +42,66 @@ if (process.env.NODE_ENV !== 'development') {
     inputPassword: '123123123',
   });
 
-  await prisma.website.create({
-    data: {
-      userId: user.id,
-      name: 'baidu',
-      url: 'https://www.baidu.com',
-      pingInterval: 5,
-      enabled: true,
-      emails: ['wangchenyu2017@gmail.com'],
-      createdAt: dayjs().toISOString(),
-    },
-  });
+  // await prisma.website.create({
+  //   data: {
+  //     userId: user.id,
+  //     name: 'baidu',
+  //     url: 'https://www.baidu.com',
+  //     pingInterval: 5,
+  //     enabled: true,
+  //     emails: ['wangchenyu2017@gmail.com'],
+  //     createdAt: dayjs().toISOString(),
+  //   },
+  // });
+
+  // await prisma.website.create({
+  //   data: {
+  //     userId: user.id,
+  //     name: 'nodns',
+  //     url: 'https://thisdnsdoesnotexists',
+  //     pingInterval: 5,
+  //     enabled: true,
+  //     emails: ['wangchenyu2017@gmail.com'],
+  //     createdAt: dayjs().toISOString(),
+  //   },
+  // });
+
+  // await prisma.website.create({
+  //   data: {
+  //     userId: user.id,
+  //     name: 'nodns',
+  //     url: 'https://blog.chenyu.pw',
+  //     pingInterval: 15,
+  //     enabled: true,
+  //     emails: ['wangchenyu2017@gmail.com'],
+  //     createdAt: dayjs().toISOString(),
+  //   },
+  // });
 
   await prisma.website.create({
     data: {
       userId: user.id,
-      name: 'nodns',
-      url: 'https://thisdnsdoesnotexists',
-      pingInterval: 5,
-      enabled: true,
-      emails: ['wangchenyu2017@gmail.com'],
-      createdAt: dayjs().toISOString(),
-    },
-  });
-
-  await prisma.website.create({
-    data: {
-      userId: user.id,
-      name: 'nodns',
-      url: 'https://blog.chenyu.pw',
+      name: 'Werkstatt API',
+      url: 'https://werkstatt.grimme.io/api',
       pingInterval: 15,
       enabled: true,
       emails: ['wangchenyu2017@gmail.com'],
       createdAt: dayjs().toISOString(),
+      errorPredicate: 'HTTP_NOT_5XX',
     },
   });
+
+  // await prisma.website.create({
+  //   data: {
+  //     userId: user.id,
+  //     name: 'Audit App API',
+  //     url: 'https://auditapp.grimme.io/api',
+  //     pingInterval: 15,
+  //     enabled: true,
+  //     emails: ['wangchenyu2017@gmail.com'],
+  //     createdAt: dayjs().toISOString(),
+  //   },
+  // });
 
   await prisma.$disconnect();
 })();

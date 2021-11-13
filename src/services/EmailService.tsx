@@ -76,9 +76,9 @@ export class EmailService {
     });
   }
 
-  getWebsiteHttpsExpireContent(website: Website) {
+  getWebsiteHttpsExpireContent(website: Website, expiration: Date) {
     const duration = humanizeDuration(
-      website.httpsCertExpiredAt!.getTime() - Date.now(),
+      expiration.getTime() - Date.now(),
       {
         units: ['y', 'mo', 'w', 'd', 'h'],
         round: true,
@@ -104,7 +104,7 @@ export class EmailService {
         {' '}
         at
         {' '}
-        {website.httpsCertExpiredAt?.toUTCString()}
+        {expiration.toUTCString()}
         .
         {' '}
         Please update your certificate in advance.
@@ -125,10 +125,10 @@ export class EmailService {
     };
   }
 
-  async sendWebsiteHttpsExpireAlert(website: Website, to: string) {
-    const { subject, html } = this.getWebsiteHttpsExpireContent(website);
+  async sendWebsiteHttpsExpireAlert(website: Website, expiration: Date, to: string) {
+    const { subject, html } = this.getWebsiteHttpsExpireContent(website, expiration);
 
-    console.info(`Sending alert to ${to} about ${website.url}...`);
+    console.info(`Sending HTTP Expire alert to ${to} about ${website.url}...`);
 
     return this.mailer.sendMail({
       from: this.from,

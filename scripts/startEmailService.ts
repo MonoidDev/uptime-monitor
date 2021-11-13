@@ -9,6 +9,6 @@ import { EmailService } from '../src/services/EmailService';
   result = await service.sendWebsiteAlert(website!, 'wangchenyu2017@gmail.com');
   console.info(result);
 
-  result = await service.sendWebsiteHttpsExpireAlert(website!, 'wangchenyu2017@gmail.com');
+  result = await service.sendWebsiteHttpsExpireAlert(website!, new Date(), 'wangchenyu2017@gmail.com');
   console.info(result);
 })();
