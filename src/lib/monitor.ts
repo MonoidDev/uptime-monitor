@@ -143,6 +143,7 @@ class Monitor {
       }
 
       if (result.tlsExpiredAt) {
+        let didSendAlert = false;
         if (!website.httpsCertExpireAlerted && (result.tlsExpiredAt - new Date().getTime()) <= 7 * 24 * 3600 * 1000) {
           for (const email of website.emails) {
             await emailService.sendWebsiteHttpsExpireAlert(
@@ -151,11 +152,10 @@ class Monitor {
               email,
             );
           }
+          didSendAlert = true;
           await monitorService.updateWebsiteHttpsCertExpireAlerted(website.id, true);
         }
-        // If httpsCertExpiredAt is not null, and we have a different time, it means we must have dealt with that time before.
-        // So the user must be alerted.
-        if (website.httpsCertExpiredAt && result.tlsExpiredAt !== website.httpsCertExpiredAt?.getTime()) {
+        if (!didSendAlert && result.tlsExpiredAt !== website.httpsCertExpiredAt?.getTime()) {
           await monitorService.updateWebsiteHttpsCertExpiredAt(website.id, result.tlsExpiredAt);
           await monitorService.updateWebsiteHttpsCertExpireAlerted(website.id, false);
         }
