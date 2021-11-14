@@ -5,8 +5,6 @@ import { TraceStatus } from '@prisma/client';
 import AbortController from 'abort-controller';
 import fetch, { FetchError, Headers } from 'node-fetch';
 import Retry from 'retry';
-// @ts-expect-error
-import SslRootCAs from 'ssl-root-cas';
 
 import { doTlsPing } from './monitor-tlsping';
 
@@ -36,15 +34,9 @@ const httpAgent = new http.Agent({
   keepAlive: false,
 });
 
-const rootCAs = SslRootCAs.create();
-rootCAs.addFile(require.resolve('node_extra_ca_certs_mozilla_bundle/ca_bundle/ca_intermediate_root_bundle.pem'));
-
-https.globalAgent.options.ca = rootCAs;
-
 const httpsAgent = new https.Agent({
   keepAlive: false,
   rejectUnauthorized: true,
-  ca: rootCAs,
 });
 
 // see: https://nodejs.org/api/errors.html#errors_common_system_errors

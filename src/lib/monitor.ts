@@ -153,7 +153,9 @@ class Monitor {
           }
           await monitorService.updateWebsiteHttpsCertExpireAlerted(website.id, true);
         }
-        if (result.tlsExpiredAt !== website.httpsCertExpiredAt?.getTime()) {
+        // If httpsCertExpiredAt is not null, and we have a different time, it means we must have dealt with that time before.
+        // So the user must be alerted.
+        if (website.httpsCertExpiredAt && result.tlsExpiredAt !== website.httpsCertExpiredAt?.getTime()) {
           await monitorService.updateWebsiteHttpsCertExpiredAt(website.id, result.tlsExpiredAt);
           await monitorService.updateWebsiteHttpsCertExpireAlerted(website.id, false);
         }

@@ -9,3 +9,10 @@ process.once('exit', () => {
 });
 
 Scheduler.start();
+
+// eslint-disable-next-line no-console
+console.time('monitor');
+setInterval(() => {
+  // eslint-disable-next-line no-console
+  console.timeLog('monitor', `Memory use: ${process.memoryUsage().rss}`);
+}, 5000);
