@@ -186,14 +186,6 @@ export default function Page() {
           className={classNames('py-8', gStyles.tableRowClickable)}
           dataSource={websiteItems}
           columns={columns}
-          onRow={(record) => ({
-            onClick() {
-              router.push({
-                pathname: `${url('/monitoring/websiteStatus/[id]')}`,
-                query: `id=${record.id}`,
-              });
-            },
-          })}
           pagination={{
             showSizeChanger: true,
             className: 'flex justify-end pt-10',
