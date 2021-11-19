@@ -10,7 +10,6 @@ import {
   Input,
 } from 'antd';
 import { DeleteButton } from 'app/components/DeleteButton';
-import { SSLMessage } from 'app/components/SSLMessage';
 import { StatusArray } from 'app/components/StatusArray';
 import { gStyles } from 'app/styles';
 import classNames from 'classnames';
@@ -151,13 +150,10 @@ export default function Page() {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
-      render: (status: any[], record: WebsiteItem) => (
+      render: (status: any[]) => (
         <div className="flex gap-4 items-center">
           <div className="flex justify-start space-x-1">
             <StatusArray status={status} />
-          </div>
-          <div>
-            <SSLMessage sslMessage={record.sslMessage} />
           </div>
         </div>
       ),
