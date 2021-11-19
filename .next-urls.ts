@@ -3,6 +3,7 @@ export type StaticUrls =
   | "/auth/login"
   | "/"
   | "/monitoring/events"
+  | "/monitoring/sslStatus"
   | "/monitoring/traces"
   | "/monitoring/websites/add"
   | "/monitoring/websites"
@@ -28,6 +29,7 @@ export const urls = [
   "/auth/login",
   "/",
   "/monitoring/events",
+  "/monitoring/sslStatus",
   "/monitoring/traces",
   "/monitoring/websiteStatus/[id]",
   "/monitoring/websites/[id]",

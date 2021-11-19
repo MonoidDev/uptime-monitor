@@ -102,6 +102,12 @@ export const Layout: React.FC<LayoutProps> = (props) => {
             >
               Events
             </Menu.Item>
+            <Menu.Item
+              key={url('/monitoring/sslStatus')}
+              onClick={() => { router.push(url('/monitoring/sslStatus')); }}
+            >
+              SSL Status
+            </Menu.Item>
           </Menu.SubMenu>
         </Menu>
       </Sider>
