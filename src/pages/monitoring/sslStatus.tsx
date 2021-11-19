@@ -53,7 +53,7 @@ export default function Page() {
     return (
       <div className="flex justify-between items-center">
         <Typography.Title className="!text-primary-dark">
-          Websites
+          SSL Status
         </Typography.Title>
       </div>
     );
