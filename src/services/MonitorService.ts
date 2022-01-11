@@ -1,6 +1,6 @@
 import { Website, TraceType, TraceStatus } from '@prisma/client';
-import { PingResult } from 'app/lib/monitor-fetch';
-import { prisma } from 'app/lib/prisma';
+import { PingResult } from 'app/lib/monitor/monitor-fetch';
+import { prisma } from 'app/lib/prisma/prisma';
 import { buildEvent, WebsiteEventParams } from 'app/models/WebsiteEvent';
 
 export class MonitorService {

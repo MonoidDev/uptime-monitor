@@ -1,10 +1,11 @@
 import { TraceStatus } from '@prisma/client';
+import { WebhookService } from 'app/services/WebhookService';
 import dayjs from 'dayjs';
 import range from 'lodash/range';
 
 import { Context } from '../src/graphql/context';
 import { WebsiteEventSource } from '../src/graphql/types/EventSchema';
-import { prisma } from '../src/lib/prisma';
+import { prisma } from '../src/lib/prisma/prisma';
 import { EventService } from '../src/services/EventService';
 import { MonitorService } from '../src/services/MonitorService';
 import { TraceService } from '../src/services/TraceService';
@@ -16,14 +17,14 @@ if (process.env.NODE_ENV !== 'development') {
 }
 
 (async () => {
-  await prisma.$queryRaw(`
+  await prisma.$queryRaw`
     TRUNCATE TABLE "User" CASCADE;
-  `);
+  `;
 
   for (const seq of ['Event_id_seq', 'Trace_id_seq', 'User_id_seq', 'Website_id_seq']) {
-    await prisma.$queryRaw(`
+    await prisma.$queryRaw`
       ALTER SEQUENCE "${seq}" RESTART;
-    `);
+    `;
   }
 
   function getContext() {
@@ -37,6 +38,7 @@ if (process.env.NODE_ENV !== 'development') {
     userService: new UserService(getContext),
     websiteService: new WebsiteService(getContext),
     traceService: new TraceService(getContext),
+    webhookService: new WebhookService(getContext),
     req: {} as any,
     res: {} as any,
   };

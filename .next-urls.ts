@@ -2,6 +2,8 @@ export type StaticUrls =
   | "/auth/createUser"
   | "/auth/login"
   | "/"
+  | "/integrations/webhooks/form"
+  | "/integrations/webhooks"
   | "/monitoring/events"
   | "/monitoring/sslStatus"
   | "/monitoring/traces"
@@ -28,6 +30,8 @@ export const urls = [
   "/auth/createUser",
   "/auth/login",
   "/",
+  "/integrations/webhooks/form",
+  "/integrations/webhooks",
   "/monitoring/events",
   "/monitoring/sslStatus",
   "/monitoring/traces",

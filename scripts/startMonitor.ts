@@ -1,4 +1,4 @@
-import Scheduler from '../src/lib/monitor-scheduler';
+import Scheduler from '../src/lib/monitor/monitor-scheduler';
 
 process.once('SIGINT', async () => {
   Scheduler.stop();

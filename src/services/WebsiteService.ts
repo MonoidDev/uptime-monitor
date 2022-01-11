@@ -77,7 +77,7 @@ export class WebsiteService extends BaseService {
   }
 
   async findWebsiteStatus(websiteId: number) {
-    const queryResult = await this.ctx.prisma.$queryRaw`
+    const queryResult: any = await this.ctx.prisma.$queryRaw`
       SELECT
         groupId "groupId",
         SUM(CASE WHEN status != 'OK' THEN 1 ELSE 0 END) "httpErrorCount"

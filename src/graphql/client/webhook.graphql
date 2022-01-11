@@ -1,0 +1,50 @@
+mutation TestWebhook($webhook: CreateWebhook!) {
+  testWebhook(webhook: $webhook) {
+    success
+    status
+    body
+    message
+    duration
+  }
+}
+
+mutation CreateWebhook($webhook: CreateWebhook!) {
+  createWebhook(webhook: $webhook) {
+    ...WebhookFrag
+  }
+}
+
+mutation UpdateWebhook($webhookId: Int!, $webhook: CreateWebhook!) {
+  updateWebhook(webhookId: $webhookId, webhook: $webhook) {
+    ...WebhookFrag
+  }
+}
+
+mutation DeleteWebhook($webhookId: Int!) {
+  deleteWebhook(webhookId: $webhookId) {
+    ...WebhookFrag
+  }
+}
+
+query Webhooks($page: Int!, $pageSize: Int!) {
+  webhooks(page: $page, pageSize: $pageSize) {
+    count
+    results {
+      ...WebhookFrag
+    }
+  }
+}
+
+query Webhook($webhookId: Int!) {
+  webhook(webhookId: $webhookId) {
+    ...WebhookFrag
+  }
+}
+
+fragment WebhookFrag on Webhook {
+  userId
+  id
+  name
+  type
+  url
+}

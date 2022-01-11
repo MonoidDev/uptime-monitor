@@ -1,14 +1,15 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 import type { ApolloError } from '@apollo/client';
 import { Form } from 'antd';
+import { createValidate } from 'app/utils/createValidate';
 import * as t from 'io-ts';
 import merge from 'lodash/merge';
 import omit from 'lodash/omit';
+import useDeepCompareEffect from 'react-use/lib/useDeepCompareEffect';
 import * as h from 'tyrann-io';
 
 import { NexusValidateError } from '../../scripts/nexusValidateInput';
-import { createValidate } from '../utils/createValidate';
 
 export const extractServerMessages = (error: ApolloError): string[] => {
   return error.graphQLErrors
@@ -40,6 +41,7 @@ export const useValidation = <T extends Validators, A = any>(options: Validation
   const [form] = Form.useForm();
   const [values, setValues] = useState(initialValues);
   const [submitted, setSubmitted] = useState(false);
+  const initialValuesChangedRef = useRef(0);
 
   const [serverError, setServerError] = useState({
     messages: error && extractServerMessages(error),
@@ -52,6 +54,13 @@ export const useValidation = <T extends Validators, A = any>(options: Validation
       formErrors: error && extractServerFormErrors(error),
     });
   }, [error]);
+
+  useDeepCompareEffect(() => {
+    initialValuesChangedRef.current++;
+    if (initialValuesChangedRef.current > 1) {
+      form.resetFields();
+    }
+  }, [initialValues]);
 
   const validate = useMemo(() => createValidate(type), [type]);
 

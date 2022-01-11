@@ -5,7 +5,7 @@ import { Spin } from 'antd';
 import classNames from 'classnames';
 
 export interface QueryContainerProps {
-  queries?: QueryResult<any, any>[];
+  queries?: (QueryResult<any, any> | boolean | undefined | null)[];
   children: React.ReactNode | (() => React.ReactNode);
   renderError?: () => React.ReactNode;
   renderNotFound?: () => React.ReactNode;
@@ -23,9 +23,14 @@ export const QueryContainer: React.FC<QueryContainerProps> = (props) => {
     isNotFound = false,
   } = props;
 
-  const isSuccessfull = queries.every((q) => q.data !== undefined);
-  const isLoading = queries.some((q) => q.loading);
-  const isFailed = queries.some((q) => q.error);
+  const filteredQueries = queries.filter((q) => q && typeof q !== 'boolean') as QueryResult<
+    any,
+    any
+  >[];
+
+  const isSuccessfull = filteredQueries.every((q) => q.data !== undefined);
+  const isLoading = filteredQueries.some((q) => q.loading);
+  const isFailed = filteredQueries.some((q) => q.error);
 
   const renderChildren = () => {
     if (typeof children === 'function') return children();

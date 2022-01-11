@@ -27,6 +27,12 @@ input CreateUser {
   inputPassword: String!
 }
 
+input CreateWebhook {
+  name: String!
+  type: String!
+  url: String!
+}
+
 scalar DateTime
 
 enum ErrorPredicate {
@@ -62,11 +68,15 @@ input Login {
 
 type Mutation {
   createUser(user: CreateUser!): User
+  createWebhook(webhook: CreateWebhook!): Webhook
   createWebsite(website: CreateUpdateWebsite!): Website
+  deleteWebhook(webhookId: Int!): Webhook
   deleteWebsite(websiteId: Int!): Website
   login(auth: Login!): User
+  testWebhook(webhook: CreateWebhook!): WebhookResult
   updateMe(user: UpdateUser!): User
   updateMyPassword(updatePassword: UpdateUserPassword!): User
+  updateWebhook(webhook: CreateWebhook!, webhookId: Int!): Webhook
   updateWebsite(website: CreateUpdateWebsite!, websiteId: Int!): Website
 }
 
@@ -80,6 +90,11 @@ type PaginatedTraces {
   maxId: Int
   minId: Int
   results: [Trace!]!
+}
+
+type PaginatedWebhooks {
+  count: Int!
+  results: [Webhook!]!
 }
 
 type PaginatedWebsite {
@@ -98,6 +113,8 @@ type Query {
   traces(query: TraceQuery!): PaginatedTraces!
   user(id: Int!): User
   userWebsites: [Website!]!
+  webhook(webhookId: Int!): Webhook
+  webhooks(page: Int!, pageSize: Int!): PaginatedWebhooks
   website(id: Int!): Website
   websites(keyword: String, page: Int!, pageSize: Int!, sortByName: String): PaginatedWebsite
 }
@@ -199,6 +216,22 @@ type User {
   id: Int!
   name: String!
   token: String
+}
+
+type Webhook {
+  id: Int!
+  name: String!
+  type: String!
+  url: String!
+  userId: Int!
+}
+
+type WebhookResult {
+  body: String!
+  duration: Int!
+  message: String!
+  status: Int!
+  success: Boolean!
 }
 
 type Website {

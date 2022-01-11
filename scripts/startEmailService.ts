@@ -1,4 +1,4 @@
-import { prisma } from '../src/lib/prisma';
+import { prisma } from '../src/lib/prisma/prisma';
 import { EmailService } from '../src/services/EmailService';
 
 (async () => {

@@ -1,5 +1,6 @@
 import React from 'react';
 
+import BranchesOutlined from '@ant-design/icons/BranchesOutlined';
 import DownOutlined from '@ant-design/icons/DownOutlined';
 import HomeFilled from '@ant-design/icons/HomeFilled';
 import HomeOutlined from '@ant-design/icons/HomeOutlined';
@@ -27,7 +28,7 @@ export interface BreadcrumbItem {
 export interface LayoutProps {
   showSider?: boolean;
   breadcrumb?: BreadcrumbItem[];
-  queries?: QueryResult<any, any>[];
+  queries?: (QueryResult<any, any> | boolean | undefined | null)[];
   children: React.ReactNode | (() => React.ReactNode);
 }
 
@@ -98,6 +99,17 @@ export const Layout: React.FC<LayoutProps> = (props) => {
               SSL Status
             </Menu.Item>
           </Menu.SubMenu>
+
+          <Menu.SubMenu key="/integrations" icon={<BranchesOutlined />} title="Integrations">
+            <Menu.Item
+              key={url('/integrations/webhooks')}
+              onClick={() => {
+                router.push(url('/integrations/webhooks'));
+              }}
+            >
+              Webhooks
+            </Menu.Item>
+          </Menu.SubMenu>
         </Menu>
       </Sider>
     );
@@ -106,13 +118,13 @@ export const Layout: React.FC<LayoutProps> = (props) => {
   const renderUserMenu = () => {
     const menu = (
       <Menu>
-        <Menu.Item>
+        <Menu.Item key={url('/settings/user')}>
           <Link href={url('/settings/user')}>Edit Profile</Link>
         </Menu.Item>
-        <Menu.Item>
+        <Menu.Item key={url('/settings/changePassword')}>
           <Link href={url('/settings/changePassword')}>Change Password</Link>
         </Menu.Item>
-        <Menu.Item>
+        <Menu.Item key="logout">
           <a onClick={onLogout}>Log out</a>
         </Menu.Item>
       </Menu>
@@ -175,7 +187,11 @@ export const Layout: React.FC<LayoutProps> = (props) => {
               queries={queries}
               renderError={() => (
                 <div className="h-full flex justify-center items-center">
-                  <ErrorView message={queries.map((m) => m.error?.message ?? '').join('\n')} />
+                  <ErrorView
+                    message={queries
+                      .map((m) => (m && typeof m !== 'boolean' && m.error?.message) ?? '')
+                      .join('\n')}
+                  />
                 </div>
               )}
             >

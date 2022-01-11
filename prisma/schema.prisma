@@ -8,62 +8,75 @@ generator client {
 }
 
 model User {
-  id    Int     @id @default(autoincrement())
-  name  String
-  email String @unique
-  isAdmin Boolean @default(false)
-  password String
-  websites Website[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
+  id        Int       @id @default(autoincrement())
+  name      String
+  email     String    @unique
+  isAdmin   Boolean   @default(false)
+  password  String
+  websites  Website[]
+  webhooks  Webhook[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now()) @updatedAt
 }
 
 model Website {
-  id    Int     @id @default(autoincrement())
-  name  String
-  url   String
-  pingInterval Int
-  enabled  Boolean @default(false)
-  userId Int
-  user User @relation(fields: [userId], references: [id])
-  traces Trace[]
-  events Event[]
-  emails String[]
-  errorPredicate ErrorPredicate @default(HTTP_2XX_ONLY)
-  httpsCertExpiredAt DateTime?
-  httpsCertExpireAlerted Boolean @default(false)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
+  id                     Int            @id @default(autoincrement())
+  name                   String
+  url                    String
+  pingInterval           Int
+  enabled                Boolean        @default(false)
+  userId                 Int
+  user                   User           @relation(fields: [userId], references: [id])
+  traces                 Trace[]
+  events                 Event[]
+  emails                 String[]
+  webhooks               Webhook[]
+  errorPredicate         ErrorPredicate @default(HTTP_2XX_ONLY)
+  httpsCertExpiredAt     DateTime?
+  httpsCertExpireAlerted Boolean        @default(false)
+  createdAt              DateTime       @default(now())
+  updatedAt              DateTime       @default(now()) @updatedAt
 }
 
 model Trace {
-  id    Int     @id @default(autoincrement())
-  traceType TraceType
-  userId Int
-  websiteId Int
-  website Website @relation(fields: [websiteId], references: [id])
-  status TraceStatus @default(OK)
-  httpStatusCode Int?
-  duration Int
-  requestHeaders String?
+  id              Int         @id @default(autoincrement())
+  traceType       TraceType
+  userId          Int
+  websiteId       Int
+  website         Website     @relation(fields: [websiteId], references: [id])
+  status          TraceStatus @default(OK)
+  httpStatusCode  Int?
+  duration        Int
+  requestHeaders  String?
   responseHeaders String?
-  responseData String?
-  event Event?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
+  responseData    String?
+  event           Event?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @default(now()) @updatedAt
 }
 
 model Event {
-  id    Int     @id @default(autoincrement())
-  type  String
+  id        Int          @id @default(autoincrement())
+  type      String
   websiteId Int
-  website Website @relation(fields: [websiteId], references: [id])
-  status SeverityType @default(LOG)
-  traceId Int?
-  trace Trace? @relation(fields: [traceId], references: [id])
-  data String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
+  website   Website      @relation(fields: [websiteId], references: [id])
+  status    SeverityType @default(LOG)
+  traceId   Int?         @unique
+  trace     Trace?       @relation(fields: [traceId], references: [id])
+  data      String
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @default(now()) @updatedAt
+}
+
+model Webhook {
+  id   Int    @id @default(autoincrement())
+  name String
+  type String
+  url  String
+
+  websites Website[]
+  user     User     @relation(fields: [userId], references: [id])
+  userId   Int
 }
 
 enum SeverityType {
