@@ -4,16 +4,17 @@
   "private": true,
   "scripts": {
     "postinstall": "husky install && patch-package",
-    "dev": "yarn build:config && concurrently npm:dev:watch-*",
+    "dev": "yarn build:utils && next dev",
     "dev:watch-url": "ts-node scripts/emitNextUrls.ts watch",
     "dev:watch-dev": "next dev",
     "dev:watch-gql": "yarn dev:ts --respawn scripts/emitGqlSchema.ts",
     "dev:watch-cg": "graphql-codegen --watch --config codegen.yml",
-    "build": "yarn db-types && yarn build:config && yarn build:url && yarn build:gql && yarn build:cg && next build",
+    "build": "yarn build:utils && next build",
     "build:url": "yarn ts scripts/emitNextUrls.ts",
     "build:gql": "yarn ts scripts/emitGqlSchema.ts",
     "build:config": "node config/build.js",
     "build:cg": "graphql-codegen --config codegen.yml",
+    "build:utils": "yarn db-types && yarn build:config && yarn build:url && yarn build:gql && yarn build:cg",
     "start:monitor": "yarn ts scripts/startMonitor.ts",
     "start": "yarn concurrently --kill-others -n web,mon 'next start' 'yarn start:monitor'",
     "dev:start": "yarn dev:env concurrently --kill-others -n web,mon 'next start' 'yarn start:monitor'",
@@ -136,7 +137,7 @@
     }
   },
   "engines": {
-    "node": "^14.17.5"
+    "node": "^16.12.0"
   },
   "resolutions": {
     "postcss": "8.3.6"
