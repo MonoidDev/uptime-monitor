@@ -7617,9 +7617,9 @@ next-universal-cookie@^3.0.1:
     cookie "^0.4.1"
 
 next-with-less@^2.0.2:
-  version "2.0.2"
-  resolved "https://registry.yarnpkg.com/next-with-less/-/next-with-less-2.0.2.tgz#391f88ff6c16e680e89c709a0c62cd08fe84219f"
-  integrity sha512-ARPjT6jNwSlGc8RRAhEiOMGfr4HuvvJ2k26WXmEVkpsuSXUe0h4KTb/ML67zxZy1EoBaH3r9Eos0f+SnWTZ1pA==
+  version "2.0.4"
+  resolved "https://registry.yarnpkg.com/next-with-less/-/next-with-less-2.0.4.tgz#4f67a5758669cc015abf801664e32da518c84dba"
+  integrity sha512-vMAXY6ZkpaGr3VXFJK0NsdzHJ4wmPoaduWjKypaS9843MF00WZ6ZG5JWAugYAOzudXxYb2G1vcS/pc1oZyC9wQ==
   dependencies:
     clone-deep "^4.0.1"
 
