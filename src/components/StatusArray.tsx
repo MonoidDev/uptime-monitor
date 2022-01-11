@@ -13,17 +13,12 @@ export const statusToClass = {
 };
 
 export const StatusArray: React.VFC<StatusArrayProps> = (props) => {
-  const {
-    status,
-  } = props;
+  const { status } = props;
 
   return (
     <div title="The up status for past 24 hours. " className="flex space-x-1">
       {status.map((s, i) => (
-        <div
-          key={i}
-          className={classNames('w-1 h-4', statusToClass[s])}
-        />
+        <div key={i} className={classNames('w-1 h-4', statusToClass[s])} />
       ))}
     </div>
   );

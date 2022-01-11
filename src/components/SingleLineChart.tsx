@@ -24,7 +24,7 @@ export interface SingleLineChartProps<T extends {}> {
   linkDataKey: keyof T & string;
   xAxisProps?: XAxisProps;
   yAxisProps?: YAxisProps;
-  tickFormatter?: ((value: any, index: number) => string)
+  tickFormatter?: (value: any, index: number) => string;
 }
 
 export const SingleLineChart = <T extends {}>(props: SingleLineChartProps<T>) => {
@@ -41,23 +41,10 @@ export const SingleLineChart = <T extends {}>(props: SingleLineChartProps<T>) =>
   } = props;
 
   return (
-    <ChartContainer
-      title={title}
-      {...chartContainerProps}
-    >
-      <ResponsiveContainer
-        width="100%"
-        height={300}
-        {...responsiveContainerProps}
-      >
-        <RechartsLineChart
-          data={data}
-          margin={{ top: 25, bottom: 25 }}
-        >
-          <CartesianGrid
-            horizontal
-            vertical={false}
-          />
+    <ChartContainer title={title} {...chartContainerProps}>
+      <ResponsiveContainer width="100%" height={300} {...responsiveContainerProps}>
+        <RechartsLineChart data={data} margin={{ top: 25, bottom: 25 }}>
+          <CartesianGrid horizontal vertical={false} />
           <XAxis
             tickLine={false}
             axisLine={{
@@ -65,7 +52,10 @@ export const SingleLineChart = <T extends {}>(props: SingleLineChartProps<T>) =>
               strokeWidth: 2,
             }}
             tick={{
-              fill: '#C6BECF', fontSize: 12, dy: 15, dx: -8,
+              fill: '#C6BECF',
+              fontSize: 12,
+              dy: 15,
+              dx: -8,
             }}
             padding={{ left: 10, right: 10 }}
             dataKey={xDataKey}
@@ -93,6 +83,5 @@ export const SingleLineChart = <T extends {}>(props: SingleLineChartProps<T>) =>
         </RechartsLineChart>
       </ResponsiveContainer>
     </ChartContainer>
-
   );
 };

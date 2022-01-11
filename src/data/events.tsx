@@ -16,40 +16,23 @@ const getLink = (websiteName: string, id: number) => {
   );
 };
 
-export const websiteEventTypeToDescription: Record<WebsiteEventSource, (websiteName: string, id: number) => React.ReactNode> = {
+export const websiteEventTypeToDescription: Record<
+  WebsiteEventSource,
+  (websiteName: string, id: number) => React.ReactNode
+> = {
   [WebsiteEventSource.HighLatency]: (websiteName: string, id: number) => (
-    <>
-      {getLink(websiteName, id)}
-      {' '}
-      responses with high latency.
-    </>
+    <>{getLink(websiteName, id)} responses with high latency.</>
   ),
   [WebsiteEventSource.NotAvailable]: (websiteName: string, id: number) => (
-    <>
-      {getLink(websiteName, id)}
-      {' '}
-      becomes not available.
-    </>
+    <>{getLink(websiteName, id)} becomes not available.</>
   ),
   [WebsiteEventSource.Enabled]: (websiteName: string, id: number) => (
-    <>
-      {getLink(websiteName, id)}
-      {' '}
-      is enabled.
-    </>
+    <>{getLink(websiteName, id)} is enabled.</>
   ),
   [WebsiteEventSource.Disabled]: (websiteName: string, id: number) => (
-    <>
-      {getLink(websiteName, id)}
-      {' '}
-      is disabled.
-    </>
+    <>{getLink(websiteName, id)} is disabled.</>
   ),
   [WebsiteEventSource.Available]: (websiteName: string, id: number) => (
-    <>
-      {getLink(websiteName, id)}
-      {' '}
-      becomes available.
-    </>
+    <>{getLink(websiteName, id)} becomes available.</>
   ),
 };

@@ -8,7 +8,7 @@ async function doTlsPing(rawUrl: string): Promise<tls.PeerCertificate | undefine
     port = parseInt(parsedUrl.port, 10);
   }
   return new Promise((resolve, reject) => {
-    let cert : tls.PeerCertificate | undefined;
+    let cert: tls.PeerCertificate | undefined;
 
     const socket = tls.connect({
       host: parsedUrl.host,
@@ -29,6 +29,4 @@ async function doTlsPing(rawUrl: string): Promise<tls.PeerCertificate | undefine
   });
 }
 
-export {
-  doTlsPing,
-};
+export { doTlsPing };

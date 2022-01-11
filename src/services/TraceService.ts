@@ -9,9 +9,9 @@ import { createCursorQuery } from './helpers/cursorQuery';
 
 dayjs.extend(duration);
 
-export type CountGroup = { groupId: number, count: number }[];
+export type CountGroup = { groupId: number; count: number }[];
 
-export type AverageDurationGroup = { groupId: number, avgDuration: number }[];
+export type AverageDurationGroup = { groupId: number; avgDuration: number }[];
 
 export class TraceService extends BaseService {
   async findTraceById(id: number) {
@@ -27,7 +27,10 @@ export class TraceService extends BaseService {
     });
   }
 
-  async queryErrorCountGroupByDate(rangeTime: string, byWebsiteId?: number | null): Promise<CountGroup> {
+  async queryErrorCountGroupByDate(
+    rangeTime: string,
+    byWebsiteId?: number | null,
+  ): Promise<CountGroup> {
     const websiteIds = byWebsiteId
       ? [byWebsiteId]
       : await this.ctx.websiteService.findUserWebsiteIds();
@@ -72,7 +75,10 @@ export class TraceService extends BaseService {
     }
   }
 
-  async queryAverageDurationGroupByDate(rangeTime: string, byWebsiteId?: number | null): Promise<AverageDurationGroup> {
+  async queryAverageDurationGroupByDate(
+    rangeTime: string,
+    byWebsiteId?: number | null,
+  ): Promise<AverageDurationGroup> {
     const websiteIds = byWebsiteId
       ? [byWebsiteId]
       : await this.ctx.websiteService.findUserWebsiteIds();
@@ -137,52 +143,44 @@ export class TraceService extends BaseService {
   }
 
   async findTraces(query: TraceQuery) {
-    const {
-      isError,
-      websiteId,
-      websiteIds,
-      rangeTime,
-      timeAfter,
-      timeBefore,
-      status,
-    } = query;
+    const { isError, websiteId, websiteIds, rangeTime, timeAfter, timeBefore, status } = query;
 
     const { cursorWhere, orderBy } = createCursorQuery(query);
 
     const where = {
-      ...isError && {
+      ...(isError && {
         status: {
           not: 'OK' as const,
         },
-      },
-      ...status && {
+      }),
+      ...(status && {
         status: {
           in: status as TraceStatus[],
         },
-      },
-      ...websiteId && {
+      }),
+      ...(websiteId && {
         websiteId,
-      },
-      ...websiteIds && {
+      }),
+      ...(websiteIds && {
         websiteId: {
           in: websiteIds,
         },
-      },
-      ...rangeTime && {
+      }),
+      ...(rangeTime && {
         createdAt: {
           gt: getStartFromRangeTime(rangeTime),
         },
-      },
-      ...timeAfter && {
+      }),
+      ...(timeAfter && {
         createdAt: {
           gt: timeAfter,
         },
-      },
-      ...timeBefore && {
+      }),
+      ...(timeBefore && {
         createdAt: {
           lt: timeBefore,
         },
-      },
+      }),
     } as const;
 
     const whereWithId = {
@@ -191,19 +189,23 @@ export class TraceService extends BaseService {
       userId: this.ctx.authInfo!.id,
     } as const;
 
-    const minId = (await this.ctx.prisma.trace.findFirst({
-      where,
-      orderBy: {
-        id: 'asc',
-      },
-    }))?.id;
+    const minId = (
+      await this.ctx.prisma.trace.findFirst({
+        where,
+        orderBy: {
+          id: 'asc',
+        },
+      })
+    )?.id;
 
-    const maxId = (await this.ctx.prisma.trace.findFirst({
-      where,
-      orderBy: {
-        id: 'desc',
-      },
-    }))?.id;
+    const maxId = (
+      await this.ctx.prisma.trace.findFirst({
+        where,
+        orderBy: {
+          id: 'desc',
+        },
+      })
+    )?.id;
 
     const results = await this.ctx.prisma.trace.findMany({
       where: whereWithId,

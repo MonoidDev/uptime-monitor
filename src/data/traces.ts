@@ -1,6 +1,4 @@
-import type {
-  TraceStatus,
-} from '@prisma/client';
+import type { TraceStatus } from '@prisma/client';
 import { TraceStatusChoices } from 'graphql/client/generated';
 
 export const allTraceStatus = Object.values(TraceStatusChoices);

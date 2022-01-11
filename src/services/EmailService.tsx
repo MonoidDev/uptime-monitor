@@ -38,19 +38,13 @@ export class EmailService {
       <>
         Dear User:
         <br />
-        Your website
-        {' '}
+        Your website{' '}
         <a href={website.url}>
           <b>{website.name}</b>
-        </a>
-        {' '}
+        </a>{' '}
         has just responded with error.
-
         <br />
-
-        For more details:
-        {' '}
-        {url}
+        For more details: {url}
       </>
     );
 
@@ -77,13 +71,10 @@ export class EmailService {
   }
 
   getWebsiteHttpsExpireContent(website: Website, expiration: Date) {
-    const duration = humanizeDuration(
-      expiration.getTime() - Date.now(),
-      {
-        units: ['y', 'mo', 'w', 'd', 'h'],
-        round: true,
-      },
-    );
+    const duration = humanizeDuration(expiration.getTime() - Date.now(), {
+      units: ['y', 'mo', 'w', 'd', 'h'],
+      round: true,
+    });
     const subject = `[Uptime Monitor] ${website.name} expires in ${duration}!`;
 
     const url = `https://uptime-monitor-staging.herokuapp.com/monitoring/websiteStatus/${website.id}`;
@@ -92,28 +83,14 @@ export class EmailService {
       <>
         Dear User:
         <br />
-        The SSL certificate website for
-        {' '}
+        The SSL certificate website for{' '}
         <a href={website.url}>
           <b>{website.name}</b>
-        </a>
-        {' '}
-        is expiring in
-        {' '}
-        {duration}
-        {' '}
-        at
-        {' '}
-        {expiration.toUTCString()}
-        .
-        {' '}
-        Please update your certificate in advance.
-
+        </a>{' '}
+        is expiring in {duration} at {expiration.toUTCString()}. Please update your certificate in
+        advance.
         <br />
-
-        For more details:
-        {' '}
-        {url}
+        For more details: {url}
       </>
     );
 

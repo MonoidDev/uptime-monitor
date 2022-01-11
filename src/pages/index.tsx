@@ -1,12 +1,8 @@
 import React, { useMemo } from 'react';
 
 import useSearch from '@monoid-dev/use-search';
-import {
-  Typography, Select, Row, Col,
-} from 'antd';
-import {
-  ErrorChart, ErrorTable, EventTable, ResponseTimeChart,
-} from 'app/components/dashboard';
+import { Typography, Select, Row, Col } from 'antd';
+import { ErrorChart, ErrorTable, EventTable, ResponseTimeChart } from 'app/components/dashboard';
 import { Layout } from 'app/components/Layout';
 import { ReloadApollo } from 'app/components/ReloadApollo';
 import { gStyles } from 'app/styles';
@@ -20,21 +16,21 @@ import * as h from 'tyrann-io';
 
 export default function Page() {
   const { search, updateSearch } = useSearch(
-    useMemo(() => t.type({
-      rangeTime: h.omittable(t.string),
-    }), []),
+    useMemo(
+      () =>
+        t.type({
+          rangeTime: h.omittable(t.string),
+        }),
+      [],
+    ),
   );
 
-  const {
-    rangeTime = '24h',
-  } = search ?? {};
+  const { rangeTime = '24h' } = search ?? {};
 
   const renderTitle = () => {
     return (
       <div className="flex items-center">
-        <Typography.Title className="!text-primary-dark">
-          Dashboard
-        </Typography.Title>
+        <Typography.Title className="!text-primary-dark">Dashboard</Typography.Title>
 
         <div className="flex-1" />
 
@@ -108,11 +104,15 @@ export const getServerSideProps = () => ({
 });
 
 export const sampleErrorData = range(31).map((i) => ({
-  time: dayjs().subtract(31 - i, 'day').format('D/M'),
+  time: dayjs()
+    .subtract(31 - i, 'day')
+    .format('D/M'),
   count: random(0, 50, false),
 }));
 
 export const sampleResponseTimeData = range(31).map((i) => ({
-  time: dayjs().subtract(31 - i, 'day').format('D/M'),
+  time: dayjs()
+    .subtract(31 - i, 'day')
+    .format('D/M'),
   responseTime: random(100, 200, false),
 }));

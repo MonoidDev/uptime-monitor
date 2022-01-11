@@ -18,33 +18,22 @@ export interface EmitNextUrlsConfig {
 }
 
 export const main = async (config: EmitNextUrlsConfig = {}) => {
-  const {
-    dir = '.',
-    output = '.next-urls.ts',
-    watch = false,
-  } = config;
+  const { dir = '.', output = '.next-urls.ts', watch = false } = config;
 
   if (!output.endsWith('.ts')) {
     throw new Error('Cannot output to a non-typescript file');
   }
 
-  const nextConfig: NextConfig = await loadConfig(
-    'phase-production-build',
-    dir,
-  );
+  const nextConfig: NextConfig = await loadConfig('phase-production-build', dir);
 
   const pagesDir = findPagesDir(dir);
 
   const emit = async () => {
     const pagePaths = await collectPages(pagesDir, nextConfig.pageExtensions!);
 
-    const mappedPages = createPagesMapping(
-      pagePaths, nextConfig.pageExtensions!, true, false,
-    );
+    const mappedPages = createPagesMapping(pagePaths, nextConfig.pageExtensions!, true, false);
 
-    const urls = Object.keys(mappedPages).filter(
-      (s) => !s.match(/^\/(_|api)/),
-    );
+    const urls = Object.keys(mappedPages).filter((s) => !s.match(/^\/(_|api)/));
 
     const dynamicUrls = urls.filter((u) => u.includes('['));
     const staticUrls = urls.filter((u) => !dynamicUrls.includes(u));
@@ -52,7 +41,9 @@ export const main = async (config: EmitNextUrlsConfig = {}) => {
     const makeParam = (dynamicUrl: string) => {
       const { routeKeys } = getParametrizedRoute(dynamicUrl);
       return `{
-        ${Object.keys(routeKeys ?? {}).map((k) => `${k}: string | number;`).join('\n')}
+        ${Object.keys(routeKeys ?? {})
+          .map((k) => `${k}: string | number;`)
+          .join('\n')}
       }`;
     };
 
@@ -91,9 +82,7 @@ export const main = async (config: EmitNextUrlsConfig = {}) => {
       await emit();
       console.info(`${output} is generated. `);
     };
-    chokidar
-      .watch(pagesDir)
-      .on('all', debounce(handleChange, 500));
+    chokidar.watch(pagesDir).on('all', debounce(handleChange, 500));
   } else {
     await emit();
   }

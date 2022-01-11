@@ -1,7 +1,7 @@
 import { ErrorPredicate } from '@prisma/client';
 import { WebsiteEventSource } from 'app/graphql/types/EventSchema';
 import * as t from 'io-ts';
-import { range } from 'lodash';
+import { range } from 'lodash-es';
 
 import { CreateUpdateWebsiteSchema } from '../graphql/types/WebsiteSchema';
 import { BaseService } from './BaseService';
@@ -30,12 +30,12 @@ export class WebsiteService extends BaseService {
         ...this.getFilterWebsiteWhere(keyword),
       },
       orderBy: {
-        ...!sortByName && {
+        ...(!sortByName && {
           createdAt: 'desc',
-        },
-        ...sortByName && {
+        }),
+        ...(sortByName && {
           name: mapSortOrder(sortByName),
-        },
+        }),
       },
     });
   }
@@ -56,10 +56,11 @@ export class WebsiteService extends BaseService {
   async findUserWebsiteIds() {
     const userId = this.ctx.authInfo!.id;
 
-    return (await this.ctx.prisma.website.findMany({
-      where: { userId },
-    }))
-      .map((w) => w.id);
+    return (
+      await this.ctx.prisma.website.findMany({
+        where: { userId },
+      })
+    ).map((w) => w.id);
   }
 
   async findFirstWebsite() {
@@ -89,7 +90,9 @@ export class WebsiteService extends BaseService {
       ) as tmp group by groupId order by groupId;
     `;
 
-    const groupIdToErrorCount = new Map<number, number>(queryResult.map(({ groupId, httpErrorCount }: any) => [groupId, httpErrorCount]));
+    const groupIdToErrorCount = new Map<number, number>(
+      queryResult.map(({ groupId, httpErrorCount }: any) => [groupId, httpErrorCount]),
+    );
 
     return range(12).map((tick) => {
       const errorCount = groupIdToErrorCount.get(tick);
@@ -160,7 +163,7 @@ export class WebsiteService extends BaseService {
   }
 
   async deleteWebsite(websiteId: number) {
-    const [,, website] = await this.ctx.prisma.$transaction([
+    const [, , website] = await this.ctx.prisma.$transaction([
       this.ctx.prisma.event.deleteMany({
         where: {
           websiteId,
@@ -192,20 +195,20 @@ export class WebsiteService extends BaseService {
         {
           OR: [
             {
-              ...keyword && {
+              ...(keyword && {
                 name: {
                   contains: keyword,
                   mode: 'insensitive' as const,
                 },
-              },
+              }),
             },
             {
-              ...keyword && {
+              ...(keyword && {
                 url: {
                   contains: keyword,
                   mode: 'insensitive' as const,
                 },
-              },
+              }),
             },
           ],
         },

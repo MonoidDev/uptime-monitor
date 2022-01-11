@@ -59,9 +59,7 @@ export default function Page() {
   const renderTitle = () => {
     return (
       <div className="flex justify-between items-center">
-        <Typography.Title className="!text-primary-dark">
-          Add Website
-        </Typography.Title>
+        <Typography.Title className="!text-primary-dark">Add Website</Typography.Title>
       </div>
     );
   };
@@ -84,44 +82,26 @@ export default function Page() {
     >
       {renderTitle()}
       <div className="bg-white p-8 shadow-md">
-        <Form
-          {...validation.form}
-          {...formItemLayout}
-          name="websiteSearch"
-        >
+        <Form {...validation.form} {...formItemLayout} name="websiteSearch">
           <Row>
             <Col span={8} />
             {validation.serverError.messages?.map((m, i) => (
               <Alert key={i} message={m} type="error" showIcon />
             ))}
           </Row>
-          <Form.Item
-            {...validation.item('name')}
-            required
-          >
+          <Form.Item {...validation.item('name')} required>
             <Input placeholder="Name" />
           </Form.Item>
-          <Form.Item
-            {...validation.item('url')}
-            required
-          >
+          <Form.Item {...validation.item('url')} required>
             <Input placeholder="URL" />
           </Form.Item>
-          <Form.Item
-            {...validation.item('pingInterval')}
-            required
-          >
+          <Form.Item {...validation.item('pingInterval')} required>
             <InputNumber placeholder="Ping Interval" className="w-full" />
           </Form.Item>
-          <Form.Item
-            {...validation.item('enabled')}
-            valuePropName="checked"
-          >
+          <Form.Item {...validation.item('enabled')} valuePropName="checked">
             <Switch />
           </Form.Item>
-          <Form.List
-            {...validation.item('emails')}
-          >
+          <Form.List {...validation.item('emails')}>
             {(fields, { add, remove }, { errors }) => (
               <>
                 {fields.map((field, index) => (
@@ -131,10 +111,7 @@ export default function Page() {
                     required={false}
                     key={field.key}
                   >
-                    <Form.Item
-                      {...field}
-                      noStyle
-                    >
+                    <Form.Item {...field} noStyle>
                       <Input placeholder="Email" className="w-4/5" />
                     </Form.Item>
                     <MinusCircleOutlined
@@ -158,21 +135,14 @@ export default function Page() {
             )}
           </Form.List>
 
-          <Form.Item
-            {...validation.item('errorPredicate')}
-            required
-          >
+          <Form.Item {...validation.item('errorPredicate')} required>
             <Radio.Group className="py-1">
               <Space direction="vertical">
                 {Object.values(ErrorPredicate).map((e) => (
                   <Radio value={e} key={e}>
-                    <span>
-                      {mapErrorPredicateLabel(e)}
-                    </span>
+                    <span>{mapErrorPredicateLabel(e)}</span>
                     <br />
-                    <span className="text-gray-500">
-                      {mapErrorPredicateExplanation(e)}
-                    </span>
+                    <span className="text-gray-500">{mapErrorPredicateExplanation(e)}</span>
                   </Radio>
                 ))}
               </Space>
@@ -180,12 +150,7 @@ export default function Page() {
           </Form.Item>
 
           <Form.Item>
-            <Button
-              type="primary"
-              shape="round"
-              htmlType="submit"
-              loading={loading}
-            >
+            <Button type="primary" shape="round" htmlType="submit" loading={loading}>
               Add
             </Button>
           </Form.Item>

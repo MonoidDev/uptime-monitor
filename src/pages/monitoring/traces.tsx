@@ -2,12 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 
 import useSearch from '@monoid-dev/use-search';
 import type { TraceStatus } from '@prisma/client';
-import {
-  Typography,
-  Table,
-  Button,
-  Form,
-} from 'antd';
+import { Typography, Table, Button, Form } from 'antd';
 import { dynamicUrl } from 'app/../.next-urls';
 import { CursorPagination } from 'app/components/CursorPagination';
 import { DatePicker } from 'app/components/DatePicker';
@@ -23,8 +18,8 @@ import * as h from 'tyrann-io';
 import { Layout } from '../../components/Layout';
 
 interface Website {
-  name: string,
-  url: string,
+  name: string;
+  url: string;
   id: number;
 }
 
@@ -35,14 +30,18 @@ interface FilterValues {
 
 export default function Page() {
   const { search, updateSearch } = useSearch(
-    useMemo(() => t.type({
-      timeBefore: h.omittable(t.string),
-      timeAfter: h.omittable(t.string),
-      afterId: h.omittable(h.number().cast()),
-      beforeId: h.omittable(h.number().cast()),
-      status: h.omittable(t.array(t.string)),
-      websiteIds: h.omittable(t.array(h.number().cast())),
-    }), []),
+    useMemo(
+      () =>
+        t.type({
+          timeBefore: h.omittable(t.string),
+          timeAfter: h.omittable(t.string),
+          afterId: h.omittable(h.number().cast()),
+          beforeId: h.omittable(h.number().cast()),
+          status: h.omittable(t.array(t.string)),
+          websiteIds: h.omittable(t.array(h.number().cast())),
+        }),
+      [],
+    ),
   );
 
   const userWebsitesResponse = useGetUserWebsitesQuery({
@@ -67,13 +66,7 @@ export default function Page() {
     fetchPolicy: 'cache-and-network',
   });
 
-  const {
-    hasMoreBefore,
-    hasMoreAfter,
-    nextPage,
-    previousPage,
-    resetCursor,
-  } = useCursor({
+  const { hasMoreBefore, hasMoreAfter, nextPage, previousPage, resetCursor } = useCursor({
     cursor: {
       afterId: search?.afterId,
       beforeId: search?.beforeId,
@@ -114,9 +107,7 @@ export default function Page() {
             id: website.id,
           })}
         >
-          <a className="underline">
-            {website.name}
-          </a>
+          <a className="underline">{website.name}</a>
         </Link>
       ),
       filters: [
@@ -124,10 +115,10 @@ export default function Page() {
           text: 'All',
           value: -1,
         },
-        ...userWebsitesResponse.data?.userWebsites.map((w) => ({
+        ...(userWebsitesResponse.data?.userWebsites.map((w) => ({
           text: w.name,
           value: w.id,
-        })) ?? [],
+        })) ?? []),
       ],
       filteredValue: finalSearch.websiteIds,
       filterMultiple: false,
@@ -136,11 +127,7 @@ export default function Page() {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
-      render: (status: TraceStatus) => (
-        <div className={traceStatusToColor[status]}>
-          {status}
-        </div>
-      ),
+      render: (status: TraceStatus) => <div className={traceStatusToColor[status]}>{status}</div>,
       filters: allTraceStatus.map((s) => ({
         text: s,
         value: s,
@@ -151,31 +138,19 @@ export default function Page() {
       title: 'Duration',
       dataIndex: 'duration',
       key: 'duration',
-      render: (duration: number) => (
-        <span>
-          {`${duration}ms`}
-        </span>
-      ),
+      render: (duration: number) => <span>{`${duration}ms`}</span>,
     },
     {
       title: 'Time',
       dataIndex: 'createdAt',
       key: 'createdAt',
-      render: (createdAt: any) => (
-        <span>
-          {dayjs(createdAt).format('YYYY-MM-DD HH:mm:ss')}
-        </span>
-      ),
+      render: (createdAt: any) => <span>{dayjs(createdAt).format('YYYY-MM-DD HH:mm:ss')}</span>,
     },
     {
       title: 'Action',
       key: 'action',
       render: (_: any, record: Exclude<typeof traceItems, undefined>[number]) => (
-        <Button
-          type="primary"
-          shape="round"
-          onClick={() => setCurrentTrace(record.id)}
-        >
+        <Button type="primary" shape="round" onClick={() => setCurrentTrace(record.id)}>
           Details
         </Button>
       ),
@@ -185,16 +160,18 @@ export default function Page() {
   const renderTitle = () => {
     return (
       <div className="flex justify-between items-center">
-        <Typography.Title className="!text-primary-dark">
-          Traces
-        </Typography.Title>
+        <Typography.Title className="!text-primary-dark">Traces</Typography.Title>
       </div>
     );
   };
 
   const renderSearch = () => {
     const onFinish = async (values: FilterValues) => {
-      if (values.timeAfter && values.timeBefore && (values.timeAfter.toISOString() > values.timeBefore.toISOString())) {
+      if (
+        values.timeAfter &&
+        values.timeBefore &&
+        values.timeAfter.toISOString() > values.timeBefore.toISOString()
+      ) {
         // eslint-disable-next-line no-alert
         window.alert('Cannot set the end time later than before time. ');
         return;
@@ -217,23 +194,15 @@ export default function Page() {
           }}
           onFinish={onFinish}
         >
-          <Form.Item
-            name="timeAfter"
-          >
+          <Form.Item name="timeAfter">
             <DatePicker showTime placeholder="Start Time" />
           </Form.Item>
           <span className="pr-3 pt-2"> to </span>
-          <Form.Item
-            name="timeBefore"
-          >
+          <Form.Item name="timeBefore">
             <DatePicker showTime placeholder="End Time" />
           </Form.Item>
           <Form.Item>
-            <Button
-              type="primary"
-              shape="round"
-              htmlType="submit"
-            >
+            <Button type="primary" shape="round" htmlType="submit">
               Search
             </Button>
           </Form.Item>
@@ -245,12 +214,7 @@ export default function Page() {
   const renderBottom = () => {
     return (
       <div className="flex justify-start">
-        <Button
-          type="primary"
-          shape="round"
-          onClick={() => resetCursor()}
-          className="mr-5"
-        >
+        <Button type="primary" shape="round" onClick={() => resetCursor()} className="mr-5">
           Page 1
         </Button>
         <CursorPagination

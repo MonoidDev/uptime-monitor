@@ -15,7 +15,8 @@ export const formStrings = createStrings({
 export const emailRegex = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
 
 export const emailField = (label: string) => {
-  return h.string()
+  return h
+    .string()
     .withLabel(label)
     .min(1, formStrings.notEmpty(label))
     .max(64, formStrings.tooLong(label, 64))
@@ -27,7 +28,8 @@ export const emailArrayField = (label: string) => {
 };
 
 export const newPasswordField = (label: string) => {
-  return h.string()
+  return h
+    .string()
     .withLabel(label)
     .min(8, formStrings.tooShort(label, 8))
     .max(64, formStrings.tooLong(label, 64));
@@ -35,9 +37,7 @@ export const newPasswordField = (label: string) => {
 };
 
 export const requiredStringField = (label: string) => {
-  return h.string()
-    .withLabel(label)
-    .min(1, formStrings.notEmpty(label));
+  return h.string().withLabel(label).min(1, formStrings.notEmpty(label));
 };
 
 export const requiredNumberField = (label: string) => {

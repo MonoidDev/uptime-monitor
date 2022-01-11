@@ -34,15 +34,8 @@ export interface ValidationOptions<P, A> {
   onSubmit?: (values: t.TypeOf<t.InterfaceType<P, A>>) => Promise<void>;
 }
 
-export const useValidation = <T extends Validators, A = any>(
-  options: ValidationOptions<T, A>,
-) => {
-  const {
-    type,
-    initialValues,
-    error,
-    onSubmit,
-  } = options;
+export const useValidation = <T extends Validators, A = any>(options: ValidationOptions<T, A>) => {
+  const { type, initialValues, error, onSubmit } = options;
 
   const [form] = Form.useForm();
   const [values, setValues] = useState(initialValues);
@@ -60,23 +53,19 @@ export const useValidation = <T extends Validators, A = any>(
     });
   }, [error]);
 
-  const validate = useMemo(
-    () => createValidate(type),
-    [type],
-  );
+  const validate = useMemo(() => createValidate(type), [type]);
 
   const errors = validate(values);
 
   const shouldDisplayError = (key: keyof T) => {
-    return (submitted || form.isFieldTouched(key as string))
-    && (key in errors || key in (serverError.formErrors ?? {}));
+    return (
+      (submitted || form.isFieldTouched(key as string)) &&
+      (key in errors || key in (serverError.formErrors ?? {}))
+    );
   };
 
   const getFieldErrorMessage = (key: keyof T) => {
-    return [
-      errors[key],
-      serverError.formErrors?.[key as string],
-    ].filter(Boolean).join('\n');
+    return [errors[key], serverError.formErrors?.[key as string]].filter(Boolean).join('\n');
   };
 
   return {
@@ -102,7 +91,7 @@ export const useValidation = <T extends Validators, A = any>(
       return {
         label: type.props[key].label,
         name: key,
-        validateStatus: shouldDisplayError(key) ? 'error' as const : undefined,
+        validateStatus: shouldDisplayError(key) ? ('error' as const) : undefined,
         help: getFieldErrorMessage(key),
       };
     },

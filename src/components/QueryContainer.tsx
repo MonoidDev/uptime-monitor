@@ -37,25 +37,17 @@ export const QueryContainer: React.FC<QueryContainerProps> = (props) => {
   return (
     <>
       {isSuccessfull && !isNotFound && renderChildren()}
-      {isFailed && (
-        renderError?.() ?? (
-          <div className={classNames(divClass, 'text-red-500')}>
-            Sorry, there is an error!
-          </div>
-        )
-      )}
+      {isFailed &&
+        (renderError?.() ?? (
+          <div className={classNames(divClass, 'text-red-500')}>Sorry, there is an error!</div>
+        ))}
       {isLoading && !isSuccessfull && (
         <div className={divClass}>
           <Spin />
         </div>
       )}
-      {isNotFound && (
-        renderNotFound?.() ?? (
-          <div className={divClass}>
-            Sorry, nothing to show here!
-          </div>
-        )
-      )}
+      {isNotFound &&
+        (renderNotFound?.() ?? <div className={divClass}>Sorry, nothing to show here!</div>)}
     </>
   );
 };

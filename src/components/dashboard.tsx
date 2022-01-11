@@ -15,7 +15,11 @@ import { websiteEventTypeToDescription } from 'app/data/events';
 import { traceStatusToColor } from 'app/data/traces';
 import { WebsiteEventSource } from 'app/graphql/types/EventSchema';
 import { REVERSE_INITIAL_CURSOR, useCursor } from 'app/hooks/useCursor';
-import { getTickCountFromRangeTime, getTickFromRangeTime, getTimeRangeFromEndTime } from 'app/utils/date';
+import {
+  getTickCountFromRangeTime,
+  getTickFromRangeTime,
+  getTimeRangeFromEndTime,
+} from 'app/utils/date';
 import classNames from 'classnames';
 import dayjs from 'dayjs';
 import Link from 'next/link';
@@ -32,13 +36,11 @@ export interface TimeDataPoint {
   y: number;
 }
 
-export const normalizeTraceGroups = <
-  T extends { groupId: number },
-  >(
-    rangeTime: string,
-    groups: T[],
-    getPlaceholder: ((id: number) => T),
-  ) => {
+export const normalizeTraceGroups = <T extends { groupId: number }>(
+  rangeTime: string,
+  groups: T[],
+  getPlaceholder: (id: number) => T,
+) => {
   const tickCount = getTickCountFromRangeTime(rangeTime);
 
   let i = 0;
@@ -84,15 +86,11 @@ export const ResponseTimeChart: React.VFC<ResponseTimeChartProps> = React.memo((
   const data = useMemo(() => {
     if (!traceOfResponseTime) return [];
 
-    const normalized = normalizeTraceGroups(
-      rangeTime,
-      traceOfResponseTime,
-      (i: number) => ({
-        groupId: i,
-        time: getTickFromRangeTime(rangeTime, i),
-        avgDuration: NaN,
-      }),
-    );
+    const normalized = normalizeTraceGroups(rangeTime, traceOfResponseTime, (i: number) => ({
+      groupId: i,
+      time: getTickFromRangeTime(rangeTime, i),
+      avgDuration: NaN,
+    }));
 
     return normalized.map((n) => ({
       time: getTimeRangeFromEndTime(rangeTime, n.time),
@@ -108,9 +106,7 @@ export const ResponseTimeChart: React.VFC<ResponseTimeChartProps> = React.memo((
       isNotFound={traces.data?.traceOfResponseTime?.length === 0}
       renderNotFound={() => (
         <div className="flex justify-center items-center h-[355px] text-gray-500 text-lg">
-          There are no ping records in past
-          {' '}
-          {rangeTime}
+          There are no ping records in past {rangeTime}
         </div>
       )}
       className="h-[355px]"
@@ -175,10 +171,7 @@ export const ErrorChart: React.VFC<ErrorChartProps> = React.memo((props) => {
   const tickCount = useMemo(() => {
     if (traceOfErrorCount === undefined) return 0;
 
-    return Math.max(
-      Math.max(...traceCount.data!.traceOfErrorCount!.map((d) => d.count)),
-      2,
-    );
+    return Math.max(Math.max(...traceCount.data!.traceOfErrorCount!.map((d) => d.count)), 2);
   }, [traceOfErrorCount]);
 
   const upPercentage = useMemo(() => {
@@ -186,19 +179,14 @@ export const ErrorChart: React.VFC<ErrorChartProps> = React.memo((props) => {
       return 0;
     }
 
-    const validPoints = data.filter(
-      (p) => p.iso >= firstWebsite.data!.firstWebsite!.createdAt,
-    );
+    const validPoints = data.filter((p) => p.iso >= firstWebsite.data!.firstWebsite!.createdAt);
 
     return validPoints.filter((p) => p.count === 0).length / validPoints.length;
   }, [traceOfErrorCount, firstWebsite.data?.firstWebsite]);
 
   // eslint-disable-next-line no-nested-ternary
-  const tagClass = (upPercentage < 0.8)
-    ? gStyles.error
-    : (upPercentage < 0.9)
-      ? gStyles.warn
-      : gStyles.info;
+  const tagClass =
+    upPercentage < 0.8 ? gStyles.error : upPercentage < 0.9 ? gStyles.warn : gStyles.info;
 
   return (
     <QueryContainer
@@ -219,10 +207,7 @@ export const ErrorChart: React.VFC<ErrorChartProps> = React.memo((props) => {
           chartContainerProps={{
             titleRight: (
               <span className={classNames(gStyles.tag, tagClass, 'self-center m-3')}>
-                Up:
-                {' '}
-                {Math.floor(upPercentage * 100)}
-                %
+                Up: {Math.floor(upPercentage * 100)}%
               </span>
             ),
           }}
@@ -239,10 +224,7 @@ export interface ErrorTableProps {
 }
 
 export const ErrorTable: React.VFC<ErrorTableProps> = React.memo((props) => {
-  const {
-    rangeTime,
-    websiteId,
-  } = props;
+  const { rangeTime, websiteId } = props;
 
   const [currentTrace, setCurrentTrace] = useState<number>();
   const [cursor, setCursor] = useState(REVERSE_INITIAL_CURSOR);
@@ -263,13 +245,7 @@ export const ErrorTable: React.VFC<ErrorTableProps> = React.memo((props) => {
     fetchPolicy: 'cache-and-network',
   });
 
-  const {
-    hasMoreBefore,
-    hasMoreAfter,
-    nextPage,
-    previousPage,
-    resetCursor,
-  } = useCursor({
+  const { hasMoreBefore, hasMoreAfter, nextPage, previousPage, resetCursor } = useCursor({
     cursor,
     onCursorChange: setCursor,
     data: traces.data?.traces,
@@ -287,19 +263,11 @@ export const ErrorTable: React.VFC<ErrorTableProps> = React.memo((props) => {
             {row.website.name}
           </Link>
         </td>
-        <td className={tableStyles.error}>
-          {row.status}
-        </td>
+        <td className={tableStyles.error}>{row.status}</td>
+        <td>{row.duration}</td>
+        <td>{dayjs(row.createdAt).format('YYYY-MM-DD HH:mm:ss')}</td>
         <td>
-          {row.duration}
-        </td>
-        <td>
-          {dayjs(row.createdAt).format('YYYY-MM-DD HH:mm:ss')}
-        </td>
-        <td>
-          <a onClick={() => setCurrentTrace(row.id)}>
-            More
-          </a>
+          <a onClick={() => setCurrentTrace(row.id)}>More</a>
         </td>
       </tr>
     );
@@ -310,26 +278,14 @@ export const ErrorTable: React.VFC<ErrorTableProps> = React.memo((props) => {
       <table className={tableStyles.simpleTable}>
         <thead>
           <tr>
-            <th>
-              Website
-            </th>
-            <th>
-              Status
-            </th>
-            <th>
-              Duration
-            </th>
-            <th>
-              Time
-            </th>
-            <th>
-              {' '}
-            </th>
+            <th>Website</th>
+            <th>Status</th>
+            <th>Duration</th>
+            <th>Time</th>
+            <th> </th>
           </tr>
         </thead>
-        <tbody>
-          {traces.data?.traces.results.map(renderRow)}
-        </tbody>
+        <tbody>{traces.data?.traces.results.map(renderRow)}</tbody>
       </table>
     );
   };
@@ -343,10 +299,7 @@ export const ErrorTable: React.VFC<ErrorTableProps> = React.memo((props) => {
       <div className="flex justify-between">
         <Link href={href}>
           <a>
-            <Button
-              type="primary"
-              shape="round"
-            >
+            <Button type="primary" shape="round">
               All
             </Button>
           </a>
@@ -363,10 +316,7 @@ export const ErrorTable: React.VFC<ErrorTableProps> = React.memo((props) => {
   };
 
   return (
-    <QueryContainer
-      className="h-full"
-      queries={[traces]}
-    >
+    <QueryContainer className="h-full" queries={[traces]}>
       {() => (
         <>
           <TraceDataModal
@@ -375,9 +325,7 @@ export const ErrorTable: React.VFC<ErrorTableProps> = React.memo((props) => {
             visible={currentTrace !== undefined}
           />
           <div className="h-full flex flex-col">
-            <div className="flex-1">
-              {renderTable()}
-            </div>
+            <div className="flex-1">{renderTable()}</div>
             {renderBottom()}
           </div>
         </>
@@ -392,10 +340,7 @@ export interface EventTableProps {
 }
 
 export const EventTable: React.VFC<EventTableProps> = React.memo((props) => {
-  const {
-    rangeTime,
-    websiteId,
-  } = props;
+  const { rangeTime, websiteId } = props;
 
   const [cursor, setCursor] = useState(REVERSE_INITIAL_CURSOR);
   const [currentTrace, setCurrentTrace] = useState<number>();
@@ -413,13 +358,7 @@ export const EventTable: React.VFC<EventTableProps> = React.memo((props) => {
 
   const data = events.data?.events;
 
-  const {
-    hasMoreBefore,
-    hasMoreAfter,
-    nextPage,
-    previousPage,
-    resetCursor,
-  } = useCursor({
+  const { hasMoreBefore, hasMoreAfter, nextPage, previousPage, resetCursor } = useCursor({
     cursor,
     onCursorChange: setCursor,
     data,
@@ -436,31 +375,19 @@ export const EventTable: React.VFC<EventTableProps> = React.memo((props) => {
           <span className={classNames(gStyles.tag, gStyles[row.status.toLowerCase()], 'mr-2')}>
             {row.status.toLowerCase()}
           </span>
-
-          {websiteEventTypeToDescription[row.type as WebsiteEventSource]?.(row.website.name, row.website.id)}
-          {' '}
+          {websiteEventTypeToDescription[row.type as WebsiteEventSource]?.(
+            row.website.name,
+            row.website.id,
+          )}{' '}
           {row.trace?.status && (
             <>
-              Reason:
-              {' '}
-              <span className={traceStatusToColor[row.trace.status]}>
-                {row.trace.status}
-              </span>
+              Reason:{' '}
+              <span className={traceStatusToColor[row.trace.status]}>{row.trace.status}</span>
             </>
           )}
         </td>
-        <td>
-          {dayjs(row.createdAt).format('YYYY-MM-DD HH:mm:ss')}
-        </td>
-        <td>
-          {row.traceId
-            ? (
-              <a onClick={() => setCurrentTrace(row.traceId!)}>
-                Trace
-              </a>
-            )
-            : '-'}
-        </td>
+        <td>{dayjs(row.createdAt).format('YYYY-MM-DD HH:mm:ss')}</td>
+        <td>{row.traceId ? <a onClick={() => setCurrentTrace(row.traceId!)}>Trace</a> : '-'}</td>
       </tr>
     );
   };
@@ -470,20 +397,12 @@ export const EventTable: React.VFC<EventTableProps> = React.memo((props) => {
       <table className={tableStyles.simpleTable}>
         <thead>
           <tr>
-            <th>
-              Event
-            </th>
-            <th>
-              Time
-            </th>
-            <th>
-              Reason
-            </th>
+            <th>Event</th>
+            <th>Time</th>
+            <th>Reason</th>
           </tr>
         </thead>
-        <tbody>
-          {events.data?.events?.results.map(renderRow)}
-        </tbody>
+        <tbody>{events.data?.events?.results.map(renderRow)}</tbody>
       </table>
     );
   };
@@ -491,15 +410,15 @@ export const EventTable: React.VFC<EventTableProps> = React.memo((props) => {
   const renderBottom = () => {
     return (
       <div className="flex justify-between">
-        <Link href={(websiteId
-          ? `${url('/monitoring/events')}?websiteIds[]=${websiteId}`
-          : url('/monitoring/events'))}
+        <Link
+          href={
+            websiteId
+              ? `${url('/monitoring/events')}?websiteIds[]=${websiteId}`
+              : url('/monitoring/events')
+          }
         >
           <a>
-            <Button
-              type="primary"
-              shape="round"
-            >
+            <Button type="primary" shape="round">
               All
             </Button>
           </a>
@@ -516,10 +435,7 @@ export const EventTable: React.VFC<EventTableProps> = React.memo((props) => {
   };
 
   return (
-    <QueryContainer
-      className="h-full"
-      queries={[events]}
-    >
+    <QueryContainer className="h-full" queries={[events]}>
       {() => (
         <>
           <TraceDataModal
@@ -534,6 +450,5 @@ export const EventTable: React.VFC<EventTableProps> = React.memo((props) => {
         </>
       )}
     </QueryContainer>
-
   );
 });

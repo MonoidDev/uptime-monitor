@@ -1,6 +1,4 @@
-import {
-  objectType, inputObjectType, nonNull, enumType,
-} from 'nexus';
+import { objectType, inputObjectType, nonNull, enumType } from 'nexus';
 
 export const SeverityType = enumType({
   name: 'SeverityType',

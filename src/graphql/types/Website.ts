@@ -1,7 +1,5 @@
 import humanizeDuration from 'humanize-duration';
-import {
-  objectType, inputObjectType, nonNull, enumType,
-} from 'nexus';
+import { objectType, inputObjectType, nonNull, enumType } from 'nexus';
 
 import { SeverityType } from './Event';
 

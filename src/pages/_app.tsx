@@ -3,17 +3,9 @@ import React, { useMemo } from 'react';
 
 import 'dayjs/locale';
 
-import {
-  ApolloClient,
-  InMemoryCache,
-  ApolloProvider,
-  createHttpLink,
-  from,
-} from '@apollo/client';
+import { ApolloClient, InMemoryCache, ApolloProvider, createHttpLink, from } from '@apollo/client';
 import { onError } from '@apollo/client/link/error';
-import {
-  SearchConfigProvider,
-} from '@monoid-dev/use-search';
+import { SearchConfigProvider } from '@monoid-dev/use-search';
 import { url } from 'app/../.next-urls';
 import Head from 'next/head';
 import { useRouter as useNextRouter } from 'next/router';
@@ -23,10 +15,14 @@ import { AuthProvider, useAuth } from '../hooks/useAuth';
 const endpoint = `${process.env.NEXT_PUBLIC_SERVER}/api/graphql`;
 
 const WithApollo: React.FC = ({ children }) => {
-  const client = useMemo(() => new ApolloClient({
-    uri: endpoint,
-    cache: new InMemoryCache(),
-  }), []);
+  const client = useMemo(
+    () =>
+      new ApolloClient({
+        uri: endpoint,
+        cache: new InMemoryCache(),
+      }),
+    [],
+  );
   const router = useNextRouter();
 
   const auth = useAuth();
@@ -40,9 +36,11 @@ const WithApollo: React.FC = ({ children }) => {
       }),
       createHttpLink({
         uri: endpoint,
-        headers: auth.state.token ? {
-          Authorization: `Bearer ${auth.state.token}`,
-        } : {},
+        headers: auth.state.token
+          ? {
+              Authorization: `Bearer ${auth.state.token}`,
+            }
+          : {},
       }),
     ]);
   };
@@ -55,11 +53,7 @@ const WithApollo: React.FC = ({ children }) => {
     }
   }, [auth.state.token]);
 
-  return (
-    <ApolloProvider client={client}>
-      {children}
-    </ApolloProvider>
-  );
+  return <ApolloProvider client={client}>{children}</ApolloProvider>;
 };
 
 const useRouter = () => {
@@ -80,11 +74,7 @@ const useRouter = () => {
 
 function MyApp({ Component, pageProps }: any) {
   const initialToken = useMemo(
-    () => (
-      typeof window !== 'undefined'
-        ? localStorage.getItem('uptimeMonitorToken')
-        : null
-    ),
+    () => (typeof window !== 'undefined' ? localStorage.getItem('uptimeMonitorToken') : null),
     [],
   );
 
@@ -92,9 +82,7 @@ function MyApp({ Component, pageProps }: any) {
     <>
       <Head>
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
-        <title>
-          Uptime Monitor
-        </title>
+        <title>Uptime Monitor</title>
       </Head>
       <SearchConfigProvider
         config={{

@@ -39,9 +39,15 @@ export function getTickCountFromRangeTime(rangeTime: string) {
 
 export function getTimeRangeFromEndTime(rangeTime: string, endTime: string) {
   const timeRange = {
-    '24h': `${dayjs(endTime).subtract(1, 'hours').format('MM-DD HH:mm')}  --  ${dayjs(endTime).format('MM-DD HH:mm')}`,
-    '7d': `${dayjs(endTime).subtract(6, 'hours').format('MM-DD HH:mm')}  --  ${dayjs(endTime).format('MM-DD HH:mm')}`,
-    '31d': `${dayjs(endTime).subtract(1, 'days').format('MM-DD HH:mm')}  --  ${dayjs(endTime).format('MM-DD HH:mm')}`,
+    '24h': `${dayjs(endTime).subtract(1, 'hours').format('MM-DD HH:mm')}  --  ${dayjs(
+      endTime,
+    ).format('MM-DD HH:mm')}`,
+    '7d': `${dayjs(endTime).subtract(6, 'hours').format('MM-DD HH:mm')}  --  ${dayjs(
+      endTime,
+    ).format('MM-DD HH:mm')}`,
+    '31d': `${dayjs(endTime).subtract(1, 'days').format('MM-DD HH:mm')}  --  ${dayjs(
+      endTime,
+    ).format('MM-DD HH:mm')}`,
   }[rangeTime]!;
   return timeRange;
 }

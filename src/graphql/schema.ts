@@ -11,18 +11,13 @@ export interface CreateSchemaOptions {
 }
 
 export const createSchema = (options: CreateSchemaOptions = {}) => {
-  const {
-    emit = false,
-  } = options;
+  const { emit = false } = options;
 
   return makeSchema({
     types,
     shouldGenerateArtifacts: emit,
     outputs: {
-      typegen: join(
-        process.cwd(),
-        'graphql', 'server', 'generated', 'index.d.ts',
-      ),
+      typegen: join(process.cwd(), 'graphql', 'server', 'generated', 'index.d.ts'),
       schema: join(process.cwd(), 'graphql', 'schema.graphql'),
     },
     contextType: {

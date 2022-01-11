@@ -20,7 +20,10 @@ import { url } from 'app/../.next-urls';
 import { mapErrorPredicateExplanation, mapErrorPredicateLabel } from 'app/data/websites';
 import { usePageQuery } from 'app/hooks/usePageQuery';
 import {
-  useUpdateWebsiteMutation, useGetWebsiteByIdQuery, useDeleteWebsiteMutation, ErrorPredicate,
+  useUpdateWebsiteMutation,
+  useGetWebsiteByIdQuery,
+  useDeleteWebsiteMutation,
+  ErrorPredicate,
 } from 'graphql/client/generated';
 import * as t from 'io-ts';
 import { useRouter } from 'next/router';
@@ -35,9 +38,13 @@ export default function Page() {
   const router = useRouter();
 
   const { id } = usePageQuery(
-    useMemo(() => t.type({
-      id: h.number().castString(),
-    }), []),
+    useMemo(
+      () =>
+        t.type({
+          id: h.number().castString(),
+        }),
+      [],
+    ),
   );
 
   const websiteDetails = useGetWebsiteByIdQuery({
@@ -78,7 +85,11 @@ export default function Page() {
   });
 
   const onDeleteWebsite = async () => {
-    if (!window.confirm(`Do you really want to delete ${websiteDetailsData.name}? All related data will be deleted and cannnot be reversed. `)) {
+    if (
+      !window.confirm(
+        `Do you really want to delete ${websiteDetailsData.name}? All related data will be deleted and cannnot be reversed. `,
+      )
+    ) {
       return;
     }
 
@@ -97,9 +108,7 @@ export default function Page() {
   const renderTitle = () => {
     return (
       <div className="flex justify-between items-center">
-        <Typography.Title className="!text-primary-dark">
-          Modify Website
-        </Typography.Title>
+        <Typography.Title className="!text-primary-dark">Modify Website</Typography.Title>
       </div>
     );
   };
@@ -119,51 +128,30 @@ export default function Page() {
           title: String(id),
         },
       ]}
-      queries={[
-        websiteDetails,
-      ]}
+      queries={[websiteDetails]}
     >
       {renderTitle()}
       <div className="bg-white p-8 shadow-md">
-        <Form
-          {...validation.form}
-          {...formItemLayout}
-          name="websiteSearch"
-        >
+        <Form {...validation.form} {...formItemLayout} name="websiteSearch">
           <Row>
             <Col span={8} />
             {validation.serverError.messages?.map((m, i) => (
               <Alert key={i} message={m} type="error" showIcon />
             ))}
           </Row>
-          <Form.Item
-            {...validation.item('name')}
-            required
-          >
+          <Form.Item {...validation.item('name')} required>
             <Input placeholder="Name" />
           </Form.Item>
-          <Form.Item
-            {...validation.item('url')}
-            required
-          >
+          <Form.Item {...validation.item('url')} required>
             <Input placeholder="URL" />
           </Form.Item>
-          <Form.Item
-            {...validation.item('pingInterval')}
-            required
-            label="Ping Interval"
-          >
+          <Form.Item {...validation.item('pingInterval')} required label="Ping Interval">
             <InputNumber placeholder="Ping Interval" className="w-full" />
           </Form.Item>
-          <Form.Item
-            {...validation.item('enabled')}
-            valuePropName="checked"
-          >
+          <Form.Item {...validation.item('enabled')} valuePropName="checked">
             <Switch />
           </Form.Item>
-          <Form.List
-            {...validation.item('emails')}
-          >
+          <Form.List {...validation.item('emails')}>
             {(fields, { add, remove }, { errors }) => (
               <>
                 {fields.map((field, index) => (
@@ -173,10 +161,7 @@ export default function Page() {
                     required={false}
                     key={field.key}
                   >
-                    <Form.Item
-                      {...field}
-                      noStyle
-                    >
+                    <Form.Item {...field} noStyle>
                       <Input placeholder="Email" className="w-4/5" />
                     </Form.Item>
                     <MinusCircleOutlined
@@ -200,21 +185,14 @@ export default function Page() {
             )}
           </Form.List>
 
-          <Form.Item
-            {...validation.item('errorPredicate')}
-            required
-          >
+          <Form.Item {...validation.item('errorPredicate')} required>
             <Radio.Group className="py-1">
               <Space direction="vertical">
                 {Object.values(ErrorPredicate).map((e) => (
                   <Radio value={e} key={e}>
-                    <span>
-                      {mapErrorPredicateLabel(e)}
-                    </span>
+                    <span>{mapErrorPredicateLabel(e)}</span>
                     <br />
-                    <span className="text-gray-500">
-                      {mapErrorPredicateExplanation(e)}
-                    </span>
+                    <span className="text-gray-500">{mapErrorPredicateExplanation(e)}</span>
                   </Radio>
                 ))}
               </Space>
@@ -222,11 +200,7 @@ export default function Page() {
           </Form.Item>
 
           <Form.Item>
-            <Button
-              type="primary"
-              shape="round"
-              htmlType="submit"
-            >
+            <Button type="primary" shape="round" htmlType="submit">
               Modify
             </Button>
             <Button

@@ -63,12 +63,14 @@ if (process.env.NODE_ENV !== 'development') {
       pingInterval: 10,
       enabled: false,
       emails: ['wangchenyu2017@gmail.com'],
-      createdAt: dayjs().subtract(((n - 31) * ((3600 * 24) * 31)) / n, 'seconds').toISOString(),
+      createdAt: dayjs()
+        .subtract(((n - 31) * (3600 * 24 * 31)) / n, 'seconds')
+        .toISOString(),
     },
   });
 
   for (const i of range(0, n)) {
-    const date = dayjs().subtract(((n - i) * ((3600 * 24) * 31)) / n, 'seconds');
+    const date = dayjs().subtract(((n - i) * (3600 * 24 * 31)) / n, 'seconds');
     const timeout = Math.random() < 0.2;
     const sslerror = Math.random() < 0.1;
     const httperror = Math.random() < 0.2;
@@ -102,7 +104,8 @@ if (process.env.NODE_ENV !== 'development') {
 
     if (status !== 'OK' && Math.random() < 0.3) {
       await monitorService.addEvent({
-        source: Math.random() < 0.3 ? WebsiteEventSource.NotAvailable : WebsiteEventSource.HighLatency,
+        source:
+          Math.random() < 0.3 ? WebsiteEventSource.NotAvailable : WebsiteEventSource.HighLatency,
         website,
         trace,
       });
@@ -117,12 +120,14 @@ if (process.env.NODE_ENV !== 'development') {
       pingInterval: 10,
       enabled: false,
       emails: ['wangchenyu2017@gmail.com'],
-      createdAt: dayjs().subtract(((n - 31) * ((3600 * 24) * 15)) / n, 'seconds').toISOString(),
+      createdAt: dayjs()
+        .subtract(((n - 31) * (3600 * 24 * 15)) / n, 'seconds')
+        .toISOString(),
     },
   });
 
   for (const i of range(0, n)) {
-    const date = dayjs().subtract(((n - i) * ((3600 * 24) * 15)) / n, 'seconds');
+    const date = dayjs().subtract(((n - i) * (3600 * 24 * 15)) / n, 'seconds');
     const timeout = Math.random() < 0.2;
     const sslerror = Math.random() < 0.1;
     const httperror = Math.random() < 0.2;
@@ -156,7 +161,8 @@ if (process.env.NODE_ENV !== 'development') {
 
     if (status !== 'OK' && Math.random() < 0.3) {
       await monitorService.addEvent({
-        source: Math.random() < 0.3 ? WebsiteEventSource.NotAvailable : WebsiteEventSource.HighLatency,
+        source:
+          Math.random() < 0.3 ? WebsiteEventSource.NotAvailable : WebsiteEventSource.HighLatency,
         website: website2,
         trace,
       });
@@ -171,7 +177,9 @@ if (process.env.NODE_ENV !== 'development') {
       pingInterval: 10,
       enabled: false,
       emails: ['wangchenyu2017@gmail.com'],
-      createdAt: dayjs().subtract(((n - 31) * ((3600 * 24) * 15)) / n, 'seconds').toISOString(),
+      createdAt: dayjs()
+        .subtract(((n - 31) * (3600 * 24 * 15)) / n, 'seconds')
+        .toISOString(),
     },
   });
 
@@ -183,7 +191,9 @@ if (process.env.NODE_ENV !== 'development') {
       pingInterval: 10,
       enabled: false,
       emails: ['wangchenyu2017@gmail.com'],
-      createdAt: dayjs().subtract(((n - 31) * ((3600 * 24) * 15)) / n, 'seconds').toISOString(),
+      createdAt: dayjs()
+        .subtract(((n - 31) * (3600 * 24 * 15)) / n, 'seconds')
+        .toISOString(),
     },
   });
 
@@ -195,7 +205,9 @@ if (process.env.NODE_ENV !== 'development') {
       pingInterval: 100,
       enabled: false,
       emails: ['wangchenyu2017@gmail.com'],
-      createdAt: dayjs().subtract(((n - 31) * ((3600 * 24) * 15)) / n, 'seconds').toISOString(),
+      createdAt: dayjs()
+        .subtract(((n - 31) * (3600 * 24 * 15)) / n, 'seconds')
+        .toISOString(),
     },
   });
 
@@ -207,7 +219,9 @@ if (process.env.NODE_ENV !== 'development') {
       pingInterval: 100,
       enabled: true,
       emails: ['wangchenyu2017@gmail.com'],
-      createdAt: dayjs().subtract(((n - 31) * ((3600 * 24) * 15)) / n, 'seconds').toISOString(),
+      createdAt: dayjs()
+        .subtract(((n - 31) * (3600 * 24 * 15)) / n, 'seconds')
+        .toISOString(),
     },
   });
 
@@ -219,7 +233,9 @@ if (process.env.NODE_ENV !== 'development') {
       pingInterval: 100,
       enabled: true,
       emails: ['wangchenyu2017@gmail.com'],
-      createdAt: dayjs().subtract(((n - 31) * ((3600 * 24) * 15)) / n, 'seconds').toISOString(),
+      createdAt: dayjs()
+        .subtract(((n - 31) * (3600 * 24 * 15)) / n, 'seconds')
+        .toISOString(),
     },
   });
 
@@ -231,7 +247,9 @@ if (process.env.NODE_ENV !== 'development') {
       pingInterval: 100,
       enabled: true,
       emails: ['wangchenyu2017@gmail.com'],
-      createdAt: dayjs().subtract(((n - 31) * ((3600 * 24) * 15)) / n, 'seconds').toISOString(),
+      createdAt: dayjs()
+        .subtract(((n - 31) * (3600 * 24 * 15)) / n, 'seconds')
+        .toISOString(),
     },
   });
 
@@ -243,7 +261,9 @@ if (process.env.NODE_ENV !== 'development') {
       pingInterval: 500,
       enabled: true,
       emails: ['wangchenyu2017@gmail.com'],
-      createdAt: dayjs().subtract(((n - 31) * ((3600 * 24) * 15)) / n, 'seconds').toISOString(),
+      createdAt: dayjs()
+        .subtract(((n - 31) * (3600 * 24 * 15)) / n, 'seconds')
+        .toISOString(),
       httpsCertExpiredAt: dayjs().subtract(1, 'day').toDate(),
     },
   });
@@ -256,7 +276,9 @@ if (process.env.NODE_ENV !== 'development') {
       pingInterval: 500,
       enabled: true,
       emails: ['wangchenyu2017@gmail.com'],
-      createdAt: dayjs().subtract(((n - 31) * ((3600 * 24) * 15)) / n, 'seconds').toISOString(),
+      createdAt: dayjs()
+        .subtract(((n - 31) * (3600 * 24 * 15)) / n, 'seconds')
+        .toISOString(),
       httpsCertExpiredAt: dayjs().add(1, 'day').toDate(),
     },
   });
@@ -269,7 +291,9 @@ if (process.env.NODE_ENV !== 'development') {
       pingInterval: 500,
       enabled: true,
       emails: ['wangchenyu2017@gmail.com'],
-      createdAt: dayjs().subtract(((n - 31) * ((3600 * 24) * 15)) / n, 'seconds').toISOString(),
+      createdAt: dayjs()
+        .subtract(((n - 31) * (3600 * 24 * 15)) / n, 'seconds')
+        .toISOString(),
       httpsCertExpiredAt: dayjs().add(100, 'day').toDate(),
     },
   });

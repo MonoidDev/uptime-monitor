@@ -1,15 +1,6 @@
 import React from 'react';
 
-import {
-  message,
-  Alert,
-  Button,
-  Col,
-  Form,
-  Input,
-  Row,
-  Typography,
-} from 'antd';
+import { message, Alert, Button, Col, Form, Input, Row, Typography } from 'antd';
 import { Layout } from 'app/components/Layout';
 import { UpdateUserPasswordSchema } from 'app/graphql/types/UserSchema';
 import { useValidation } from 'app/hooks/useValidation';
@@ -46,9 +37,7 @@ export default function Page() {
   });
 
   return (
-    <Layout
-      queries={[me]}
-    >
+    <Layout queries={[me]}>
       {() => (
         <Form
           {...validation.form}
@@ -63,30 +52,20 @@ export default function Page() {
           </Row>
 
           <Row>
-            <Typography.Title className="!text-primary-dark">
-              Change Password
-            </Typography.Title>
+            <Typography.Title className="!text-primary-dark">Change Password</Typography.Title>
           </Row>
 
           <Row>
-            <Col
-              span={12}
-            >
-              <Form.Item
-                {...validation.item('currentPassword')}
-              >
+            <Col span={12}>
+              <Form.Item {...validation.item('currentPassword')}>
                 <Input.Password />
               </Form.Item>
 
-              <Form.Item
-                {...validation.item('newPassword')}
-              >
+              <Form.Item {...validation.item('newPassword')}>
                 <Input.Password />
               </Form.Item>
 
-              <Form.Item
-                {...validation.item('newPasswordRepeated')}
-              >
+              <Form.Item {...validation.item('newPasswordRepeated')}>
                 <Input.Password />
               </Form.Item>
 

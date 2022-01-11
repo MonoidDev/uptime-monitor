@@ -1,19 +1,11 @@
-import {
-  Prisma,
-  SeverityType,
-  Trace,
-  Website,
-} from '@prisma/client';
-import {
-  WebsiteEventDataHighLatency,
-  WebsiteEventSource,
-} from 'app/graphql/types/EventSchema';
+import { Prisma, SeverityType, Trace, Website } from '@prisma/client';
+import { WebsiteEventDataHighLatency, WebsiteEventSource } from 'app/graphql/types/EventSchema';
 
 export type WebsiteEventParams = {
-  website: Website,
-  trace?: Trace,
-  source: WebsiteEventSource,
-  data?: unknown,
+  website: Website;
+  trace?: Trace;
+  source: WebsiteEventSource;
+  data?: unknown;
 };
 
 function buildEvent(params: WebsiteEventParams) {
@@ -46,7 +38,7 @@ function buildEvent(params: WebsiteEventParams) {
       break;
     }
     case WebsiteEventSource.HighLatency: {
-      const eventData = (params.data as WebsiteEventDataHighLatency);
+      const eventData = params.data as WebsiteEventDataHighLatency;
       eventSeverity = eventData?.isActive ? SeverityType.WARN : SeverityType.WARN;
       // eventDataString = JSON.stringify(eventData);
       break;
@@ -67,6 +59,4 @@ function buildEvent(params: WebsiteEventParams) {
   return createInput;
 }
 
-export {
-  buildEvent,
-};
+export { buildEvent };

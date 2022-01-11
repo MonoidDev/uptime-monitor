@@ -7,24 +7,18 @@ export interface ErrorViewProps {
 }
 
 export const ErrorView: React.VFC<ErrorViewProps> = (props) => {
-  const {
-    message,
-  } = props;
+  const { message } = props;
 
   return (
     <Result
       status="500"
       title="500"
       subTitle={message}
-      extra={(
-        <Button
-          type="primary"
-          shape="round"
-          onClick={() => window.location.reload()}
-        >
+      extra={
+        <Button type="primary" shape="round" onClick={() => window.location.reload()}>
           Refresh
         </Button>
-      )}
+      }
     />
   );
 };

@@ -1,14 +1,10 @@
 import React, { useMemo } from 'react';
 
 import useSearch from '@monoid-dev/use-search';
-import {
-  Select, Typography, Descriptions, Button, Row, Col,
-} from 'antd';
+import { Select, Typography, Descriptions, Button, Row, Col } from 'antd';
 import { dynamicUrl, url } from 'app/../.next-urls';
 import { useGetWebsiteByIdQuery } from 'app/../graphql/client/generated';
-import {
-  ErrorChart, ErrorTable, EventTable, ResponseTimeChart,
-} from 'app/components/dashboard';
+import { ErrorChart, ErrorTable, EventTable, ResponseTimeChart } from 'app/components/dashboard';
 import { Layout } from 'app/components/Layout';
 import { ReloadApollo } from 'app/components/ReloadApollo';
 import { SSLMessage } from 'app/components/SSLMessage';
@@ -27,19 +23,25 @@ export default function Page() {
   const router = useRouter();
 
   const { search, updateSearch } = useSearch(
-    useMemo(() => t.type({
-      rangeTime: h.omittable(t.string),
-    }), []),
+    useMemo(
+      () =>
+        t.type({
+          rangeTime: h.omittable(t.string),
+        }),
+      [],
+    ),
   );
 
-  const {
-    rangeTime = '24h',
-  } = search ?? {};
+  const { rangeTime = '24h' } = search ?? {};
 
   const { id } = usePageQuery(
-    useMemo(() => t.type({
-      id: h.number().castString(),
-    }), []),
+    useMemo(
+      () =>
+        t.type({
+          id: h.number().castString(),
+        }),
+      [],
+    ),
   );
 
   const website = useGetWebsiteByIdQuery({
@@ -55,9 +57,7 @@ export default function Page() {
           {website.data?.website?.name}
         </Typography.Title>
 
-        <StatusArray
-          status={website.data?.website?.status ?? []}
-        />
+        <StatusArray status={website.data?.website?.status ?? []} />
 
         <div className="flex-1" />
 
@@ -93,15 +93,9 @@ export default function Page() {
     return (
       <div className={classNames(gStyles.paper, descriptionsStyles.descriptions, 'mb-8')}>
         <Descriptions title="Website">
-          <Descriptions.Item label="Name">
-            {website.data?.website?.name}
-          </Descriptions.Item>
+          <Descriptions.Item label="Name">{website.data?.website?.name}</Descriptions.Item>
           <Descriptions.Item label="URL">
-            <a
-              href={website.data?.website?.url}
-              target="_blank"
-              rel="noreferrer"
-            >
+            <a href={website.data?.website?.url} target="_blank" rel="noreferrer">
               {website.data?.website?.url}
             </a>
           </Descriptions.Item>
@@ -118,7 +112,6 @@ export default function Page() {
               <SSLMessage sslMessage={website.data?.website?.sslMessage} />
             </Descriptions.Item>
           )}
-
         </Descriptions>
 
         <Link
@@ -127,10 +120,7 @@ export default function Page() {
           })}
         >
           <a>
-            <Button
-              type="primary"
-              shape="round"
-            >
+            <Button type="primary" shape="round">
               Modify
             </Button>
           </a>
@@ -187,9 +177,7 @@ export default function Page() {
           title: website?.data?.website?.name ?? 'Loading...',
         },
       ]}
-      queries={[
-        website,
-      ]}
+      queries={[website]}
     >
       {() => (
         <>

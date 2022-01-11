@@ -16,11 +16,7 @@ export interface TraceDataModalProps {
 }
 
 export const TraceDataModal: React.VFC<TraceDataModalProps> = (props) => {
-  const {
-    visible,
-    onClose,
-    id,
-  } = props;
+  const { visible, onClose, id } = props;
 
   const trace = useGetTraceByIdQuery({
     variables: {
@@ -42,15 +38,10 @@ export const TraceDataModal: React.VFC<TraceDataModalProps> = (props) => {
         </Button>,
       ]}
     >
-      <QueryContainer
-        queries={[trace]}
-        className="h-96"
-      >
+      <QueryContainer queries={[trace]} className="h-96">
         {() => (
           <>
-            <TraceDataCell label="Type">
-              {traceData?.traceType}
-            </TraceDataCell>
+            <TraceDataCell label="Type">{traceData?.traceType}</TraceDataCell>
             <TraceDataCell label="Website">
               <a
                 className="underline"
@@ -77,12 +68,8 @@ export const TraceDataModal: React.VFC<TraceDataModalProps> = (props) => {
             <TraceDataCell label="Status" className={traceStatusToColor[traceData?.status!]}>
               {traceData?.status}
             </TraceDataCell>
-            <TraceDataCell label="Duration">
-              {traceData?.duration}
-            </TraceDataCell>
-            <TraceDataCell label="HTTP Status Code">
-              {traceData?.httpStatusCode}
-            </TraceDataCell>
+            <TraceDataCell label="Duration">{traceData?.duration}</TraceDataCell>
+            <TraceDataCell label="HTTP Status Code">{traceData?.httpStatusCode}</TraceDataCell>
             <TraceDataCell label="Request Headers" multilines>
               {traceData?.requestHeaders}
             </TraceDataCell>

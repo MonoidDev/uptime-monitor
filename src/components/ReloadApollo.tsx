@@ -8,14 +8,13 @@ import useAsyncFn from 'react-use/lib/useAsyncFn';
 export const ReloadApollo: React.VFC<React.ComponentProps<typeof ReloadOutlined>> = (props) => {
   const queryClient = useApolloClient();
 
-  const {
-    className,
-    ...rest
-  } = props;
+  const { className, ...rest } = props;
 
-  const [refetchState, refetch] = useAsyncFn(() => queryClient.refetchQueries({
-    include: 'active',
-  }));
+  const [refetchState, refetch] = useAsyncFn(() =>
+    queryClient.refetchQueries({
+      include: 'active',
+    }),
+  );
 
   return (
     <ReloadOutlined

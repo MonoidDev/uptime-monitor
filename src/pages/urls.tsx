@@ -11,9 +11,7 @@ export default function Page() {
         {urls.map((url) => (
           <li key={url}>
             <Link href={url}>
-              <a>
-                {url}
-              </a>
+              <a>{url}</a>
             </Link>
           </li>
         ))}

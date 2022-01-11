@@ -1,8 +1,6 @@
 import React from 'react';
 
-import {
-  Form, Input, Button, Typography, Row, Col, Alert,
-} from 'antd';
+import { Form, Input, Button, Typography, Row, Col, Alert } from 'antd';
 import { useRouter } from 'next/router';
 
 import { useCreateUserMutation } from '../../../graphql/client/generated';
@@ -45,7 +43,6 @@ export default function Page() {
           span: 8,
         }}
       >
-
         <Row>
           <Col span={8} />
           {validation.serverError.messages?.map((m, i) => (
@@ -54,20 +51,14 @@ export default function Page() {
         </Row>
         <Row>
           <Col span={8} />
-          <Typography.Title className="!text-primary-dark">
-            Create User
-          </Typography.Title>
+          <Typography.Title className="!text-primary-dark">Create User</Typography.Title>
         </Row>
 
-        <Form.Item
-          {...validation.item('email')}
-        >
+        <Form.Item {...validation.item('email')}>
           <Input />
         </Form.Item>
 
-        <Form.Item
-          {...validation.item('inputPassword')}
-        >
+        <Form.Item {...validation.item('inputPassword')}>
           <Input.Password />
         </Form.Item>
 

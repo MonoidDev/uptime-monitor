@@ -1,7 +1,10 @@
 import * as t from 'io-ts';
 
 import {
-  requiredStringField, requiredNumberField, traceTypeField, traceStatusField,
+  requiredStringField,
+  requiredNumberField,
+  traceTypeField,
+  traceStatusField,
 } from '../../utils/fields';
 import { defineSchema } from '../../utils/types';
 

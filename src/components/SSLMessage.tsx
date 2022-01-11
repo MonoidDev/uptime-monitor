@@ -3,13 +3,11 @@ import classNames from 'classnames';
 import { SeverityType, SslMessage } from 'graphql/client/generated';
 
 export interface SSLMessageProps {
-  sslMessage: SslMessage
+  sslMessage: SslMessage;
 }
 
 export const SSLMessage: React.VFC<SSLMessageProps> = (props: SSLMessageProps) => {
-  const {
-    sslMessage,
-  } = props;
+  const { sslMessage } = props;
 
   const isSslMessageImportant = [
     SeverityType.Error,

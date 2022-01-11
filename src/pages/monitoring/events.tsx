@@ -1,12 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 
 import useSearch from '@monoid-dev/use-search';
-import {
-  Typography,
-  Table,
-  Button,
-  Form,
-} from 'antd';
+import { Typography, Table, Button, Form } from 'antd';
 import { dynamicUrl } from 'app/../.next-urls';
 import { useEventsQuery, useGetUserWebsitesQuery } from 'app/../graphql/client/generated';
 import { CursorPagination } from 'app/components/CursorPagination';
@@ -26,8 +21,8 @@ import Link from 'next/link';
 import * as h from 'tyrann-io';
 
 interface Website {
-  name: string,
-  id: number,
+  name: string;
+  id: number;
 }
 
 interface FilterValues {
@@ -39,13 +34,17 @@ export default function Page() {
   const [currentTrace, setCurrentTrace] = useState<number>();
 
   const { search, updateSearch } = useSearch(
-    useMemo(() => t.type({
-      timeBefore: h.omittable(t.string),
-      timeAfter: h.omittable(t.string),
-      afterId: h.omittable(h.number().cast()),
-      beforeId: h.omittable(h.number().cast()),
-      websiteIds: h.omittable(t.array(h.number().cast())),
-    }), []),
+    useMemo(
+      () =>
+        t.type({
+          timeBefore: h.omittable(t.string),
+          timeAfter: h.omittable(t.string),
+          afterId: h.omittable(h.number().cast()),
+          beforeId: h.omittable(h.number().cast()),
+          websiteIds: h.omittable(t.array(h.number().cast())),
+        }),
+      [],
+    ),
   );
 
   const finalSearch = {
@@ -75,31 +74,17 @@ export default function Page() {
         <span className={classNames(gStyles.tag, gStyles[e.status.toLowerCase()], 'mr-2')}>
           {e.status.toLowerCase()}
         </span>
-        {websiteEventTypeToDescription[e.type as WebsiteEventSource](
-          e.website.name,
-          e.website.id,
-        )}
-        {' '}
+        {websiteEventTypeToDescription[e.type as WebsiteEventSource](e.website.name, e.website.id)}{' '}
         {e.trace?.status && (
           <>
-            Reason:
-            {' '}
-            <span className={traceStatusToColor[e.trace.status]}>
-              {e.trace.status}
-            </span>
+            Reason: <span className={traceStatusToColor[e.trace.status]}>{e.trace.status}</span>
           </>
         )}
       </>
     ),
   }));
 
-  const {
-    hasMoreBefore,
-    hasMoreAfter,
-    nextPage,
-    previousPage,
-    resetCursor,
-  } = useCursor({
+  const { hasMoreBefore, hasMoreAfter, nextPage, previousPage, resetCursor } = useCursor({
     cursor: {
       afterId: search?.afterId,
       beforeId: search?.beforeId,
@@ -110,11 +95,7 @@ export default function Page() {
 
   useEffect(() => {
     resetCursor();
-  }, [
-    finalSearch?.timeAfter,
-    finalSearch?.timeBefore,
-    finalSearch.websiteIds.toString(),
-  ]);
+  }, [finalSearch?.timeAfter, finalSearch?.timeBefore, finalSearch.websiteIds.toString()]);
 
   const columns = [
     {
@@ -132,9 +113,7 @@ export default function Page() {
             id: website.id,
           })}
         >
-          <a className="underline">
-            {website.name}
-          </a>
+          <a className="underline">{website.name}</a>
         </Link>
       ),
       filters: [
@@ -142,10 +121,10 @@ export default function Page() {
           text: 'All',
           value: -1,
         },
-        ...userWebsitesResponse.data?.userWebsites.map((w) => ({
+        ...(userWebsitesResponse.data?.userWebsites.map((w) => ({
           text: w.name,
           value: w.id,
-        })) ?? [],
+        })) ?? []),
       ],
       filteredValue: finalSearch.websiteIds,
       filterMultiple: false,
@@ -166,37 +145,32 @@ export default function Page() {
       title: 'Reason',
       dataIndex: 'reason',
       key: 'reason',
-      render: (_: any, record: Exclude<typeof eventItems, undefined>[number]) => (
-        record.traceId
-          ? (
-            <Button
-              type="primary"
-              shape="round"
-              onClick={() => setCurrentTrace(record.traceId!)}
-            >
-              Trace
-              {' '}
-              #
-              {record.traceId}
-            </Button>
-          ) : '-'
-      ),
+      render: (_: any, record: Exclude<typeof eventItems, undefined>[number]) =>
+        record.traceId ? (
+          <Button type="primary" shape="round" onClick={() => setCurrentTrace(record.traceId!)}>
+            Trace #{record.traceId}
+          </Button>
+        ) : (
+          '-'
+        ),
     },
   ];
 
   const renderTitle = () => {
     return (
       <div className="flex justify-between items-center">
-        <Typography.Title className="!text-primary-dark">
-          Events
-        </Typography.Title>
+        <Typography.Title className="!text-primary-dark">Events</Typography.Title>
       </div>
     );
   };
 
   const renderSearch = () => {
     const onFinish = async (values: FilterValues) => {
-      if (values.timeAfter && values.timeBefore && (values.timeAfter.toISOString() > values.timeBefore.toISOString())) {
+      if (
+        values.timeAfter &&
+        values.timeBefore &&
+        values.timeAfter.toISOString() > values.timeBefore.toISOString()
+      ) {
         // eslint-disable-next-line no-alert
         window.alert('Cannot set the end time later than before time. ');
         return;
@@ -218,23 +192,15 @@ export default function Page() {
           }}
           onFinish={onFinish}
         >
-          <Form.Item
-            name="timeAfter"
-          >
+          <Form.Item name="timeAfter">
             <DatePicker showTime placeholder="Start Time" />
           </Form.Item>
           <span className="pr-3 pt-2"> to </span>
-          <Form.Item
-            name="timeBefore"
-          >
+          <Form.Item name="timeBefore">
             <DatePicker showTime placeholder="End Time" />
           </Form.Item>
           <Form.Item>
-            <Button
-              type="primary"
-              shape="round"
-              htmlType="submit"
-            >
+            <Button type="primary" shape="round" htmlType="submit">
               Search
             </Button>
           </Form.Item>
@@ -246,12 +212,7 @@ export default function Page() {
   const renderBottom = () => {
     return (
       <div className="flex justify-start">
-        <Button
-          type="primary"
-          shape="round"
-          onClick={() => resetCursor()}
-          className="mr-5"
-        >
+        <Button type="primary" shape="round" onClick={() => resetCursor()} className="mr-5">
           Page 1
         </Button>
         <CursorPagination

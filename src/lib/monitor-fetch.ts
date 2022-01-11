@@ -40,17 +40,10 @@ const httpsAgent = new https.Agent({
 });
 
 // see: https://nodejs.org/api/errors.html#errors_common_system_errors
-const ioErrors = [
-  'ECONNREFUSED',
-  'ECONNRESET',
-  'EPIPE',
-  'ETIMEDOUT',
-];
+const ioErrors = ['ECONNREFUSED', 'ECONNRESET', 'EPIPE', 'ETIMEDOUT'];
 
 // see: https://nodejs.org/api/errors.html#errors_common_system_errors
-const dnsErrors = [
-  'ENOTFOUND',
-];
+const dnsErrors = ['ENOTFOUND'];
 
 // see: https://nodejs.org/api/tls.html#tls_x509_certificate_error_codes
 const sslErrors = [
@@ -101,8 +94,8 @@ async function doPing(rawUrl: string, retries: number): Promise<PingResult> {
 
   const reqHeadersDefault: { [key: string]: string } = {
     'Accept-Encoding': 'gzip,deflate,br',
-    'Accept': '*/*',
-    'Connection': 'close',
+    Accept: '*/*',
+    Connection: 'close',
     'Transfer-Encoding': 'chunked',
     'User-Agent': 'node-fetch',
   };
@@ -185,7 +178,4 @@ async function doPing(rawUrl: string, retries: number): Promise<PingResult> {
   return result;
 }
 
-export {
-  doPing,
-  PingResult,
-};
+export { doPing, PingResult };

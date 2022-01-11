@@ -1,7 +1,10 @@
 import * as t from 'io-ts';
 
 import {
-  requiredStringField, requiredNumberField, booleanField, emailArrayField,
+  requiredStringField,
+  requiredNumberField,
+  booleanField,
+  emailArrayField,
 } from '../../utils/fields';
 import { defineSchema } from '../../utils/types';
 

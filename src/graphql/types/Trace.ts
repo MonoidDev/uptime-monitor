@@ -1,7 +1,5 @@
 import { TraceStatus } from '@prisma/client';
-import {
-  objectType, inputObjectType, enumType, nonNull,
-} from 'nexus';
+import { objectType, inputObjectType, enumType, nonNull } from 'nexus';
 
 export const Trace = objectType({
   name: 'Trace',

@@ -5,3 +5,5 @@ next.config.js
 .eslintrc.js
 stylelint.config.js
 dist/
+graphql/client/generated/
+graphql/server/generated/

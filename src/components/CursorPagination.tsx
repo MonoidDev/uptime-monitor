@@ -11,25 +11,12 @@ export interface CursorPaginationProps {
 }
 
 export const CursorPagination: React.VFC<CursorPaginationProps> = (props) => {
-  const {
-    hasMoreBefore = true,
-    hasMoreAfter = true,
-    onClickBefore,
-    onClickAfter,
-  } = props;
+  const { hasMoreBefore = true, hasMoreAfter = true, onClickBefore, onClickAfter } = props;
 
   return (
     <div className="flex gap-2">
-      <Button
-        disabled={!hasMoreBefore}
-        icon={<LeftOutlined />}
-        onClick={onClickBefore}
-      />
-      <Button
-        disabled={!hasMoreAfter}
-        icon={<RightOutlined />}
-        onClick={onClickAfter}
-      />
+      <Button disabled={!hasMoreBefore} icon={<LeftOutlined />} onClick={onClickBefore} />
+      <Button disabled={!hasMoreAfter} icon={<RightOutlined />} onClick={onClickAfter} />
     </div>
   );
 };

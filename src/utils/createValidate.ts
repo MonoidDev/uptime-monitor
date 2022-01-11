@@ -7,12 +7,11 @@ export const createValidate = (type: t.Type<any>) => (values: any) => {
   const errors = pipe(
     v,
     fold(
-      (errs: any) => errs.map(
-        (error: any) => [
-          error.context.map(({ key }: any) => key).filter(Boolean),
-          error.message,
-        ] as const,
-      ),
+      (errs: any) =>
+        errs.map(
+          (error: any) =>
+            [error.context.map(({ key }: any) => key).filter(Boolean), error.message] as const,
+        ),
       () => [],
     ),
   );

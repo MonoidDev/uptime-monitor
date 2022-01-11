@@ -17,52 +17,51 @@ export class EventService extends BaseService {
   }
 
   async findEvents(query: EventQuery) {
-    const {
-      websiteId,
-      rangeTime,
-      timeAfter,
-      timeBefore,
-    } = query;
+    const { websiteId, rangeTime, timeAfter, timeBefore } = query;
 
     const { cursorWhere, orderBy } = createCursorQuery(query);
 
     const where = {
-      ...websiteId && {
+      ...(websiteId && {
         websiteId,
-      },
-      ...rangeTime && {
+      }),
+      ...(rangeTime && {
         createdAt: {
           gt: getStartFromRangeTime(rangeTime),
         },
-      },
-      ...timeAfter && {
+      }),
+      ...(timeAfter && {
         createdAt: {
           gt: timeAfter,
         },
-      },
-      ...timeBefore && {
+      }),
+      ...(timeBefore && {
         createdAt: {
           lt: timeBefore,
         },
-      },
+      }),
       website: {
         userId: this.ctx.authInfo!.id,
       },
     } as const;
 
-    const minId = (await this.ctx.prisma.event.findFirst({
-      where,
-      orderBy: {
-        createdAt: 'asc',
-      },
-    }))?.id;
+    const minId = (
+      await this.ctx.prisma.event.findFirst({
+        where,
+        orderBy: {
+          createdAt: 'asc',
+        },
+      })
+    )?.id;
 
-    const maxId = (await this.ctx.prisma.event.findFirst({
-      where,
-      orderBy: {
-        createdAt: 'desc',
-      },
-    }))?.id;
+    const maxId = (
+      await this.ctx.prisma.event.findFirst({
+        where,
+        orderBy: {
+          createdAt: 'desc',
+        },
+      })
+    )?.id;
 
     const whereWithId = {
       ...cursorWhere,

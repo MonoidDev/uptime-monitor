@@ -3,12 +3,7 @@ import { createUserInputErrors } from 'app/utils/createUserInputErrors';
 import { mutationField, nonNull } from 'nexus';
 
 import { Auth, loginRequired } from '../auth';
-import {
-  CreateUser,
-  Login,
-  UpdateUser,
-  UpdateUserPassword,
-} from '../types';
+import { CreateUser, Login, UpdateUser, UpdateUserPassword } from '../types';
 import { CreateUserSchema, UpdateUserPasswordSchema, UpdateUserSchema } from '../types/UserSchema';
 
 export const login = mutationField('login', {
@@ -44,12 +39,9 @@ export const createUser = mutationField('createUser', {
   },
   async resolve(_, { user }, ctx) {
     if (await ctx.userService.findUserByEmail(user.email)) {
-      throw createUserInputErrors(
-        CreateUserSchema,
-        {
-          email: `${user?.email} is already registered`,
-        },
-      );
+      throw createUserInputErrors(CreateUserSchema, {
+        email: `${user?.email} is already registered`,
+      });
     }
 
     const newUser = await ctx.userService.createUser(user);
@@ -81,9 +73,6 @@ export const updateMyPassword = mutationField('updateMyPassword', {
     updatePassword: UpdateUserPasswordSchema,
   },
   async resolve(_, { updatePassword }, ctx) {
-    return ctx.userService.updateUserPassword(
-      ctx.authInfo!.id!,
-      updatePassword,
-    );
+    return ctx.userService.updateUserPassword(ctx.authInfo!.id!, updatePassword);
   },
 });

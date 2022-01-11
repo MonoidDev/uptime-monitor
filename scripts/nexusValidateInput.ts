@@ -36,8 +36,9 @@ export const nexusValidateInput = () => {
     fieldDefTypes,
     onCreateFieldResolver(config) {
       return function resolver(source, args, context, info, next) {
-        const schemas = config.fieldConfig
-          .extensions?.nexus?.config.validate as NexusValidateInputSchemas | undefined;
+        const schemas = config.fieldConfig.extensions?.nexus?.config.validate as
+          | NexusValidateInputSchemas
+          | undefined;
 
         const errors: NexusValidateError = {};
 

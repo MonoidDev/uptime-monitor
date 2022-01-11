@@ -1,14 +1,7 @@
 import React, { useMemo } from 'react';
 
 import useSearch from '@monoid-dev/use-search';
-import {
-  message,
-  Typography,
-  Table,
-  Button,
-  Form,
-  Input,
-} from 'antd';
+import { message, Typography, Table, Button, Form, Input } from 'antd';
 import { DeleteButton } from 'app/components/DeleteButton';
 import { SSLMessage } from 'app/components/SSLMessage';
 import { StatusArray } from 'app/components/StatusArray';
@@ -24,12 +17,16 @@ import { Layout } from '../../../components/Layout';
 
 export default function Page() {
   const { search, updateSearch, setSearch } = useSearch(
-    useMemo(() => t.type({
-      keyword: h.omittable(t.string),
-      page: h.omittable(h.number().castString()),
-      pageSize: h.omittable(h.number().castString()),
-      sortByName: h.omittable(h.string()),
-    }), []),
+    useMemo(
+      () =>
+        t.type({
+          keyword: h.omittable(t.string),
+          page: h.omittable(h.number().castString()),
+          pageSize: h.omittable(h.number().castString()),
+          sortByName: h.omittable(h.string()),
+        }),
+      [],
+    ),
   );
 
   const router = useRouter();
@@ -44,7 +41,9 @@ export default function Page() {
     fetchPolicy: 'cache-and-network',
   });
 
-  type WebsiteItem = NonNullable<NonNullable<(typeof websites)['data']>['websites']>['results'][number];
+  type WebsiteItem = NonNullable<
+    NonNullable<typeof websites['data']>['websites']
+  >['results'][number];
 
   const [deleteWebsite] = useDeleteWebsiteMutation();
 
@@ -81,9 +80,7 @@ export default function Page() {
   const renderTitle = () => {
     return (
       <div className="flex justify-between items-center">
-        <Typography.Title className="!text-primary-dark">
-          Websites
-        </Typography.Title>
+        <Typography.Title className="!text-primary-dark">Websites</Typography.Title>
       </div>
     );
   };
@@ -97,12 +94,7 @@ export default function Page() {
     };
     return (
       <>
-        <Form
-          layout="inline"
-          name="websiteSearch"
-          initialValues={search}
-          onFinish={onFinish}
-        >
+        <Form layout="inline" name="websiteSearch" initialValues={search} onFinish={onFinish}>
           <Form.Item name="keyword">
             <Input
               placeholder="Keyword"
@@ -120,11 +112,7 @@ export default function Page() {
             />
           </Form.Item>
           <Form.Item>
-            <Button
-              type="primary"
-              shape="round"
-              htmlType="submit"
-            >
+            <Button type="primary" shape="round" htmlType="submit">
               Search
             </Button>
           </Form.Item>
@@ -172,19 +160,16 @@ export default function Page() {
             shape="round"
             onClick={(e) => {
               e.stopPropagation();
-              router.push(dynamicUrl(
-                '/monitoring/websites/[id]',
-                {
+              router.push(
+                dynamicUrl('/monitoring/websites/[id]', {
                   id: record.id,
-                },
-              ));
+                }),
+              );
             }}
           >
             Modify
           </Button>
-          <DeleteButton
-            onDelete={getOnDelete(record)}
-          />
+          <DeleteButton onDelete={getOnDelete(record)} />
         </div>
       ),
     },
@@ -202,9 +187,7 @@ export default function Page() {
           href: '/monitoring/websites',
         },
       ]}
-      queries={[
-        websites,
-      ]}
+      queries={[websites]}
     >
       {renderTitle()}
       <div className="bg-white p-8 shadow-md">
@@ -234,14 +217,15 @@ export default function Page() {
           pagination={{
             showSizeChanger: true,
             className: 'flex justify-end pt-10',
-            pageSize: (search?.pageSize ?? 10),
+            pageSize: search?.pageSize ?? 10,
             pageSizeOptions: ['10', '20', '50'],
             total: websitesData?.count!,
             current: (search?.page ?? 0) + 1,
-            onChange: (page, pageSize) => updateSearch({
-              page: page - 1,
-              pageSize,
-            }),
+            onChange: (page, pageSize) =>
+              updateSearch({
+                page: page - 1,
+                pageSize,
+              }),
           }}
           onChange={(_, __, sorter, extra) => {
             if (extra.action === 'sort') {

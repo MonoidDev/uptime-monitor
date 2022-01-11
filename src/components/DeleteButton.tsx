@@ -4,13 +4,11 @@ import { DeleteOutlined } from '@ant-design/icons';
 import { Button, Popconfirm } from 'antd';
 
 export interface DeleteButtonProps {
-  onDelete: ()=>Promise<void>,
+  onDelete: () => Promise<void>;
 }
 
 export const DeleteButton: React.FC<DeleteButtonProps> = (props) => {
-  const {
-    onDelete,
-  } = props;
+  const { onDelete } = props;
 
   const [visible, setVisible] = useState<boolean | undefined>(false);
   const [confirmLoading, setConfirmLoading] = useState<boolean>(false);

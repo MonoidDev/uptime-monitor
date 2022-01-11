@@ -26,8 +26,8 @@ const auth = new Auth();
 
 export const createContext: RequestObjectHandler<Context> = async ({ req, res }) => {
   let authInfo: AuthInfo | undefined;
-  const token = req.cookies?.uptimeMonitorToken
-    ?? req.headers.authorization?.replace(/^Bearer /, '');
+  const token =
+    req.cookies?.uptimeMonitorToken ?? req.headers.authorization?.replace(/^Bearer /, '');
 
   if (token) {
     try {

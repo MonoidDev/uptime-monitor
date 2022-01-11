@@ -1,15 +1,6 @@
 import React from 'react';
 
-import {
-  message,
-  Alert,
-  Button,
-  Col,
-  Form,
-  Input,
-  Row,
-  Typography,
-} from 'antd';
+import { message, Alert, Button, Col, Form, Input, Row, Typography } from 'antd';
 import { Layout } from 'app/components/Layout';
 import { UpdateUserSchema } from 'app/graphql/types/UserSchema';
 import { useValidation } from 'app/hooks/useValidation';
@@ -45,13 +36,9 @@ export default function Page() {
   });
 
   return (
-    <Layout
-      queries={[me]}
-    >
+    <Layout queries={[me]}>
       {() => (
-        <Form
-          {...validation.form}
-        >
+        <Form {...validation.form}>
           <Row>
             {validation.serverError.messages?.map((m, i) => (
               <Alert key={i} message={m} type="error" showIcon />
@@ -59,24 +46,16 @@ export default function Page() {
           </Row>
 
           <Row>
-            <Typography.Title className="!text-primary-dark">
-              Edit Profile
-            </Typography.Title>
+            <Typography.Title className="!text-primary-dark">Edit Profile</Typography.Title>
           </Row>
 
           <Row>
-            <Col
-              span={12}
-            >
-              <Form.Item
-                {...validation.item('email')}
-              >
+            <Col span={12}>
+              <Form.Item {...validation.item('email')}>
                 <Input />
               </Form.Item>
 
-              <Form.Item
-                {...validation.item('name')}
-              >
+              <Form.Item {...validation.item('name')}>
                 <Input />
               </Form.Item>
 

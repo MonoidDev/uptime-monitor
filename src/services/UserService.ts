@@ -4,7 +4,11 @@ import type { User } from '@prisma/client';
 import { createUserInputErrors } from 'app/utils/createUserInputErrors';
 import * as t from 'io-ts';
 
-import { CreateUserSchema, UpdateUserPasswordSchema, UpdateUserSchema } from '../graphql/types/UserSchema';
+import {
+  CreateUserSchema,
+  UpdateUserPasswordSchema,
+  UpdateUserSchema,
+} from '../graphql/types/UserSchema';
 import { BaseService } from './BaseService';
 
 export class UserService extends BaseService {
@@ -26,9 +30,7 @@ export class UserService extends BaseService {
 
   // TODO: salt?
   hashPassword(password: string) {
-    return createHash('sha256')
-      .update(password)
-      .digest('base64');
+    return createHash('sha256').update(password).digest('base64');
   }
 
   verifyPassword(user: User, inputPassword: string) {
@@ -46,17 +48,16 @@ export class UserService extends BaseService {
   }
 
   async updateUser(id: number, user: t.TypeOf<typeof UpdateUserSchema>) {
-    const currentId = (await this.ctx.prisma.user.findUnique({
-      where: { email: user.email },
-    }))?.id;
+    const currentId = (
+      await this.ctx.prisma.user.findUnique({
+        where: { email: user.email },
+      })
+    )?.id;
 
     if (currentId !== id && currentId !== undefined) {
-      throw createUserInputErrors(
-        UpdateUserSchema,
-        {
-          email: `${user?.email} is already registered`,
-        },
-      );
+      throw createUserInputErrors(UpdateUserSchema, {
+        email: `${user?.email} is already registered`,
+      });
     }
 
     return this.ctx.prisma.user.update({

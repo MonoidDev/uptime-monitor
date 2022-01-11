@@ -21,13 +21,10 @@ export interface CursorOptions {
 }
 
 export const useCursor = (options: CursorOptions) => {
-  const {
-    onCursorChange,
-    data,
-  } = options;
+  const { onCursorChange, data } = options;
 
-  const currentMinId = useMemo(() => Math.min(...data?.results.map((e) => e.id) ?? []), [data]);
-  const currentMaxId = useMemo(() => Math.max(...data?.results.map((e) => e.id) ?? []), [data]);
+  const currentMinId = useMemo(() => Math.min(...(data?.results.map((e) => e.id) ?? [])), [data]);
+  const currentMaxId = useMemo(() => Math.max(...(data?.results.map((e) => e.id) ?? [])), [data]);
 
   const hasMoreBefore = data?.maxId ? data.maxId > currentMaxId : false;
   const hasMoreAfter = data?.minId ? data.minId < currentMinId : false;

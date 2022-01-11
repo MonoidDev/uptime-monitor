@@ -1,9 +1,4 @@
-import {
-  ErrorPredicate,
-  Trace,
-  TraceStatus,
-  Website,
-} from '@prisma/client';
+import { ErrorPredicate, Trace, TraceStatus, Website } from '@prisma/client';
 import { WebsiteEventSource } from 'app/graphql/types/EventSchema';
 import { WebsiteEventParams } from 'app/models/WebsiteEvent';
 import { EmailService } from 'app/services/EmailService';
@@ -75,12 +70,14 @@ class Monitor {
 
       // console.log(`found ${websites.length} in ${nWebsites}, lastId=${lastId}`);
 
-      await Promise.all(websites.map(async (website) => {
-        const trace = await monitorService.findLatestTraceByWebsite(website.id);
-        if (this.checkInterval(website, trace, startAt)) {
-          futures.push(this.processWebsite(website, trace));
-        }
-      }));
+      await Promise.all(
+        websites.map(async (website) => {
+          const trace = await monitorService.findLatestTraceByWebsite(website.id);
+          if (this.checkInterval(website, trace, startAt)) {
+            futures.push(this.processWebsite(website, trace));
+          }
+        }),
+      );
     }
 
     if (process.env.NODE_ENV !== 'production') {
@@ -144,7 +141,10 @@ class Monitor {
 
       if (result.tlsExpiredAt) {
         let didSendAlert = false;
-        if (!website.httpsCertExpireAlerted && (result.tlsExpiredAt - new Date().getTime()) <= 7 * 24 * 3600 * 1000) {
+        if (
+          !website.httpsCertExpireAlerted &&
+          result.tlsExpiredAt - new Date().getTime() <= 7 * 24 * 3600 * 1000
+        ) {
           for (const email of website.emails) {
             await emailService.sendWebsiteHttpsExpireAlert(
               website,

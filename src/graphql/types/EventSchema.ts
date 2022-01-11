@@ -12,6 +12,6 @@ export type WebsiteEventDataAvailable = void;
 export type WebsiteEventDataNotAvailable = void;
 
 export type WebsiteEventDataHighLatency = {
-  isActive: boolean,
-  duration: number,
+  isActive: boolean;
+  duration: number;
 };

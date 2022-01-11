@@ -1,6 +1,4 @@
-import {
-  queryField, nonNull, intArg, list, stringArg,
-} from 'nexus';
+import { queryField, nonNull, intArg, list, stringArg } from 'nexus';
 
 import { loginRequired } from '../auth';
 

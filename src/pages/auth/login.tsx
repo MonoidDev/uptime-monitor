@@ -1,8 +1,6 @@
 import React from 'react';
 
-import {
-  Form, Input, Button, Typography, Row, Col, Alert,
-} from 'antd';
+import { Form, Input, Button, Typography, Row, Col, Alert } from 'antd';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 
@@ -54,7 +52,6 @@ export default function Page() {
           span: 8,
         }}
       >
-
         <Row>
           <Col span={8} />
           {validation.serverError.messages?.map((m, i) => (
@@ -63,20 +60,14 @@ export default function Page() {
         </Row>
         <Row>
           <Col span={8} />
-          <Typography.Title className="!text-primary-dark">
-            Login
-          </Typography.Title>
+          <Typography.Title className="!text-primary-dark">Login</Typography.Title>
         </Row>
 
-        <Form.Item
-          {...validation.item('email')}
-        >
+        <Form.Item {...validation.item('email')}>
           <Input />
         </Form.Item>
 
-        <Form.Item
-          {...validation.item('inputPassword')}
-        >
+        <Form.Item {...validation.item('inputPassword')}>
           <Input.Password />
         </Form.Item>
 
@@ -89,9 +80,7 @@ export default function Page() {
             Login
           </Button>
           <Link href={url('/auth/createUser')}>
-            <a className="px-6 text-primary-dark">
-              Register Now
-            </a>
+            <a className="px-6 text-primary-dark">Register Now</a>
           </Link>
         </Form.Item>
       </Form>

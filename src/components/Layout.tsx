@@ -5,9 +5,7 @@ import HomeFilled from '@ant-design/icons/HomeFilled';
 import HomeOutlined from '@ant-design/icons/HomeOutlined';
 import MonitorOutlined from '@ant-design/icons/MonitorOutlined';
 import type { QueryResult } from '@apollo/client';
-import {
-  Avatar, Breadcrumb, Dropdown, Layout as AntdLayout, Menu,
-} from 'antd';
+import { Avatar, Breadcrumb, Dropdown, Layout as AntdLayout, Menu } from 'antd';
 import classNames from 'classnames';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -34,12 +32,7 @@ export interface LayoutProps {
 }
 
 export const Layout: React.FC<LayoutProps> = (props) => {
-  const {
-    showSider = true,
-    breadcrumb,
-    children = null,
-    queries = [],
-  } = props;
+  const { showSider = true, breadcrumb, children = null, queries = [] } = props;
 
   const auth = useAuth();
 
@@ -72,18 +65,10 @@ export const Layout: React.FC<LayoutProps> = (props) => {
           defaultOpenKeys={[currentRoot]}
           style={{ height: '100%', borderRight: 0 }}
         >
-          <Menu.Item
-            key="/"
-            icon={<HomeFilled />}
-            onClick={() => router.push(url('/'))}
-          >
+          <Menu.Item key="/" icon={<HomeFilled />} onClick={() => router.push(url('/'))}>
             Dashboard
           </Menu.Item>
-          <Menu.SubMenu
-            key="/monitoring"
-            icon={<MonitorOutlined />}
-            title="Monitoring"
-          >
+          <Menu.SubMenu key="/monitoring" icon={<MonitorOutlined />} title="Monitoring">
             <Menu.Item
               key={url('/monitoring/websites')}
               onClick={() => router.push(url('/monitoring/websites'))}
@@ -98,7 +83,9 @@ export const Layout: React.FC<LayoutProps> = (props) => {
             </Menu.Item>
             <Menu.Item
               key={url('/monitoring/events')}
-              onClick={() => { router.push(url('/monitoring/events')); }}
+              onClick={() => {
+                router.push(url('/monitoring/events'));
+              }}
             >
               Events
             </Menu.Item>
@@ -112,19 +99,13 @@ export const Layout: React.FC<LayoutProps> = (props) => {
     const menu = (
       <Menu>
         <Menu.Item>
-          <Link href={url('/settings/user')}>
-            Edit Profile
-          </Link>
+          <Link href={url('/settings/user')}>Edit Profile</Link>
         </Menu.Item>
         <Menu.Item>
-          <Link href={url('/settings/changePassword')}>
-            Change Password
-          </Link>
+          <Link href={url('/settings/changePassword')}>Change Password</Link>
         </Menu.Item>
         <Menu.Item>
-          <a onClick={onLogout}>
-            Log out
-          </a>
+          <a onClick={onLogout}>Log out</a>
         </Menu.Item>
       </Menu>
     );
@@ -145,9 +126,7 @@ export const Layout: React.FC<LayoutProps> = (props) => {
     return (
       <Header className="text-white text-2xl flex items-center">
         <Link href={url('/')}>
-          <a className="hover:text-gray-200">
-            Uptime Monitor
-          </a>
+          <a className="hover:text-gray-200">Uptime Monitor</a>
         </Link>
 
         <div className="flex-1" />
@@ -163,9 +142,7 @@ export const Layout: React.FC<LayoutProps> = (props) => {
 
   const renderBreadcrumb = () => {
     return (
-      <div
-        className="bg-gray-100 h-12 border-b border-solid border-gray-300 p-6 flex items-center"
-      >
+      <div className="bg-gray-100 h-12 border-b border-solid border-gray-300 p-6 flex items-center">
         <HomeOutlined className="pr-3 color-gray-500" />
         <Breadcrumb>
           {breadcrumb?.map((b, i) => (
@@ -190,11 +167,7 @@ export const Layout: React.FC<LayoutProps> = (props) => {
               queries={queries}
               renderError={() => (
                 <div className="h-full flex justify-center items-center">
-                  <ErrorView
-                    message={queries.map(
-                      (m) => m.error?.message ?? '',
-                    ).join('\n')}
-                  />
+                  <ErrorView message={queries.map((m) => m.error?.message ?? '').join('\n')} />
                 </div>
               )}
             >

@@ -1,6 +1,4 @@
-import {
-  queryField, nonNull, intArg, stringArg, list,
-} from 'nexus';
+import { queryField, nonNull, intArg, stringArg, list } from 'nexus';
 
 import { loginRequired } from '../auth';
 
@@ -12,10 +10,12 @@ export const website = queryField('website', {
   authorize: loginRequired,
   async resolve(_, { id }, ctx) {
     const w = await ctx.websiteService.findWebsiteById(id);
-    return w && {
-      ...w,
-      status: await ctx.websiteService.findWebsiteStatus(id),
-    };
+    return (
+      w && {
+        ...w,
+        status: await ctx.websiteService.findWebsiteStatus(id),
+      }
+    );
   },
 });
 
@@ -28,22 +28,15 @@ export const websites = queryField('websites', {
     keyword: stringArg(),
   },
   authorize: loginRequired,
-  async resolve(
-    _,
-    {
-      page,
-      pageSize,
-      keyword,
-      sortByName,
-    },
-    ctx,
-  ) {
+  async resolve(_, { page, pageSize, keyword, sortByName }, ctx) {
     const count = await ctx.websiteService.total(keyword);
     const queryResult = await ctx.websiteService.findWebsites(page, pageSize, keyword, sortByName);
-    const results = await Promise.all(queryResult.map(async (w) => ({
-      status: await ctx.websiteService.findWebsiteStatus(w.id),
-      ...w,
-    })));
+    const results = await Promise.all(
+      queryResult.map(async (w) => ({
+        status: await ctx.websiteService.findWebsiteStatus(w.id),
+        ...w,
+      })),
+    );
     return {
       count,
       results,

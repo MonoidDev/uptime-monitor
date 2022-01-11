@@ -1,6 +1,4 @@
-import React, {
-  useContext, useEffect, useMemo, useReducer,
-} from 'react';
+import React, { useContext, useEffect, useMemo, useReducer } from 'react';
 
 import { useRouter } from 'next/router';
 
@@ -11,22 +9,24 @@ export interface AuthState {
   token: string | null;
 }
 
-export type AuthAction = {
-  type: 'login',
-  token: string;
-} | {
-  type: 'logout',
-};
+export type AuthAction =
+  | {
+      type: 'login';
+      token: string;
+    }
+  | {
+      type: 'logout';
+    };
 
 const AuthContext = React.createContext<{
-  state: AuthState,
-  dispatch:(action: AuthAction) => void,
+  state: AuthState;
+  dispatch: (action: AuthAction) => void;
 }>({
-      state: {
-        token: null,
-      },
-      dispatch: () => {},
-    });
+  state: {
+    token: null,
+  },
+  dispatch: () => {},
+});
 
 const reducer = (prev: AuthState, action: AuthAction) => {
   switch (action.type) {
@@ -56,10 +56,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = (props) => {
     token: initialToken,
   });
 
-  const value = useMemo(() => ({
-    state,
-    dispatch,
-  }), [state, dispatch]);
+  const value = useMemo(
+    () => ({
+      state,
+      dispatch,
+    }),
+    [state, dispatch],
+  );
 
   const router = useRouter();
 
@@ -69,11 +72,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = (props) => {
     }
   }, [router.pathname, state.token]);
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
 export const useAuth = () => {
