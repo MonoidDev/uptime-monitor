@@ -1,18 +1,17 @@
 import React, { useMemo } from 'react';
 
 import useSearch from '@monoid-dev/use-search';
-import { message, Typography, Table, Button, Form, Input } from 'antd';
-import { DeleteButton } from 'app/components/DeleteButton';
-import { StatusArray } from 'app/components/StatusArray';
+import { Typography, Table, Button, Form, Input } from 'antd';
+import { SSLMessage } from 'app/components/SSLMessage';
 import { gStyles } from 'app/styles';
 import classNames from 'classnames';
-import { useDeleteWebsiteMutation, useGetWebsitesQuery } from 'graphql/client/generated';
+import { useGetWebsitesQuery } from 'graphql/client/generated';
 import * as t from 'io-ts';
 import { useRouter } from 'next/router';
 import * as h from 'tyrann-io';
 
-import { dynamicUrl, url } from '../../../../.next-urls';
-import { Layout } from '../../../components/Layout';
+import { dynamicUrl, url } from '../../../.next-urls';
+import { Layout } from '../../components/Layout';
 
 export default function Page() {
   const { search, updateSearch, setSearch } = useSearch(
@@ -44,42 +43,16 @@ export default function Page() {
     NonNullable<typeof websites['data']>['websites']
   >['results'][number];
 
-  const [deleteWebsite] = useDeleteWebsiteMutation();
-
   const websitesData = websites.data?.websites;
 
   const websiteItems = websitesData?.results?.map((website) => ({
     ...website,
   }));
 
-  const needGotoPrevPage = () => {
-    const page = search?.page ?? 0;
-    const pageSize = search?.pageSize ?? 10;
-    const itemNum = (websitesData?.count ?? 0) % pageSize;
-    return itemNum === 1 && page !== 0;
-  };
-
-  const getOnDelete = (record: WebsiteItem) => {
-    return async () => {
-      await deleteWebsite({
-        variables: {
-          websiteId: record.id,
-        },
-      }).then(async () => {
-        message.success(`Successfully deleted site ${record.name}`);
-        if (needGotoPrevPage()) {
-          updateSearch({ page: search?.page! - 1 });
-        } else {
-          websites.refetch();
-        }
-      });
-    };
-  };
-
   const renderTitle = () => {
     return (
       <div className="flex justify-between items-center">
-        <Typography.Title className="!text-primary-dark">Websites</Typography.Title>
+        <Typography.Title className="!text-primary-dark">SSL Status</Typography.Title>
       </div>
     );
   };
@@ -135,14 +108,12 @@ export default function Page() {
       render: (text: string) => <a href={text}>{text}</a>,
     },
     {
-      title: 'Status',
-      dataIndex: 'status',
+      title: 'SSL Status',
+      dataIndex: 'sslMessage',
       key: 'status',
-      render: (status: any[]) => (
-        <div className="flex gap-4 items-center">
-          <div className="flex justify-start space-x-1">
-            <StatusArray status={status} />
-          </div>
+      render: (sslMessage: WebsiteItem['sslMessage']) => (
+        <div>
+          <SSLMessage sslMessage={sslMessage} />
         </div>
       ),
     },
@@ -157,15 +128,14 @@ export default function Page() {
             onClick={(e) => {
               e.stopPropagation();
               router.push(
-                dynamicUrl('/monitoring/websites/[id]', {
+                dynamicUrl('/monitoring/websiteStatus/[id]', {
                   id: record.id,
                 }),
               );
             }}
           >
-            Modify
+            Details
           </Button>
-          <DeleteButton onDelete={getOnDelete(record)} />
         </div>
       ),
     },
@@ -179,8 +149,8 @@ export default function Page() {
           href: '/monitoring/websites',
         },
         {
-          title: 'Websites',
-          href: '/monitoring/websites',
+          title: 'WebsiteStatus',
+          href: '/monitoring/sslStatus',
         },
       ]}
       queries={[websites]}
@@ -202,14 +172,6 @@ export default function Page() {
           className={classNames('py-8', gStyles.tableRowClickable)}
           dataSource={websiteItems}
           columns={columns}
-          onRow={(record) => ({
-            onClick() {
-              router.push({
-                pathname: `${url('/monitoring/websiteStatus/[id]')}`,
-                query: `id=${record.id}`,
-              });
-            },
-          })}
           pagination={{
             showSizeChanger: true,
             className: 'flex justify-end pt-10',

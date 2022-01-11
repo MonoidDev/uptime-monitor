@@ -31,7 +31,11 @@ export const main = async (config: EmitNextUrlsConfig = {}) => {
   const emit = async () => {
     const pagePaths = await collectPages(pagesDir, nextConfig.pageExtensions!);
 
-    const mappedPages = createPagesMapping(pagePaths, nextConfig.pageExtensions!, true, false);
+    const mappedPages = createPagesMapping(pagePaths, nextConfig.pageExtensions!, {
+      isDev: true,
+      hasConcurrentFeatures: false,
+      hasServerComponents: false,
+    });
 
     const urls = Object.keys(mappedPages).filter((s) => !s.match(/^\/(_|api)/));
 
