@@ -74,6 +74,7 @@ export const Website = objectType({
         };
       },
     });
+    t.model.webhooks();
   },
 });
 
@@ -97,6 +98,9 @@ export const CreateUpdateWebsite = inputObjectType({
     t.nonNull.string('errorPredicate');
     t.nonNull.list.field('emails', {
       type: nonNull('String'),
+    });
+    t.nonNull.list.field('webhookIds', {
+      type: nonNull('Int'),
     });
   },
 });

@@ -112,6 +112,11 @@ export default function Page() {
               <SSLMessage sslMessage={website.data?.website?.sslMessage} />
             </Descriptions.Item>
           )}
+          {website.data?.website?.webhooks.length && (
+            <Descriptions.Item label="Webhooks">
+              {website.data?.website.webhooks.length}
+            </Descriptions.Item>
+          )}
         </Descriptions>
 
         <Link

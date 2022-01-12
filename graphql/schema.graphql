@@ -20,6 +20,7 @@ input CreateUpdateWebsite {
   name: String!
   pingInterval: Int!
   url: String!
+  webhookIds: [Int!]!
 }
 
 input CreateUser {
@@ -234,6 +235,10 @@ type WebhookResult {
   success: Boolean!
 }
 
+input WebhookWhereUniqueInput {
+  id: Int
+}
+
 type Website {
   createdAt: DateTime!
   emails: [String!]!
@@ -247,6 +252,7 @@ type Website {
   status: [WebsiteStatusType!]
   url: String!
   userId: Int!
+  webhooks(after: WebhookWhereUniqueInput, before: WebhookWhereUniqueInput, first: Int, last: Int): [Webhook!]!
 }
 
 enum WebsiteStatusType {

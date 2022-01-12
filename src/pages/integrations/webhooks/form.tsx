@@ -3,9 +3,9 @@ import React, { useMemo, useRef } from 'react';
 import useSearch from '@monoid-dev/use-search';
 import { Typography, Button, Form, Input, Row, Col, Alert, Select } from 'antd';
 import { Layout } from 'app/components/Layout';
+import { webhookDefinitions } from 'app/data/webhooks';
 import { CreateWebhookSchema } from 'app/graphql/types/WebhookSchema';
 import { useValidation } from 'app/hooks/useValidation';
-import { webhookDefinitions } from 'app/lib/webhooks/data';
 import {
   useCreateWebhookMutation,
   useDeleteWebhookMutation,
@@ -15,6 +15,7 @@ import {
   WebhookResult,
 } from 'graphql/client/generated';
 import * as t from 'io-ts';
+import Image from 'next/image';
 import { useRouter } from 'next/router';
 import * as h from 'tyrann-io';
 
@@ -197,8 +198,13 @@ export default function Page() {
           <Form.Item {...validation.item('type')} required>
             <Select>
               {webhookDefinitions.map((def) => (
-                <Select.Option key={def.name} value={def.name}>
-                  {def.name}
+                <Select.Option key={def.type} value={def.type}>
+                  <div>
+                    <span className="mr-2 relative top-[2px]">
+                      <Image src={def.icon} height={16} width={16} />
+                    </span>
+                    {def.type}
+                  </div>
                 </Select.Option>
               ))}
             </Select>

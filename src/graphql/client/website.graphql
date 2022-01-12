@@ -1,4 +1,3 @@
-
 fragment WebsiteFrag on Website {
   id
   name
@@ -12,6 +11,9 @@ fragment WebsiteFrag on Website {
   sslMessage {
     severity
     message
+  }
+  webhooks {
+    ...WebhookFrag
   }
 }
 

@@ -1,15 +1,21 @@
+import larkIcon from 'app/assets/Lark.png';
+import slackIcon from 'app/assets/Slack.png';
+
 export interface WebhookDefinition {
-  name: string;
+  type: string;
   baseUrl: string;
+  icon: StaticImageData;
 }
 
 export const webhookDefinitions: WebhookDefinition[] = [
   {
-    name: 'Lark',
+    type: 'Lark',
     baseUrl: 'https://open.larksuite.com/open-apis/bot/v2/hook/',
+    icon: larkIcon,
   },
   {
-    name: 'Slack',
+    type: 'Slack',
     baseUrl: 'https://hooks.slack.com/services/',
+    icon: slackIcon,
   },
 ];

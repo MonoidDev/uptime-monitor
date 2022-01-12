@@ -15,24 +15,28 @@ import {
   InputNumber,
   Radio,
   Space,
+  Select,
 } from 'antd';
 import { url } from 'app/../.next-urls';
+import { Layout } from 'app/components/Layout';
+import { webhookDefinitions } from 'app/data/webhooks';
 import { mapErrorPredicateExplanation, mapErrorPredicateLabel } from 'app/data/websites';
+import { CreateUpdateWebsiteSchema } from 'app/graphql/types/WebsiteSchema';
 import { usePageQuery } from 'app/hooks/usePageQuery';
+import { useValidation } from 'app/hooks/useValidation';
+import { useThrottledCall } from 'app/utils/useThrottledCall';
 import {
   useUpdateWebsiteMutation,
   useGetWebsiteByIdQuery,
   useDeleteWebsiteMutation,
   ErrorPredicate,
+  useWebhooksQuery,
 } from 'graphql/client/generated';
 import * as t from 'io-ts';
+import Image from 'next/image';
 import { useRouter } from 'next/router';
 import sleep from 'sleep-promise';
 import * as h from 'tyrann-io';
-
-import { Layout } from '../../../components/Layout';
-import { CreateUpdateWebsiteSchema } from '../../../graphql/types/WebsiteSchema';
-import { useValidation } from '../../../hooks/useValidation';
 
 export default function Page() {
   const router = useRouter();
@@ -53,6 +57,16 @@ export default function Page() {
     },
   });
 
+  const webhooks = useWebhooksQuery({
+    variables: {
+      page: 1,
+      pageSize: 8964,
+    },
+    fetchPolicy: 'cache-and-network',
+  });
+
+  const refreshWebhooks = useThrottledCall(() => webhooks.refetch(), 5000);
+
   const websiteDetailsData = {
     name: websiteDetails.data?.website?.name ?? '',
     url: websiteDetails.data?.website?.url ?? '',
@@ -60,6 +74,7 @@ export default function Page() {
     enabled: websiteDetails.data?.website?.enabled ?? false,
     emails: websiteDetails.data?.website?.emails ?? [],
     errorPredicate: websiteDetails.data?.website?.errorPredicate ?? ErrorPredicate.Http_2XxOnly,
+    webhookIds: websiteDetails.data?.website?.webhooks.map((item) => item.id) || [],
   };
 
   const [updateWebsite, { error }] = useUpdateWebsiteMutation();
@@ -128,7 +143,7 @@ export default function Page() {
           title: String(id),
         },
       ]}
-      queries={[websiteDetails]}
+      queries={[websiteDetails, webhooks]}
     >
       {renderTitle()}
       <div className="bg-white p-8 shadow-md">
@@ -197,6 +212,41 @@ export default function Page() {
                 ))}
               </Space>
             </Radio.Group>
+          </Form.Item>
+
+          <Form.Item
+            {...validation.item('webhookIds')}
+            help={
+              <div className="text-gray-400 text-sm mt-1">
+                <a href={url('/integrations/webhooks')} target="_blank" rel="noreferrer">
+                  Manage hooks...
+                </a>
+              </div>
+            }
+          >
+            <Select
+              mode="multiple"
+              style={{ width: '100%' }}
+              placeholder="Webhooks"
+              optionLabelProp="label"
+              onMouseEnter={() => refreshWebhooks()}
+            >
+              {webhooks.data?.webhooks?.results.map((webhook) => {
+                const icon = webhookDefinitions.find((def) => def.type === webhook.type)?.icon;
+                return (
+                  <Select.Option key={webhook.id} value={webhook.id} label={webhook.name}>
+                    <div>
+                      {icon && (
+                        <span className="mr-4 relative top-[2px]">
+                          <Image src={icon} height={16} width={16} />
+                        </span>
+                      )}
+                      {webhook.name}
+                    </div>
+                  </Select.Option>
+                );
+              })}
+            </Select>
           </Form.Item>
 
           <Form.Item>

@@ -1,4 +1,5 @@
 import * as t from 'io-ts';
+import * as h from 'tyrann-io';
 
 import {
   requiredStringField,
@@ -17,5 +18,6 @@ export const CreateUpdateWebsiteSchema = defineSchema(
     enabled: booleanField('Enable Monitoring'),
     emails: emailArrayField('Emails'),
     errorPredicate: requiredStringField('Error Predicate'),
+    webhookIds: h.array(t.number).withLabel('Webhooks'),
   }),
 );

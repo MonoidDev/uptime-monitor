@@ -1,4 +1,5 @@
 import { ErrorPredicate } from '@prisma/client';
+import { ValidationError } from 'apollo-server-errors';
 import { WebsiteEventSource } from 'app/graphql/types/EventSchema';
 import * as t from 'io-ts';
 import { range } from 'lodash-es';
@@ -113,12 +114,17 @@ export class WebsiteService extends BaseService {
     const userId = this.ctx.authInfo!.id;
     const ret = await this.ctx.prisma.website.create({
       data: {
-        userId,
         name: website!.name,
         url: website!.url,
         pingInterval: website!.pingInterval,
         enabled: website!.enabled,
         emails: website!.emails,
+        webhooks: {
+          connect: website.webhookIds.map((id) => ({ id })),
+        },
+        user: {
+          connect: { id: userId },
+        },
       },
     });
     await this.ctx.eventService.addEvent({
@@ -135,7 +141,7 @@ export class WebsiteService extends BaseService {
       },
     });
     if (!existingWebsite) {
-      return Promise.reject();
+      throw new ValidationError(`${websiteId} does not exist. `);
     }
 
     const ret = await this.ctx.prisma.website.update({
@@ -149,6 +155,9 @@ export class WebsiteService extends BaseService {
         enabled: website!.enabled,
         emails: website!.emails,
         errorPredicate: website!.errorPredicate as ErrorPredicate,
+        webhooks: {
+          connect: website.webhookIds.map((id) => ({ id })),
+        },
       },
     });
 

@@ -14,13 +14,22 @@ import {
   message,
   Radio,
   Space,
+  Select,
 } from 'antd';
 import { url } from 'app/../.next-urls';
 import { Layout } from 'app/components/Layout';
+import { webhookDefinitions } from 'app/data/webhooks';
 import { mapErrorPredicateExplanation, mapErrorPredicateLabel } from 'app/data/websites';
 import { CreateUpdateWebsiteSchema } from 'app/graphql/types/WebsiteSchema';
 import { useValidation } from 'app/hooks/useValidation';
-import { ErrorPredicate, useCreateWebsiteMutation, useMeQuery } from 'graphql/client/generated';
+import { useThrottledCall } from 'app/utils/useThrottledCall';
+import {
+  ErrorPredicate,
+  useCreateWebsiteMutation,
+  useMeQuery,
+  useWebhooksQuery,
+} from 'graphql/client/generated';
+import Image from 'next/image';
 import { useRouter } from 'next/router';
 import sleep from 'sleep-promise';
 
@@ -31,6 +40,16 @@ export default function Page() {
 
   const [createWebsite, { error, loading }] = useCreateWebsiteMutation();
 
+  const webhooks = useWebhooksQuery({
+    variables: {
+      page: 1,
+      pageSize: 8964,
+    },
+    fetchPolicy: 'cache-and-network',
+  });
+
+  const refreshWebhooks = useThrottledCall(() => webhooks.refetch(), 5000);
+
   const validation = useValidation({
     initialValues: {
       name: '',
@@ -39,6 +58,7 @@ export default function Page() {
       enabled: true,
       emails: [me.data?.me?.email!],
       errorPredicate: '',
+      webhookIds: [],
     },
     type: CreateUpdateWebsiteSchema,
     error,
@@ -147,6 +167,41 @@ export default function Page() {
                 ))}
               </Space>
             </Radio.Group>
+          </Form.Item>
+
+          <Form.Item
+            {...validation.item('webhookIds')}
+            help={
+              <div className="text-gray-400 text-sm mt-1">
+                <a href={url('/integrations/webhooks')} target="_blank" rel="noreferrer">
+                  Manage hooks...
+                </a>
+              </div>
+            }
+          >
+            <Select
+              mode="multiple"
+              style={{ width: '100%' }}
+              placeholder="Webhooks"
+              optionLabelProp="label"
+              onMouseEnter={() => refreshWebhooks()}
+            >
+              {webhooks.data?.webhooks?.results.map((webhook) => {
+                const icon = webhookDefinitions.find((def) => def.type === webhook.type)?.icon;
+                return (
+                  <Select.Option key={webhook.id} value={webhook.id} label={webhook.name}>
+                    <div>
+                      {icon && (
+                        <span className="mr-4 relative top-[2px]">
+                          <Image src={icon} height={16} width={16} />
+                        </span>
+                      )}
+                      {webhook.name}
+                    </div>
+                  </Select.Option>
+                );
+              })}
+            </Select>
           </Form.Item>
 
           <Form.Item>

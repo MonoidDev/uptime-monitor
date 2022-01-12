@@ -132,7 +132,11 @@ export default function Page() {
       title: 'Url',
       dataIndex: 'url',
       key: 'url',
-      render: (text: string) => <a href={text}>{text}</a>,
+      render: (text: string) => (
+        <a href={text} target="_blank" rel="noreferrer">
+          {text}
+        </a>
+      ),
     },
     {
       title: 'Status',
