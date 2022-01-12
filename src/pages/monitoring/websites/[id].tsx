@@ -234,7 +234,20 @@ export default function Page() {
               {webhooks.data?.webhooks?.results.map((webhook) => {
                 const icon = webhookDefinitions.find((def) => def.type === webhook.type)?.icon;
                 return (
-                  <Select.Option key={webhook.id} value={webhook.id} label={webhook.name}>
+                  <Select.Option
+                    key={webhook.id}
+                    value={webhook.id}
+                    label={
+                      <div>
+                        {icon && (
+                          <span className="mr-1 relative top-[2px]">
+                            <Image src={icon} height={16} width={16} />
+                          </span>
+                        )}
+                        {webhook.name}
+                      </div>
+                    }
+                  >
                     <div>
                       {icon && (
                         <span className="mr-4 relative top-[2px]">

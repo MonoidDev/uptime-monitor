@@ -1,14 +1,17 @@
-import { ErrorPredicate, Trace, TraceStatus, Website } from '@prisma/client';
+import { ErrorPredicate, Trace, TraceStatus, Webhook, Website } from '@prisma/client';
 import { WebsiteEventSource } from 'app/graphql/types/EventSchema';
 import { WebsiteEventParams } from 'app/models/WebsiteEvent';
 import { EmailService } from 'app/services/EmailService';
 import { MonitorService } from 'app/services/MonitorService';
+import { WebhookInvokeService } from 'app/services/WebhookInvokeService';
 
 import { doPing } from './monitor-fetch';
 
 const monitorService = new MonitorService();
 
 const emailService = new EmailService();
+
+const webhookInvokeService = new WebhookInvokeService();
 
 class Monitor {
   private isScanning = false;
@@ -105,7 +108,10 @@ class Monitor {
     return nextAt < nowAt;
   }
 
-  private async processWebsite(website: Website, lastTrace: Trace | null) {
+  private async processWebsite(
+    website: Website & { webhooks: Webhook[] },
+    lastTrace: Trace | null,
+  ) {
     if (this.activeWebsiteIds.has(website.id)) {
       if (process.env.NODE_ENV !== 'production') {
         console.info(`already processing ${website.id}`);
@@ -169,6 +175,12 @@ class Monitor {
         if (eventAvailability.source === WebsiteEventSource.NotAvailable) {
           for (const email of website.emails) {
             await emailService.sendWebsiteAlert(website, email);
+          }
+          for (const webhook of website.webhooks) {
+            await webhookInvokeService.invokeWebhook(
+              webhook,
+              webhookInvokeService.getWebhookWebsiteAlertBody(webhook.type, website)!,
+            );
           }
         }
       }

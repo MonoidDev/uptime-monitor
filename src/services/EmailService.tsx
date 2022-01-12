@@ -32,7 +32,7 @@ export class EmailService {
   getWebsiteAlertContent(website: Website) {
     const subject = `[Uptime Monitor] ${website.name} is DOWN!`;
 
-    const url = `https://uptime-monitor-staging.herokuapp.com/monitoring/websiteStatus/${website.id}`;
+    const url = `${process.env.NEXT_PUBLIC_SERVER}/monitoring/websiteStatus/${website.id}`;
 
     const Template = () => (
       <>

@@ -5,7 +5,25 @@ import { buildEvent, WebsiteEventParams } from 'app/models/WebsiteEvent';
 
 export class MonitorService {
   async findEnabledWebsites(count: number, lastId: number | null) {
-    let args: any = {
+    if (lastId !== null) {
+      return prisma.website.findMany({
+        where: {
+          enabled: true,
+        },
+        orderBy: {
+          id: 'asc',
+        },
+        take: count,
+        cursor: {
+          id: lastId,
+        },
+        skip: 1,
+        include: {
+          webhooks: true,
+        },
+      });
+    }
+    return prisma.website.findMany({
       where: {
         enabled: true,
       },
@@ -13,17 +31,10 @@ export class MonitorService {
         id: 'asc',
       },
       take: count,
-    };
-    if (lastId !== null) {
-      args = {
-        ...args,
-        cursor: {
-          id: lastId,
-        },
-        skip: 1,
-      };
-    }
-    return prisma.website.findMany(args);
+      include: {
+        webhooks: true,
+      },
+    });
   }
 
   async findLatestTraceByWebsite(websiteId: number) {
