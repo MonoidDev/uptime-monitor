@@ -1,7 +1,7 @@
 import { Website, TraceType, TraceStatus } from '@prisma/client';
 import { PingResult } from 'app/lib/monitor/monitor-fetch';
 import { prisma } from 'app/lib/prisma/prisma';
-import { buildEvent, WebsiteEventParams } from 'app/models/WebsiteEvent';
+import { buildEvent, WebsiteEventParams } from 'app/services/helpers/WebsiteEvent';
 
 export class MonitorService {
   async findEnabledWebsites(count: number, lastId: number | null) {

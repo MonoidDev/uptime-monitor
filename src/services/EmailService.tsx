@@ -75,7 +75,7 @@ export class EmailService {
       units: ['y', 'mo', 'w', 'd', 'h'],
       round: true,
     });
-    const subject = `[Uptime Monitor] ${website.name} expires in ${duration}!`;
+    const subject = `[Uptime Monitor] ${website.name} SSL certificate expires in ${duration}!`;
 
     const url = `https://uptime-monitor-staging.herokuapp.com/monitoring/websiteStatus/${website.id}`;
 

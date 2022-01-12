@@ -1,7 +1,7 @@
 import { ErrorPredicate, Trace, TraceStatus, Webhook, Website } from '@prisma/client';
 import { WebsiteEventSource } from 'app/graphql/types/EventSchema';
-import { WebsiteEventParams } from 'app/models/WebsiteEvent';
 import { EmailService } from 'app/services/EmailService';
+import { WebsiteEventParams } from 'app/services/helpers/WebsiteEvent';
 import { MonitorService } from 'app/services/MonitorService';
 import { WebhookInvokeService } from 'app/services/WebhookInvokeService';
 
@@ -152,11 +152,30 @@ class Monitor {
           result.tlsExpiredAt - new Date().getTime() <= 7 * 24 * 3600 * 1000
         ) {
           for (const email of website.emails) {
-            await emailService.sendWebsiteHttpsExpireAlert(
-              website,
-              new Date(result.tlsExpiredAt),
-              email,
-            );
+            try {
+              await emailService.sendWebsiteHttpsExpireAlert(
+                website,
+                new Date(result.tlsExpiredAt),
+                email,
+              );
+            } catch (e) {
+              console.warn(e);
+            }
+          }
+
+          for (const webhook of website.webhooks) {
+            try {
+              await webhookInvokeService.invokeWebhook(
+                webhook,
+                webhookInvokeService.getWebhookWebsiteHttpsExpireBody(
+                  webhook.type,
+                  website,
+                  new Date(result.tlsExpiredAt),
+                ),
+              );
+            } catch (e) {
+              console.warn(e);
+            }
           }
           didSendAlert = true;
           await monitorService.updateWebsiteHttpsCertExpireAlerted(website.id, true);
@@ -174,13 +193,21 @@ class Monitor {
         await monitorService.addEvent(eventAvailability);
         if (eventAvailability.source === WebsiteEventSource.NotAvailable) {
           for (const email of website.emails) {
-            await emailService.sendWebsiteAlert(website, email);
+            try {
+              await emailService.sendWebsiteAlert(website, email);
+            } catch (e) {
+              console.warn(e);
+            }
           }
           for (const webhook of website.webhooks) {
-            await webhookInvokeService.invokeWebhook(
-              webhook,
-              webhookInvokeService.getWebhookWebsiteAlertBody(webhook.type, website)!,
-            );
+            try {
+              await webhookInvokeService.invokeWebhook(
+                webhook,
+                webhookInvokeService.getWebhookWebsiteAlertBody(webhook.type, website),
+              );
+            } catch (e) {
+              console.warn(e);
+            }
           }
         }
       }

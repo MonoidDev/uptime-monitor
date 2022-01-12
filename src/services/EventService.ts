@@ -1,5 +1,5 @@
 import { EventQuery } from 'app/../graphql/client/generated';
-import { buildEvent, WebsiteEventParams } from 'app/models/WebsiteEvent';
+import { buildEvent, WebsiteEventParams } from 'app/services/helpers/WebsiteEvent';
 import { getStartFromRangeTime } from 'app/utils/date';
 
 import { BaseService } from './BaseService';
