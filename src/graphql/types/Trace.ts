@@ -36,6 +36,15 @@ export const TraceOfResponseTime = objectType({
   },
 });
 
+export const TraceOfErrorWebsite = objectType({
+  name: 'TraceOfErrorWebsite',
+  definition(t) {
+    t.nonNull.string('time');
+    t.nonNull.int('groupId');
+    t.nonNull.int('websiteCount');
+  },
+});
+
 const TraceTypeChoices = enumType({
   name: 'TraceTypeChoices',
   members: ['PING'],

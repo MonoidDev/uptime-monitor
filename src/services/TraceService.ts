@@ -75,6 +75,54 @@ export class TraceService extends BaseService {
     }
   }
 
+  async queryErrorWebsiteCountGroupByDate(
+    rangeTime: string,
+    byWebsiteId?: number | null,
+  ): Promise<CountGroup> {
+    const websiteIds = byWebsiteId
+      ? [byWebsiteId]
+      : await this.ctx.websiteService.findUserWebsiteIds();
+
+    switch (rangeTime) {
+      case '24h':
+        return this.ctx.prisma.$queryRaw`
+        SELECT
+          groupId "groupId", count(*)
+          FROM (
+            SELECT
+            Distinct "websiteId", (23 - floor((EXTRACT(epoch FROM current_timestamp) - EXTRACT(epoch FROM "createdAt")) / 3600)) groupId
+            FROM "Trace" WHERE
+              EXTRACT(epoch FROM "createdAt") > (EXTRACT(epoch FROM current_timestamp) - 3600 * 24)
+              and status != 'OK'
+              and "websiteId" IN (${Prisma.join(websiteIds)})
+          ) as tmp group by groupId order by groupId;`;
+      case '7d':
+        return this.ctx.prisma.$queryRaw`
+        SELECT
+          groupId "groupId", count(*)
+          FROM (
+            SELECT
+            Distinct "websiteId", (27 - floor((EXTRACT(epoch FROM current_timestamp) - EXTRACT(epoch FROM "createdAt")) / 21600)) groupId
+            FROM "Trace" WHERE
+              EXTRACT(epoch FROM "createdAt") > (EXTRACT(epoch FROM current_timestamp) - 86400 * 7)
+              and status != 'OK'
+              and "websiteId" IN (${Prisma.join(websiteIds)})
+          ) as tmp group by groupId order by groupId;`;
+      default:
+        return this.ctx.prisma.$queryRaw`
+        SELECT
+          groupId "groupId", count(*)
+          FROM (
+            SELECT
+            Distinct "websiteId", (30 - floor((EXTRACT(epoch FROM current_timestamp) - EXTRACT(epoch FROM "createdAt")) / 86400)) groupId
+            FROM "Trace" WHERE
+              EXTRACT(epoch FROM "createdAt") > (EXTRACT(epoch FROM current_timestamp) - 86400 * 31)
+              and status != 'OK'
+              and "websiteId" IN (${Prisma.join(websiteIds)})
+          ) as tmp group by groupId order by groupId;`;
+    }
+  }
+
   async queryAverageDurationGroupByDate(
     rangeTime: string,
     byWebsiteId?: number | null,
@@ -121,13 +169,22 @@ export class TraceService extends BaseService {
             ) as tmp group by groupId order by groupId;`;
     }
   }
-
   async findErrorCountGroupByDate(rangeTime: string, websiteId?: number | null) {
     const queryResult = await this.queryErrorCountGroupByDate(rangeTime, websiteId);
     const result = queryResult.map(({ groupId, count }) => ({
       time: getTickFromRangeTime(rangeTime, groupId),
       groupId,
       count,
+    }));
+    return result;
+  }
+
+  async findErrorWebsiteCountGroupByDate(rangeTime: string, websiteId?: number | null) {
+    const queryResult = await this.queryErrorWebsiteCountGroupByDate(rangeTime, websiteId);
+    const result = queryResult.map(({ groupId, count }) => ({
+      time: getTickFromRangeTime(rangeTime, groupId),
+      groupId,
+      websiteCount: count,
     }));
     return result;
   }

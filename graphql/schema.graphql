@@ -110,6 +110,7 @@ type Query {
   me: User
   trace(id: Int!): Trace
   traceOfErrorCount(rangeTime: String!, websiteId: Int): [TraceOfError!]
+  traceOfErrorWebsiteCount(rangeTime: String!, websiteId: Int): [TraceOfErrorWebsite!]
   traceOfResponseTime(rangeTime: String!, websiteId: Int): [TraceOfResponseTime!]
   traces(query: TraceQuery!): PaginatedTraces!
   user(id: Int!): User
@@ -151,6 +152,12 @@ type TraceOfError {
   count: Int!
   groupId: Int!
   time: String!
+}
+
+type TraceOfErrorWebsite {
+  groupId: Int!
+  time: String!
+  websiteCount: Int!
 }
 
 type TraceOfResponseTime {
