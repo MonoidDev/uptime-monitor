@@ -44,7 +44,7 @@ export const traceOfErrorWebsiteCount = queryField('traceOfErrorWebsiteCount', {
   },
   authorize: loginRequired,
   async resolve(_, { rangeTime, websiteId }, ctx) {
-    return ctx.traceService.queryErrorWebsiteCountGroupByDate(rangeTime, websiteId);
+    return ctx.traceService.findErrorWebsiteCountGroupByDate(rangeTime, websiteId);
   },
 });
 

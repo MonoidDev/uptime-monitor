@@ -87,27 +87,39 @@ export class TraceService extends BaseService {
       case '24h':
         return this.ctx.prisma.$queryRaw`
         SELECT
-        count(Distinct "websiteId")
-        FROM "Trace" WHERE
-          EXTRACT(epoch FROM "createdAt") > (EXTRACT(epoch FROM current_timestamp) - 3600 * 24)
-          and "websiteId" IN (${Prisma.join(websiteIds)})
-          and status != 'OK';`;
+          groupId "groupId", count(*)
+          FROM (
+            SELECT
+            Distinct "websiteId", (23 - floor((EXTRACT(epoch FROM current_timestamp) - EXTRACT(epoch FROM "createdAt")) / 3600)) groupId
+            FROM "Trace" WHERE
+              EXTRACT(epoch FROM "createdAt") > (EXTRACT(epoch FROM current_timestamp) - 3600 * 24)
+              and status != 'OK'
+              and "websiteId" IN (${Prisma.join(websiteIds)})
+          ) as tmp group by groupId order by groupId;`;
       case '7d':
         return this.ctx.prisma.$queryRaw`
         SELECT
-        count(Distinct "websiteId")
-        FROM "Trace" WHERE
-            EXTRACT(epoch FROM "createdAt") > (EXTRACT(epoch FROM current_timestamp) - 86400 * 7)
-            and "websiteId" IN (${Prisma.join(websiteIds)})
-            and status != 'OK';`;
+          groupId "groupId", count(*)
+          FROM (
+            SELECT
+            Distinct "websiteId", (27 - floor((EXTRACT(epoch FROM current_timestamp) - EXTRACT(epoch FROM "createdAt")) / 21600)) groupId
+            FROM "Trace" WHERE
+              EXTRACT(epoch FROM "createdAt") > (EXTRACT(epoch FROM current_timestamp) - 86400 * 7)
+              and status != 'OK'
+              and "websiteId" IN (${Prisma.join(websiteIds)})
+          ) as tmp group by groupId order by groupId;`;
       default:
         return this.ctx.prisma.$queryRaw`
         SELECT
-        count(Distinct "websiteId")
-        FROM "Trace" WHERE
-          EXTRACT(epoch FROM "createdAt") > (EXTRACT(epoch FROM current_timestamp) - 86400 * 31)
-          and "websiteId" IN (${Prisma.join(websiteIds)})
-          and status != 'OK';`;
+          groupId "groupId", count(*)
+          FROM (
+            SELECT
+            Distinct "websiteId", (30 - floor((EXTRACT(epoch FROM current_timestamp) - EXTRACT(epoch FROM "createdAt")) / 86400)) groupId
+            FROM "Trace" WHERE
+              EXTRACT(epoch FROM "createdAt") > (EXTRACT(epoch FROM current_timestamp) - 86400 * 31)
+              and status != 'OK'
+              and "websiteId" IN (${Prisma.join(websiteIds)})
+          ) as tmp group by groupId order by groupId;`;
     }
   }
 
@@ -169,7 +181,9 @@ export class TraceService extends BaseService {
 
   async findErrorWebsiteCountGroupByDate(rangeTime: string, websiteId?: number | null) {
     const queryResult = await this.queryErrorWebsiteCountGroupByDate(rangeTime, websiteId);
-    const result = queryResult.map(({ count }) => ({
+    const result = queryResult.map(({ groupId, count }) => ({
+      time: getTickFromRangeTime(rangeTime, groupId),
+      groupId,
       websiteCount: count,
     }));
     return result;

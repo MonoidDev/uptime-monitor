@@ -8,6 +8,8 @@ import {
   useEventsQuery,
   useGetFirstWebsiteQuery,
   useTraceOfErrorCountQuery,
+  useTraceOfErrorWebsiteCountQuery,
+  useGetWebsitesQuery,
   useTraceOfResponseTimeQuery,
   useTracesQuery,
 } from 'app/../graphql/client/generated';
@@ -146,7 +148,27 @@ export const ErrorChart: React.VFC<ErrorChartProps> = React.memo((props) => {
     fetchPolicy: 'cache-and-network',
   });
 
+  const traceWebsiteCount = useTraceOfErrorWebsiteCountQuery({
+    variables: {
+      rangeTime,
+      websiteId,
+    },
+    fetchPolicy: 'cache-and-network',
+  });
+
+  const websites = useGetWebsitesQuery({
+    variables: {
+      page: 1,
+      pageSize: 1,
+      keyword: undefined,
+      sortByName: undefined,
+    },
+    fetchPolicy: 'cache-and-network',
+  });
+
+  const websitesCount = websites.data?.websites?.count;
   const traceOfErrorCount = traceCount.data?.traceOfErrorCount;
+  const traceOfErrorWebsiteCount = traceWebsiteCount.data?.traceOfErrorWebsiteCount;
 
   const data = useMemo(() => {
     if (traceCount.data === undefined) return [];
@@ -175,14 +197,15 @@ export const ErrorChart: React.VFC<ErrorChartProps> = React.memo((props) => {
   }, [traceOfErrorCount]);
 
   const upPercentage = useMemo(() => {
-    if (!firstWebsite.data?.firstWebsite || !traceOfErrorCount) {
+    if (!websitesCount || !traceOfErrorWebsiteCount) {
       return 0;
     }
-
-    const validPoints = data.filter((p) => p.iso >= firstWebsite.data!.firstWebsite!.createdAt);
-
-    return validPoints.filter((p) => p.count === 0).length / validPoints.length;
-  }, [traceOfErrorCount, firstWebsite.data?.firstWebsite]);
+    const tickCount = getTickCountFromRangeTime(rangeTime);
+    const websiteCountArr = traceOfErrorWebsiteCount.map((item) => item.websiteCount);
+    const sum = websiteCountArr.reduce((acc, cur) => acc + cur);
+    const averageWebsiteCount = sum / tickCount;
+    return averageWebsiteCount / websitesCount;
+  }, [traceOfErrorWebsiteCount, websitesCount]);
 
   // eslint-disable-next-line no-nested-ternary
   const tagClass =

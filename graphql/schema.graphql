@@ -155,7 +155,9 @@ type TraceOfError {
 }
 
 type TraceOfErrorWebsite {
-  count: Int!
+  groupId: Int!
+  time: String!
+  websiteCount: Int!
 }
 
 type TraceOfResponseTime {

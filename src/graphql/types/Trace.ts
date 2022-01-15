@@ -39,7 +39,9 @@ export const TraceOfResponseTime = objectType({
 export const TraceOfErrorWebsite = objectType({
   name: 'TraceOfErrorWebsite',
   definition(t) {
-    t.nonNull.int('count');
+    t.nonNull.string('time');
+    t.nonNull.int('groupId');
+    t.nonNull.int('websiteCount');
   },
 });
 
