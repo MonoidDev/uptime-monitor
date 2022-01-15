@@ -36,6 +36,18 @@ export const traceOfErrorCount = queryField('traceOfErrorCount', {
   },
 });
 
+export const traceOfErrorWebsiteCount = queryField('traceOfErrorWebsiteCount', {
+  type: list(nonNull('TraceOfErrorWebsite')),
+  args: {
+    rangeTime: nonNull(stringArg()),
+    websiteId: intArg(),
+  },
+  authorize: loginRequired,
+  async resolve(_, { rangeTime, websiteId }, ctx) {
+    return ctx.traceService.queryErrorWebsiteCountGroupByDate(rangeTime, websiteId);
+  },
+});
+
 export const traceOfResponseTime = queryField('traceOfResponseTime', {
   type: list(nonNull('TraceOfResponseTime')),
   args: {

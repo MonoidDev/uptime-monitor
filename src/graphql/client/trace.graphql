@@ -27,6 +27,12 @@ query TraceOfErrorCount($rangeTime: String!, $websiteId: Int) {
   }
 }
 
+query TraceOfErrorWebsiteCount($rangeTime: String!, $websiteId: Int) {
+  traceOfErrorWebsiteCount(rangeTime: $rangeTime, websiteId: $websiteId) {
+    WebsiteCount:count
+  }
+}
+
 query TraceOfResponseTime($rangeTime: String!, $websiteId: Int) {
   traceOfResponseTime(rangeTime: $rangeTime, websiteId: $websiteId) {
     time

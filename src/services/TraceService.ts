@@ -75,6 +75,42 @@ export class TraceService extends BaseService {
     }
   }
 
+  async queryErrorWebsiteCountGroupByDate(
+    rangeTime: string,
+    byWebsiteId?: number | null,
+  ): Promise<CountGroup> {
+    const websiteIds = byWebsiteId
+      ? [byWebsiteId]
+      : await this.ctx.websiteService.findUserWebsiteIds();
+
+    switch (rangeTime) {
+      case '24h':
+        return this.ctx.prisma.$queryRaw`
+        SELECT
+        count(Distinct "websiteId")
+        FROM "Trace" WHERE
+          EXTRACT(epoch FROM "createdAt") > (EXTRACT(epoch FROM current_timestamp) - 3600 * 24)
+          and "websiteId" IN (${Prisma.join(websiteIds)})
+          and status != 'OK';`;
+      case '7d':
+        return this.ctx.prisma.$queryRaw`
+        SELECT
+        count(Distinct "websiteId")
+        FROM "Trace" WHERE
+            EXTRACT(epoch FROM "createdAt") > (EXTRACT(epoch FROM current_timestamp) - 86400 * 7)
+            and "websiteId" IN (${Prisma.join(websiteIds)})
+            and status != 'OK';`;
+      default:
+        return this.ctx.prisma.$queryRaw`
+        SELECT
+        count(Distinct "websiteId")
+        FROM "Trace" WHERE
+          EXTRACT(epoch FROM "createdAt") > (EXTRACT(epoch FROM current_timestamp) - 86400 * 31)
+          and "websiteId" IN (${Prisma.join(websiteIds)})
+          and status != 'OK';`;
+    }
+  }
+
   async queryAverageDurationGroupByDate(
     rangeTime: string,
     byWebsiteId?: number | null,
@@ -121,13 +157,20 @@ export class TraceService extends BaseService {
             ) as tmp group by groupId order by groupId;`;
     }
   }
-
   async findErrorCountGroupByDate(rangeTime: string, websiteId?: number | null) {
     const queryResult = await this.queryErrorCountGroupByDate(rangeTime, websiteId);
     const result = queryResult.map(({ groupId, count }) => ({
       time: getTickFromRangeTime(rangeTime, groupId),
       groupId,
       count,
+    }));
+    return result;
+  }
+
+  async findErrorWebsiteCountGroupByDate(rangeTime: string, websiteId?: number | null) {
+    const queryResult = await this.queryErrorWebsiteCountGroupByDate(rangeTime, websiteId);
+    const result = queryResult.map(({ count }) => ({
+      websiteCount: count,
     }));
     return result;
   }
