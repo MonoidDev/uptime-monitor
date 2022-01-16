@@ -202,7 +202,7 @@ export const ErrorChart: React.VFC<ErrorChartProps> = React.memo((props) => {
     }
     const tickCount = getTickCountFromRangeTime(rangeTime);
     const websiteCountArr = traceOfErrorWebsiteCount.map((item) => item.websiteCount);
-    const sum = websiteCountArr.reduce((acc, cur) => acc + cur);
+    const sum = websiteCountArr.reduce((acc, cur) => acc + cur, 0);
     const averageWebsiteCount = sum / tickCount;
     return 1 - averageWebsiteCount / websitesCount;
   }, [traceOfErrorWebsiteCount, websitesCount]);
