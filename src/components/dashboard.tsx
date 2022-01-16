@@ -204,7 +204,7 @@ export const ErrorChart: React.VFC<ErrorChartProps> = React.memo((props) => {
     const websiteCountArr = traceOfErrorWebsiteCount.map((item) => item.websiteCount);
     const sum = websiteCountArr.reduce((acc, cur) => acc + cur);
     const averageWebsiteCount = sum / tickCount;
-    return averageWebsiteCount / websitesCount;
+    return 1 - averageWebsiteCount / websitesCount;
   }, [traceOfErrorWebsiteCount, websitesCount]);
 
   // eslint-disable-next-line no-nested-ternary
