@@ -3,6 +3,7 @@ import * as h from 'tyrann-io';
 
 import {
   requiredStringField,
+  requiredURLField,
   requiredNumberField,
   booleanField,
   emailArrayField,
@@ -13,7 +14,7 @@ export const CreateUpdateWebsiteSchema = defineSchema(
   'CreateUpdateWebsite',
   t.interface({
     name: requiredStringField('Name'),
-    url: requiredStringField('Url'),
+    url: requiredURLField('Website URL'),
     pingInterval: requiredNumberField('Ping Interval (s)'),
     enabled: booleanField('Enable Monitoring'),
     emails: emailArrayField('Emails'),

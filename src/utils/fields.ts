@@ -40,6 +40,21 @@ export const requiredStringField = (label: string) => {
   return h.string().withLabel(label).min(1, formStrings.notEmpty(label));
 };
 
+export const requiredURLField = (label: string) => {
+  return h
+    .string()
+    .withLabel(label)
+    .min(1, formStrings.notEmpty(label))
+    .refine((s) => {
+      try {
+        new URL(s);
+        return true;
+      } catch (e) {
+        return false;
+      }
+    }, `${label} is not a valid URL. `);
+};
+
 export const requiredNumberField = (label: string) => {
   return h.number().withLabel(label);
 };
