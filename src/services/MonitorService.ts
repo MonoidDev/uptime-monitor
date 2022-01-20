@@ -1,10 +1,12 @@
-import { Website, TraceType, TraceStatus } from '@prisma/client';
+import { Website, TraceType, TraceStatus, Webhook } from '@prisma/client';
 import { PingResult } from 'app/lib/monitor/monitor-fetch';
 import { prisma } from 'app/lib/prisma/prisma';
 import { buildEvent, WebsiteEventParams } from 'app/services/helpers/WebsiteEvent';
 
+export type WebsiteWithHooks = Website & { webhooks: Webhook[] };
+
 export class MonitorService {
-  async findEnabledWebsites(count: number, lastId: number | null) {
+  async findEnabledWebsites(count: number, lastId: number | null): Promise<WebsiteWithHooks[]> {
     if (lastId !== null) {
       return prisma.website.findMany({
         where: {
@@ -35,6 +37,21 @@ export class MonitorService {
         webhooks: true,
       },
     });
+  }
+
+  async findAllEnabledWebsites() {
+    return prisma.website.findMany({
+      where: {
+        enabled: true,
+      },
+      include: {
+        webhooks: true,
+      },
+    });
+  }
+
+  async findWebisteById(websiteId: number) {
+    return prisma.website.findUnique({ where: { id: websiteId }, include: { webhooks: true } });
   }
 
   async findLatestTraceByWebsite(websiteId: number) {

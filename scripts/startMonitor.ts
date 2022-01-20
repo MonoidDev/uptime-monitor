@@ -1,18 +1,12 @@
-import Scheduler from '../src/lib/monitor/monitor-scheduler';
+import { Monitor } from 'app/lib/monitor-new/Monitor';
+import { eventPlugin } from 'app/lib/monitor-new/plugins/eventPlugin';
+import { sslPlugin } from 'app/lib/monitor-new/plugins/sslPlugin';
 
-process.once('SIGINT', async () => {
-  Scheduler.stop();
-});
+(async () => {
+  const monitor = new Monitor({
+    concurrency: 8,
+    plugins: [eventPlugin(), sslPlugin()],
+  });
 
-process.once('exit', () => {
-  console.info('process exiting');
-});
-
-Scheduler.start();
-
-// eslint-disable-next-line no-console
-console.time('monitor');
-setInterval(() => {
-  // eslint-disable-next-line no-console
-  console.timeLog('monitor', `Memory use: ${process.memoryUsage().rss}`);
-}, 5000);
+  await monitor.run();
+})();
