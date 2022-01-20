@@ -6,7 +6,7 @@ import AbortController from 'abort-controller';
 import fetch, { FetchError, Headers } from 'node-fetch';
 import Retry from 'retry';
 
-import { doTlsPing } from '../monitor-new/doTlsPing';
+import { doTlsPing } from './doTlsPing';
 
 /* eslint-disable @typescript-eslint/lines-between-class-members */
 class PingResult {
