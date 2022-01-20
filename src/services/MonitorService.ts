@@ -43,7 +43,7 @@ export class MonitorService {
         websiteId,
       },
       orderBy: {
-        createdAt: 'desc',
+        id: 'desc',
       },
     });
   }
