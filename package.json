@@ -24,7 +24,7 @@
     "dev:env": "dotenv -e .env.development --",
     "dev:db-push": "yarn dev:env prisma db push",
     "dev:seed": "yarn dev:env yarn ts scripts/seed.ts",
-    "dev:start-monitor": "yarn dev:env yarn dev:ts scripts/startMonitorNew.ts",
+    "dev:start-monitor": "yarn dev:env yarn dev:ts scripts/startMonitor.ts",
     "prod:start-monitor": "yarn prod:env yarn ts scripts/startMonitor.ts",
     "prod:env": "dotenv -e .env.production --",
     "prod:db-push": "yarn prod:env prisma db push",

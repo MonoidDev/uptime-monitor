@@ -1,8 +1,5 @@
-import { Server } from 'http';
-
 import { ErrorPredicate, TraceStatus } from '@prisma/client';
 import { MonitorService, WebsiteWithHooks } from 'app/services/MonitorService';
-import express from 'express';
 import { defer, map, mergeAll, Subject } from 'rxjs';
 
 import { PingResult } from '../monitor/monitor-fetch';
@@ -18,26 +15,13 @@ export interface PingTask {
 const monitorService = new MonitorService();
 
 export class Monitor {
-  server: Server;
-
   tasks: Subject<PingTask> = new Subject();
 
   websites: WebsiteWithHooks[] = [];
 
-  constructor(public config: MonitorConfig) {
-    this.server = express()
-      .post('/reload-websites', async (_, res) => {
-        await this.loadWebsites();
-        res.sendStatus(201);
-      })
-      .listen(config.port, config.host, () => {
-        monitorDebug(`listening on ${config.host}:${config.port}`);
-      });
-  }
+  constructor(public config: MonitorConfig) {}
 
-  dispose() {
-    this.server.close();
-  }
+  dispose() {}
 
   async loadWebsites() {
     const websites = await monitorService.findAllEnabledWebsites();
@@ -85,12 +69,17 @@ export class Monitor {
       const result = await this.pingWebsite(website);
       const currentTrace = await monitorService.addTrace(website, result);
       await Promise.all([
-        ...this.config.plugins.map((p) => p.onTraceFetched(website, lastTrace, currentTrace)),
+        ...this.config.plugins.map((p) =>
+          p.onTraceFetched?.(website, lastTrace, currentTrace, result),
+        ),
       ]);
     } catch (e) {
       console.error(e);
     }
-    this.enqueueTaskByWebsite(website, false);
+    const nextWebsite = await monitorService.findWebisteById(website.id);
+    if (nextWebsite?.enabled) {
+      this.enqueueTaskByWebsite(nextWebsite, false);
+    }
   }
 
   async pingWebsite(website: WebsiteWithHooks): Promise<PingResult> {
