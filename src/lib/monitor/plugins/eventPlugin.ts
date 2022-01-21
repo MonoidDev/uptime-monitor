@@ -53,6 +53,32 @@ export const eventPlugin = (): MonitorPlugin => {
           }
         }
 
+        if (source === WebsiteEventSource.Available) {
+          for (const email of website.emails) {
+            eventDebug(`sending email ${website.url} because it becomes available`);
+
+            try {
+              await emailService.sendWebsiteRecover(website, email);
+            } catch (e) {
+              console.error(e);
+            }
+          }
+
+          for (const webhook of website.webhooks) {
+            eventDebug(
+              `calling webhook ${webhook.name} of ${website.url} because it becomes available`,
+            );
+            try {
+              await webhookInvokeService.invokeWebhook(
+                webhook,
+                webhookInvokeService.getWebhookWebsiteRecoverBody(webhook.type, website),
+              );
+            } catch (e) {
+              console.error(e);
+            }
+          }
+        }
+
         return;
       }
     },

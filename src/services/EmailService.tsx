@@ -56,10 +56,51 @@ export class EmailService {
     };
   }
 
+  getWebsiteRecoverContent(website: Website) {
+    const subject = `[Uptime Monitor] ${website.name} is UP!`;
+
+    const url = `${process.env.NEXT_PUBLIC_SERVER}/monitoring/websiteStatus/${website.id}`;
+
+    const Template = () => (
+      <>
+        Dear User:
+        <br />
+        Your website{' '}
+        <a href={website.url}>
+          <b>{website.name}</b>
+        </a>{' '}
+        is up!
+        <br />
+        For more details: {url}
+      </>
+    );
+
+    const html = ReactDOMServer.renderToString(<Template />);
+
+    return {
+      subject,
+      html,
+    };
+  }
+
   async sendWebsiteAlert(website: Website, to: string) {
     const { subject, html } = this.getWebsiteAlertContent(website);
 
     console.info(`Sending alert to ${to} about ${website.url}...`);
+
+    return this.mailer.sendMail({
+      from: this.from,
+      to,
+      subject,
+      text: subject,
+      html,
+    });
+  }
+
+  async sendWebsiteRecover(website: Website, to: string) {
+    const { subject, html } = this.getWebsiteRecoverContent(website);
+
+    console.info(`Sending recover info to ${to} about ${website.url}...`);
 
     return this.mailer.sendMail({
       from: this.from,

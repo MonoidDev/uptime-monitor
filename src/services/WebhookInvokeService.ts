@@ -147,6 +147,68 @@ For more details: <${url}|${website.name}>
     }
   }
 
+  getWebhookWebsiteRecoverBody(type: string, website: Website) {
+    const url = this.getWebsiteUrl(website);
+
+    switch (type) {
+      case 'Lark':
+        return JSON.stringify({
+          msg_type: 'post',
+          content: {
+            post: {
+              en_us: {
+                title: `${website.name} is UP!`,
+                content: [
+                  [
+                    {
+                      tag: 'text',
+                      text: 'Your website ',
+                    },
+                    {
+                      tag: 'a',
+                      text: website.name,
+                      href: website.url,
+                    },
+                    {
+                      tag: 'text',
+                      text: ' is up.',
+                    },
+                  ],
+                  [
+                    {
+                      tag: 'a',
+                      text: 'For more details...',
+                      href: url,
+                    },
+                  ],
+                ],
+              },
+            },
+          },
+        });
+
+      case 'Slack':
+        return JSON.stringify({
+          text: `${website.name} is UP!`,
+          blocks: [
+            {
+              type: 'section',
+              text: {
+                type: 'mrkdwn',
+                text: `
+*${website.name} is UP!*
+Your website <${website.url}|${website.name}> is up.
+For more details: <${url}|${website.name}>
+                `.trim(),
+              },
+            },
+          ],
+        });
+      default:
+        throw new TypeError(`Unknown webhook name: ${type}`);
+    }
+  }
+
   getWebhookPlaintextBody(type: string, plaintext: string) {
     switch (type) {
       case 'Lark':

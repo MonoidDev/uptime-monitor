@@ -23,6 +23,8 @@ export class Monitor {
 
   enabledWebsites: Map<number, WebsiteWithHooks> = new Map();
 
+  pendingWebsiteTask: Map<number, NodeJS.Timeout> = new Map();
+
   server: Server;
 
   app: express.Express;
@@ -44,12 +46,7 @@ export class Monitor {
       const website = await monitorService.findWebsiteById(id);
       if (website?.enabled) {
         monitorDebug(`website ${website.url} is enabled`);
-
-        // We must update the information of the website here
-        this.upsertEnabledWebsite(website);
-        if (!this.isIdEnabled(id)) {
-          await this.restartWebsite(website);
-        }
+        this.restartWebsite(website, true);
       } else {
         monitorDebug(`website ${id} (${website?.url}) is disabled`);
         this.removeEnabledWebsite(id);
@@ -70,21 +67,24 @@ export class Monitor {
   async loadAllEnabledWebsites() {
     const websites = await monitorService.findAllEnabledWebsites();
     for (const website of websites) {
-      await this.restartWebsite(website);
+      this.restartWebsite(website);
     }
   }
 
-  async restartWebsite(website: WebsiteWithHooks, immediate: boolean = true) {
+  restartWebsite(website: WebsiteWithHooks, immediate: boolean = true) {
     this.upsertEnabledWebsite(website);
-    await this.enqueueTaskByWebsite(website, immediate);
+    this.enqueueTaskByWebsite(website, immediate);
   }
 
   upsertEnabledWebsite(website: WebsiteWithHooks) {
+    this.removeEnabledWebsite(website.id);
     this.enabledWebsites.set(website.id, website);
   }
 
   removeEnabledWebsite(websiteId: number) {
+    clearTimeout(this.pendingWebsiteTask.get(websiteId) as any);
     this.enabledWebsites.delete(websiteId);
+    this.pendingWebsiteTask.delete(websiteId);
   }
 
   isIdEnabled(id: number) {
@@ -102,10 +102,13 @@ export class Monitor {
     await this.loadAllEnabledWebsites();
   }
 
-  enqueueTaskByWebsite(website: WebsiteWithHooks, immediate: boolean = true): Promise<void> {
+  enqueueTaskByWebsite(website: WebsiteWithHooks, immediate: boolean = true) {
     monitorDebug('enqueing', website.url);
     const deadline = Date.now() + website.pingInterval * 1000;
     const websiteId = website.id;
+
+    clearTimeout(this.pendingWebsiteTask.get(websiteId) as any);
+    this.pendingWebsiteTask.delete(websiteId);
 
     if (immediate) {
       this.tasks.next({
@@ -114,15 +117,14 @@ export class Monitor {
       });
       return Promise.resolve();
     } else {
-      return new Promise<void>((resolve) => {
-        setTimeout(() => {
-          this.tasks.next({
-            deadline,
-            websiteId,
-          });
-          resolve();
-        }, website.pingInterval * 1000);
-      });
+      const timeout = setTimeout(() => {
+        this.tasks.next({
+          deadline,
+          websiteId,
+        });
+      }, website.pingInterval * 1000);
+
+      this.pendingWebsiteTask.set(websiteId, timeout);
     }
   }
 
@@ -146,7 +148,7 @@ export class Monitor {
     } catch (e) {
       console.error(e);
     } finally {
-      await this.enqueueTaskByWebsite(website, false);
+      this.enqueueTaskByWebsite(website, false);
     }
   }
 
