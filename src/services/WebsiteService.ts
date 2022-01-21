@@ -132,7 +132,12 @@ export class WebsiteService extends BaseService {
       website: ret,
       source: ret.enabled ? WebsiteEventSource.Enabled : WebsiteEventSource.Disabled,
     });
-    await this.postMonitorWebsiteAdded(ret.id);
+
+    try {
+      await this.postMonitorWebsiteUpdated(ret.id);
+    } catch (e) {
+      console.error(e);
+    }
     return ret;
   }
 
@@ -170,6 +175,11 @@ export class WebsiteService extends BaseService {
       });
     }
 
+    try {
+      await this.postMonitorWebsiteUpdated(ret.id);
+    } catch (e) {
+      console.error(e);
+    }
     return ret;
   }
 
@@ -192,11 +202,16 @@ export class WebsiteService extends BaseService {
       }),
     ]);
 
+    try {
+      await this.postMonitorWebsiteUpdated(websiteId);
+    } catch (e) {
+      console.error(e);
+    }
     return website;
   }
 
-  async postMonitorWebsiteAdded(websiteId: number) {
-    await fetch(`http://127.0.0.1:5656/website-added/${websiteId}`, {
+  async postMonitorWebsiteUpdated(websiteId: number) {
+    await fetch(`http://127.0.0.1:5656/website-updated/${websiteId}`, {
       method: 'POST',
     });
   }

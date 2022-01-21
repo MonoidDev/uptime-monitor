@@ -11,7 +11,7 @@ import { monitorDebug } from './utils';
 
 export interface PingTask {
   deadline: number;
-  website: WebsiteWithHooks;
+  websiteId: number;
 }
 
 const monitorService = new MonitorService();
@@ -21,7 +21,7 @@ const PORT = 5656;
 export class Monitor {
   tasks: Subject<PingTask> = new Subject();
 
-  websites: WebsiteWithHooks[] = [];
+  enabledWebsites: Map<number, WebsiteWithHooks> = new Map();
 
   server: Server;
 
@@ -30,11 +30,29 @@ export class Monitor {
   constructor(public config: MonitorConfig) {
     this.app = express();
 
-    this.app.post('/website-added/:id', async (res, req) => {
+    this.app.use((req, res, next) => {
+      const t1 = Date.now();
+      next();
+
+      res.on('close', () => {
+        monitorDebug(`${req.method} ${req.url} ${res.statusCode} ${Date.now() - t1}ms`);
+      });
+    });
+
+    this.app.post('/website-updated/:id', async (res, req) => {
       const id = Number(res.params.id);
-      const website = await monitorService.findWebisteById(id);
+      const website = await monitorService.findWebsiteById(id);
       if (website?.enabled) {
-        this.enqueueTaskByWebsite(website);
+        monitorDebug(`website ${website.url} is enabled`);
+
+        // We must update the information of the website here
+        this.upsertEnabledWebsite(website);
+        if (!this.isIdEnabled(id)) {
+          await this.restartWebsite(website);
+        }
+      } else {
+        monitorDebug(`website ${id} (${website?.url}) is disabled`);
+        this.removeEnabledWebsite(id);
       }
 
       req.sendStatus(201);
@@ -45,48 +63,76 @@ export class Monitor {
     });
   }
 
-  dispose() {}
+  dispose() {
+    this.server.close();
+  }
 
-  async loadWebsites() {
+  async loadAllEnabledWebsites() {
     const websites = await monitorService.findAllEnabledWebsites();
-    this.websites = websites;
+    for (const website of websites) {
+      await this.restartWebsite(website);
+    }
+  }
+
+  async restartWebsite(website: WebsiteWithHooks, immediate: boolean = true) {
+    this.upsertEnabledWebsite(website);
+    await this.enqueueTaskByWebsite(website, immediate);
+  }
+
+  upsertEnabledWebsite(website: WebsiteWithHooks) {
+    this.enabledWebsites.set(website.id, website);
+  }
+
+  removeEnabledWebsite(websiteId: number) {
+    this.enabledWebsites.delete(websiteId);
+  }
+
+  isIdEnabled(id: number) {
+    return this.enabledWebsites.has(id);
   }
 
   async run() {
-    await this.loadWebsites();
-
     this.tasks
       .pipe(
-        map((task) => defer(() => this.handleWebsite(task.website))),
+        map((task) => defer(() => this.handleWebsite(task.websiteId))),
         mergeAll(this.config.concurrency),
       )
       .subscribe();
 
-    this.websites.forEach((website) => {
-      this.enqueueTaskByWebsite(website, true);
-    });
+    await this.loadAllEnabledWebsites();
   }
 
-  enqueueTaskByWebsite(website: WebsiteWithHooks, immediate: boolean = true) {
+  enqueueTaskByWebsite(website: WebsiteWithHooks, immediate: boolean = true): Promise<void> {
     monitorDebug('enqueing', website.url);
     const deadline = Date.now() + website.pingInterval * 1000;
+    const websiteId = website.id;
 
     if (immediate) {
       this.tasks.next({
         deadline,
-        website,
+        websiteId,
       });
+      return Promise.resolve();
     } else {
-      setTimeout(() => {
-        this.tasks.next({
-          deadline,
-          website,
-        });
-      }, website.pingInterval * 1000);
+      return new Promise<void>((resolve) => {
+        setTimeout(() => {
+          this.tasks.next({
+            deadline,
+            websiteId,
+          });
+          resolve();
+        }, website.pingInterval * 1000);
+      });
     }
   }
 
-  async handleWebsite(website: WebsiteWithHooks) {
+  async handleWebsite(websiteId: number) {
+    const website = this.enabledWebsites.get(websiteId);
+    if (website == undefined) {
+      monitorDebug(`handing website ${websiteId}, skipped because it is removed...`);
+      return;
+    }
+
     monitorDebug('handling', website.url);
     try {
       const lastTrace = await monitorService.findLatestTraceByWebsite(website.id);
@@ -97,12 +143,10 @@ export class Monitor {
           p.onTraceFetched?.(website, lastTrace, currentTrace, result),
         ),
       ]);
-      const nextWebsite = await monitorService.findWebisteById(website.id);
-      if (nextWebsite?.enabled) {
-        this.enqueueTaskByWebsite(nextWebsite, false);
-      }
     } catch (e) {
       console.error(e);
+    } finally {
+      await this.enqueueTaskByWebsite(website, false);
     }
   }
 

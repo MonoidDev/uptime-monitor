@@ -50,7 +50,7 @@ export class MonitorService {
     });
   }
 
-  async findWebisteById(websiteId: number) {
+  async findWebsiteById(websiteId: number) {
     return prisma.website.findUnique({ where: { id: websiteId }, include: { webhooks: true } });
   }
 
