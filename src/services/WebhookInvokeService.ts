@@ -21,7 +21,7 @@ export class WebhookInvokeService {
     });
 
     const title = isExpired
-      ? `${website.name} SSL cerficated has expired for ${duration}! `
+      ? `${website.name} SSL certificate has expired for ${duration}! `
       : `${website.name} SSL certificate is expiring in ${duration}!`;
 
     const prompt = `${isExpired ? 'has expired' : 'is expiring'} ${

@@ -1,5 +1,5 @@
 import { Website, TraceType, TraceStatus, Webhook } from '@prisma/client';
-import { PingResult } from 'app/lib/monitor/monitor-fetch';
+import { PingResult } from 'app/lib/monitor/doPing';
 import { prisma } from 'app/lib/prisma/prisma';
 import { buildEvent, WebsiteEventParams } from 'app/services/helpers/WebsiteEvent';
 

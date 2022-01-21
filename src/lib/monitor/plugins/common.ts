@@ -15,7 +15,7 @@ export const getEventSourceByTrace = (lastTrace: Trace | null, currentTrace: Tra
     return WebsiteEventSource.Available;
   }
 
-  if (currentTrace.duration > 2500) {
+  if (currentOk && currentTrace.duration > 4500) {
     return WebsiteEventSource.HighLatency;
   }
 

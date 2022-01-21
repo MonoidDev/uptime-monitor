@@ -1,255 +1,129 @@
-import { ErrorPredicate, Trace, TraceStatus, Webhook, Website } from '@prisma/client';
-import { WebsiteEventSource } from 'app/graphql/types/EventSchema';
-import { EmailService } from 'app/services/EmailService';
-import { WebsiteEventParams } from 'app/services/helpers/WebsiteEvent';
-import { MonitorService } from 'app/services/MonitorService';
-import { WebhookInvokeService } from 'app/services/WebhookInvokeService';
+import { Server } from 'http';
 
-import { doPing } from './monitor-fetch';
+import { ErrorPredicate, TraceStatus } from '@prisma/client';
+import { MonitorService, WebsiteWithHooks } from 'app/services/MonitorService';
+import express from 'express';
+import { defer, map, mergeAll, Subject } from 'rxjs';
+
+import { doPing, PingResult } from './doPing';
+import { MonitorConfig } from './MonitorConfig';
+import { monitorDebug } from './utils';
+
+export interface PingTask {
+  deadline: number;
+  website: WebsiteWithHooks;
+}
 
 const monitorService = new MonitorService();
 
-const emailService = new EmailService();
+const PORT = 5656;
 
-const webhookInvokeService = new WebhookInvokeService();
+export class Monitor {
+  tasks: Subject<PingTask> = new Subject();
 
-class Monitor {
-  private isScanning = false;
+  websites: WebsiteWithHooks[] = [];
 
-  private pendingNextScan = false;
+  server: Server;
 
-  private activeWebsiteIds = new Set<number>();
+  app: express.Express;
 
-  public async run() {
-    if (this.isScanning) {
-      this.pendingNextScan = true;
-      if (process.env.NODE_ENV !== 'production') {
-        console.info('skip because the last one is still running');
+  constructor(public config: MonitorConfig) {
+    this.app = express();
+
+    this.app.post('/website-added/:id', async (res, req) => {
+      const id = Number(res.params.id);
+      const website = await monitorService.findWebisteById(id);
+      if (website?.enabled) {
+        this.enqueueTaskByWebsite(website);
       }
-      return;
-    }
 
-    try {
-      this.isScanning = true;
-      // eslint-disable-next-line no-constant-condition
-      while (true) {
-        this.pendingNextScan = false;
-        await this.scanWebsites();
-        if (!this.pendingNextScan) {
-          break;
-        }
-      }
-    } finally {
-      this.isScanning = false;
-    }
+      req.sendStatus(201);
+    });
+
+    this.server = this.app.listen(PORT, () => {
+      monitorDebug(`Monitor listening on http://localhost:${PORT}`);
+    });
   }
 
-  public async scanWebsites() {
-    const startAt = new Date();
+  dispose() {}
 
-    if (process.env.NODE_ENV !== 'production') {
-      console.info(`scanning at ${startAt.toISOString()}`);
-    }
-
-    let pagingCount = 0;
-    if (process.env.NODE_ENV === 'production') {
-      pagingCount = 100;
-    } else {
-      pagingCount = 1;
-    }
-
-    const futures = new Array<Promise<void>>();
-    let nWebsites = 0;
-
-    let lastId: number | null = null;
-    // eslint-disable-next-line no-constant-condition
-    while (true) {
-      const websites = await monitorService.findEnabledWebsites(pagingCount, lastId);
-      if (websites.length === 0) {
-        break;
-      }
-      nWebsites += websites.length;
-      lastId = websites[websites.length - 1].id as number;
-
-      // console.log(`found ${websites.length} in ${nWebsites}, lastId=${lastId}`);
-
-      await Promise.all(
-        websites.map(async (website) => {
-          const trace = await monitorService.findLatestTraceByWebsite(website.id);
-          if (this.checkInterval(website, trace, startAt)) {
-            futures.push(this.processWebsite(website, trace));
-          }
-        }),
-      );
-    }
-
-    if (process.env.NODE_ENV !== 'production') {
-      console.info(`scheduled / found = ${futures.length} / ${nWebsites}`);
-    }
-
-    await Promise.all(futures);
-
-    if (process.env.NODE_ENV !== 'production') {
-      const endAt = new Date();
-      const duration = endAt.getTime() - startAt.getTime();
-      console.info(`done in ${duration}ms`);
-    }
+  async loadWebsites() {
+    const websites = await monitorService.findAllEnabledWebsites();
+    this.websites = websites;
   }
 
-  private checkInterval(website: Website, lastTrace: Trace | null, now: Date): Boolean {
-    // const lastAt = lastTrace ? lastTrace.createdAt.getTime() : website.createdAt.getTime();
-    if (lastTrace === null) {
-      return true;
-    }
-    const lastAt = lastTrace.createdAt.getTime();
-    const nextAt = lastAt + website.pingInterval * 1000;
-    const nowAt = now.getTime();
-    // console.log(`check ${website.id}: lastAt ${lastAt} nextAt ${nextAt} nowAt ${nowAt}`);
-    return nextAt < nowAt;
+  async run() {
+    await this.loadWebsites();
+
+    this.tasks
+      .pipe(
+        map((task) => defer(() => this.handleWebsite(task.website))),
+        mergeAll(this.config.concurrency),
+      )
+      .subscribe();
+
+    this.websites.forEach((website) => {
+      this.enqueueTaskByWebsite(website, true);
+    });
   }
 
-  private async processWebsite(
-    website: Website & { webhooks: Webhook[] },
-    lastTrace: Trace | null,
-  ) {
-    if (this.activeWebsiteIds.has(website.id)) {
-      if (process.env.NODE_ENV !== 'production') {
-        console.info(`already processing ${website.id}`);
-      }
+  enqueueTaskByWebsite(website: WebsiteWithHooks, immediate: boolean = true) {
+    monitorDebug('enqueing', website.url);
+    const deadline = Date.now() + website.pingInterval * 1000;
 
-      return;
-    }
-
-    if (process.env.NODE_ENV !== 'production') {
-      console.info(`processing ${website.id}`);
-    }
-
-    this.activeWebsiteIds.add(website.id);
-
-    try {
-      const result = await doPing(website.url, 2); // 3 times
-      if (result.statusCode && result.statusCode > 0) {
-        if (website.errorPredicate === ErrorPredicate.HTTP_NOT_5XX) {
-          if (result.statusCode >= 500 && result.statusCode < 600) {
-            result.traceStatus = TraceStatus.HTTP_ERROR;
-          } else {
-            result.traceStatus = TraceStatus.OK;
-          }
-        } else {
-          // ErrorPredicate.HTTP_2XX_ONLY is default
-          if (result.statusCode >= 200 && result.statusCode < 300) {
-            result.traceStatus = TraceStatus.OK;
-          } else {
-            result.traceStatus = TraceStatus.HTTP_ERROR;
-          }
-        }
-      }
-
-      if (result.tlsExpiredAt) {
-        let didSendAlert = false;
-        if (
-          !website.httpsCertExpireAlerted &&
-          result.tlsExpiredAt - new Date().getTime() <= 7 * 24 * 3600 * 1000
-        ) {
-          for (const email of website.emails) {
-            try {
-              await emailService.sendWebsiteHttpsExpireAlert(
-                website,
-                new Date(result.tlsExpiredAt),
-                email,
-              );
-            } catch (e) {
-              console.warn(e);
-            }
-          }
-
-          for (const webhook of website.webhooks) {
-            try {
-              await webhookInvokeService.invokeWebhook(
-                webhook,
-                webhookInvokeService.getWebhookWebsiteHttpsExpireBody(
-                  webhook.type,
-                  website,
-                  new Date(result.tlsExpiredAt),
-                ),
-              );
-            } catch (e) {
-              console.warn(e);
-            }
-          }
-          didSendAlert = true;
-          await monitorService.updateWebsiteHttpsCertExpireAlerted(website.id, true);
-        }
-        if (!didSendAlert && result.tlsExpiredAt !== website.httpsCertExpiredAt?.getTime()) {
-          await monitorService.updateWebsiteHttpsCertExpiredAt(website.id, result.tlsExpiredAt);
-          await monitorService.updateWebsiteHttpsCertExpireAlerted(website.id, false);
-        }
-      }
-
-      const trace = await monitorService.addTrace(website, result);
-
-      const eventAvailability = this.checkEventAvailability(website, lastTrace, trace);
-      if (eventAvailability !== null) {
-        await monitorService.addEvent(eventAvailability);
-        if (eventAvailability.source === WebsiteEventSource.NotAvailable) {
-          for (const email of website.emails) {
-            try {
-              await emailService.sendWebsiteAlert(website, email);
-            } catch (e) {
-              console.warn(e);
-            }
-          }
-          for (const webhook of website.webhooks) {
-            try {
-              await webhookInvokeService.invokeWebhook(
-                webhook,
-                webhookInvokeService.getWebhookWebsiteAlertBody(webhook.type, website),
-              );
-            } catch (e) {
-              console.warn(e);
-            }
-          }
-        }
-      }
-
-      if (process.env.NODE_ENV !== 'production') {
-        console.info(`processed ${website.id}`);
-      }
-    } finally {
-      this.activeWebsiteIds.delete(website.id);
-    }
-  }
-
-  private checkEventAvailability(
-    website: Website,
-    lastTrace: Trace | null,
-    currentTrace: Trace,
-  ): WebsiteEventParams | null {
-    const currentOk = currentTrace.status === TraceStatus.OK;
-    if (lastTrace) {
-      const lastOk = lastTrace.status === TraceStatus.OK;
-      if (lastOk === currentOk) {
-        // no status changed
-        return null;
-      }
-    }
-
-    if (currentOk) {
-      const params: WebsiteEventParams = {
-        source: WebsiteEventSource.Available,
+    if (immediate) {
+      this.tasks.next({
+        deadline,
         website,
-        trace: currentTrace,
-      };
-      return params;
+      });
+    } else {
+      setTimeout(() => {
+        this.tasks.next({
+          deadline,
+          website,
+        });
+      }, website.pingInterval * 1000);
     }
+  }
 
-    const params: WebsiteEventParams = {
-      source: WebsiteEventSource.NotAvailable,
-      website,
-      trace: currentTrace,
-    };
-    return params;
+  async handleWebsite(website: WebsiteWithHooks) {
+    monitorDebug('handling', website.url);
+    try {
+      const lastTrace = await monitorService.findLatestTraceByWebsite(website.id);
+      const result = await this.pingWebsite(website);
+      const currentTrace = await monitorService.addTrace(website, result);
+      await Promise.all([
+        ...this.config.plugins.map((p) =>
+          p.onTraceFetched?.(website, lastTrace, currentTrace, result),
+        ),
+      ]);
+      const nextWebsite = await monitorService.findWebisteById(website.id);
+      if (nextWebsite?.enabled) {
+        this.enqueueTaskByWebsite(nextWebsite, false);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  async pingWebsite(website: WebsiteWithHooks): Promise<PingResult> {
+    const result = await doPing(website.url, 2); // 3 times
+    if (result.statusCode && result.statusCode > 0) {
+      if (website.errorPredicate === ErrorPredicate.HTTP_NOT_5XX) {
+        if (result.statusCode >= 500 && result.statusCode < 600) {
+          result.traceStatus = TraceStatus.HTTP_ERROR;
+        } else {
+          result.traceStatus = TraceStatus.OK;
+        }
+      } else {
+        // ErrorPredicate.HTTP_2XX_ONLY is default
+        if (result.statusCode >= 200 && result.statusCode < 300) {
+          result.traceStatus = TraceStatus.OK;
+        } else {
+          result.traceStatus = TraceStatus.HTTP_ERROR;
+        }
+      }
+    }
+    return result;
   }
 }
-
-export default Monitor;

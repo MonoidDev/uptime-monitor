@@ -1,6 +1,6 @@
-import { Monitor } from 'app/lib/monitor-new/Monitor';
-import { eventPlugin } from 'app/lib/monitor-new/plugins/eventPlugin';
-import { sslPlugin } from 'app/lib/monitor-new/plugins/sslPlugin';
+import { Monitor } from 'app/lib/monitor/Monitor';
+import { eventPlugin } from 'app/lib/monitor/plugins/eventPlugin';
+import { sslPlugin } from 'app/lib/monitor/plugins/sslPlugin';
 
 (async () => {
   const monitor = new Monitor({
