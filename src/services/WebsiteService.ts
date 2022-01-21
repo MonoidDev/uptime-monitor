@@ -3,6 +3,7 @@ import { ValidationError } from 'apollo-server-errors';
 import { WebsiteEventSource } from 'app/graphql/types/EventSchema';
 import * as t from 'io-ts';
 import { range } from 'lodash-es';
+import fetch from 'node-fetch';
 
 import { CreateUpdateWebsiteSchema } from '../graphql/types/WebsiteSchema';
 import { BaseService } from './BaseService';
@@ -131,6 +132,7 @@ export class WebsiteService extends BaseService {
       website: ret,
       source: ret.enabled ? WebsiteEventSource.Enabled : WebsiteEventSource.Disabled,
     });
+    await this.postMonitorWebsiteAdded(ret.id);
     return ret;
   }
 
@@ -191,6 +193,12 @@ export class WebsiteService extends BaseService {
     ]);
 
     return website;
+  }
+
+  async postMonitorWebsiteAdded(websiteId: number) {
+    await fetch(`http://127.0.0.1:5656/website-added/${websiteId}`, {
+      method: 'POST',
+    });
   }
 
   getFilterWebsiteWhere(keyword?: string | null) {
