@@ -3,15 +3,43 @@ import { Server } from 'http';
 import { ErrorPredicate, TraceStatus } from '@prisma/client';
 import { MonitorService, WebsiteWithHooks } from 'app/services/MonitorService';
 import express from 'express';
-import { defer, map, mergeAll, Subject } from 'rxjs';
+import {
+  defer,
+  map,
+  merge,
+  Observable,
+  BehaviorSubject,
+  mergeAll,
+  switchAll,
+  throttleTime,
+} from 'rxjs';
 
 import { doPing, PingResult } from './doPing';
 import { MonitorConfig } from './MonitorConfig';
 import { monitorDebug } from './utils';
 
-export interface PingTask {
-  deadline: number;
-  websiteId: number;
+interface PingTask {
+  website: WebsiteWithHooks;
+}
+
+interface Schedule {
+  website: WebsiteWithHooks;
+  pingTask: BehaviorSubject<PingTask>;
+  scheduler: Observable<PingTask>;
+}
+
+function createSchedule(website: WebsiteWithHooks): Schedule {
+  const pingTask: BehaviorSubject<PingTask> = new BehaviorSubject<PingTask>({ website });
+
+  const pingInterval = website.pingInterval * 1000;
+
+  return {
+    website,
+    pingTask,
+    scheduler: pingTask.pipe(
+      throttleTime(pingInterval, undefined, { leading: true, trailing: true }),
+    ),
+  };
 }
 
 const monitorService = new MonitorService();
@@ -19,11 +47,7 @@ const monitorService = new MonitorService();
 const PORT = 5656;
 
 export class Monitor {
-  tasks: Subject<PingTask> = new Subject();
-
-  enabledWebsites: Map<number, WebsiteWithHooks> = new Map();
-
-  pendingWebsiteTask: Map<number, NodeJS.Timeout> = new Map();
+  schedules: BehaviorSubject<Schedule[]> = new BehaviorSubject<Schedule[]>([]);
 
   server: Server;
 
@@ -36,6 +60,7 @@ export class Monitor {
       const t1 = Date.now();
       next();
 
+      monitorDebug(`${req.method} ${req.url}`);
       res.on('close', () => {
         monitorDebug(`${req.method} ${req.url} ${res.statusCode} ${Date.now() - t1}ms`);
       });
@@ -44,13 +69,19 @@ export class Monitor {
     this.app.post('/website-updated/:id', async (res, req) => {
       const id = Number(res.params.id);
       const website = await monitorService.findWebsiteById(id);
-      if (website?.enabled) {
-        monitorDebug(`website ${website.url} is enabled`);
-        this.restartWebsite(website, true);
+
+      const isEnabled = website?.enabled;
+
+      if (isEnabled) {
+        monitorDebug(`reseting ${website.url}`);
       } else {
-        monitorDebug(`website ${id} (${website?.url}) is disabled`);
-        this.removeEnabledWebsite(id);
+        monitorDebug(`stopping ${id} (${website?.url})`);
       }
+
+      this.schedules.next([
+        ...this.schedules.getValue().filter((s) => s.website.id !== id),
+        ...(isEnabled ? [createSchedule(website)] : []),
+      ]);
 
       req.sendStatus(201);
     });
@@ -62,79 +93,39 @@ export class Monitor {
 
   dispose() {
     this.server.close();
+    this.schedules.unsubscribe();
   }
 
-  async loadAllEnabledWebsites() {
-    const websites = await monitorService.findAllEnabledWebsites();
-    for (const website of websites) {
-      this.restartWebsite(website);
-    }
+  scheduleAllPingTasks() {
+    this.schedules.getValue().forEach(({ pingTask, website }) => {
+      pingTask.next({ website });
+    });
   }
 
-  restartWebsite(website: WebsiteWithHooks, immediate: boolean = true) {
-    this.upsertEnabledWebsite(website);
-    this.enqueueTaskByWebsite(website, immediate);
-  }
+  scheduleNextPingTask(website: WebsiteWithHooks) {
+    monitorDebug(`scheduling ${website.url}`);
 
-  upsertEnabledWebsite(website: WebsiteWithHooks) {
-    this.removeEnabledWebsite(website.id);
-    this.enabledWebsites.set(website.id, website);
-  }
-
-  removeEnabledWebsite(websiteId: number) {
-    clearTimeout(this.pendingWebsiteTask.get(websiteId) as any);
-    this.enabledWebsites.delete(websiteId);
-    this.pendingWebsiteTask.delete(websiteId);
-  }
-
-  isIdEnabled(id: number) {
-    return this.enabledWebsites.has(id);
+    this.schedules
+      .getValue()
+      .find((w) => w.website.id === website.id)
+      ?.pingTask.next({ website });
   }
 
   async run() {
-    this.tasks
+    const websites = await monitorService.findAllEnabledWebsites();
+    this.schedules.next(websites.map((w) => createSchedule(w)));
+
+    this.schedules
       .pipe(
-        map((task) => defer(() => this.handleWebsite(task.websiteId))),
+        map((schedule) => merge(...schedule.map((s) => s.scheduler))),
+        switchAll(),
+        map((task) => defer(() => this.handleWebsite(task.website))),
         mergeAll(this.config.concurrency),
       )
       .subscribe();
-
-    await this.loadAllEnabledWebsites();
   }
 
-  enqueueTaskByWebsite(website: WebsiteWithHooks, immediate: boolean = true) {
-    monitorDebug('enqueing', website.url);
-    const deadline = Date.now() + website.pingInterval * 1000;
-    const websiteId = website.id;
-
-    clearTimeout(this.pendingWebsiteTask.get(websiteId) as any);
-    this.pendingWebsiteTask.delete(websiteId);
-
-    if (immediate) {
-      this.tasks.next({
-        deadline,
-        websiteId,
-      });
-      return Promise.resolve();
-    } else {
-      const timeout = setTimeout(() => {
-        this.tasks.next({
-          deadline,
-          websiteId,
-        });
-      }, website.pingInterval * 1000);
-
-      this.pendingWebsiteTask.set(websiteId, timeout);
-    }
-  }
-
-  async handleWebsite(websiteId: number) {
-    const website = this.enabledWebsites.get(websiteId);
-    if (website == undefined) {
-      monitorDebug(`handing website ${websiteId}, skipped because it is removed...`);
-      return;
-    }
-
+  async handleWebsite(website: WebsiteWithHooks) {
     monitorDebug('handling', website.url);
     try {
       const lastTrace = await monitorService.findLatestTraceByWebsite(website.id);
@@ -148,7 +139,8 @@ export class Monitor {
     } catch (e) {
       console.error(e);
     } finally {
-      this.enqueueTaskByWebsite(website, false);
+      monitorDebug('finished', website.url);
+      this.scheduleNextPingTask(website);
     }
   }
 
