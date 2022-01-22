@@ -12,6 +12,7 @@ import {
   mergeAll,
   switchAll,
   throttleTime,
+  Subject,
 } from 'rxjs';
 
 import { doPing, PingResult } from './doPing';
@@ -24,21 +25,31 @@ interface PingTask {
 
 interface Schedule {
   website: WebsiteWithHooks;
-  pingTask: BehaviorSubject<PingTask>;
+  pingTask: Subject<PingTask>;
   scheduler: Observable<PingTask>;
 }
 
 function createSchedule(website: WebsiteWithHooks): Schedule {
-  const pingTask: BehaviorSubject<PingTask> = new BehaviorSubject<PingTask>({ website });
-
+  const pingTask: Subject<PingTask> = new Subject<PingTask>();
   const pingInterval = website.pingInterval * 1000;
+
+  const scheduler = new Subject<PingTask>();
+  pingTask
+    .pipe(
+      throttleTime(pingInterval, undefined, { leading: true, trailing: true }),
+      // Throttle the task to respect pingInterval.
+      // We use throttling instead of interval, because the task is only scheduled when the website is
+      // added, or it has just finished last fetching. Using fixed periodic fetching may overwhelm the worker
+      // when it cannot consume tasks fast enough.
+    )
+    .forEach((task) => {
+      scheduler.next(task);
+    });
 
   return {
     website,
     pingTask,
-    scheduler: pingTask.pipe(
-      throttleTime(pingInterval, undefined, { leading: true, trailing: true }),
-    ),
+    scheduler,
   };
 }
 
@@ -72,16 +83,17 @@ export class Monitor {
 
       const isEnabled = website?.enabled;
 
-      if (isEnabled) {
-        monitorDebug(`reseting ${website.url}`);
-      } else {
-        monitorDebug(`stopping ${id} (${website?.url})`);
-      }
-
       this.schedules.next([
         ...this.schedules.getValue().filter((s) => s.website.id !== id),
         ...(isEnabled ? [createSchedule(website)] : []),
       ]);
+
+      if (isEnabled) {
+        monitorDebug(`reseting ${website.url}`);
+        this.scheduleNextPingTask(website);
+      } else {
+        monitorDebug(`stopping ${id} (${website?.url})`);
+      }
 
       req.sendStatus(201);
     });
@@ -118,11 +130,17 @@ export class Monitor {
     this.schedules
       .pipe(
         map((schedule) => merge(...schedule.map((s) => s.scheduler))),
+        // Each time the schedules is updated, get all the task emitters, then merge theme into one emitter
         switchAll(),
+        // Always use the latest task emitter, representing the current schedules
         map((task) => defer(() => this.handleWebsite(task.website))),
+        // Create lazy task runners, so that the fetching only happens when subbed
         mergeAll(this.config.concurrency),
+        // Allow fetching up to N tasks at one time
       )
       .subscribe();
+
+    this.scheduleAllPingTasks();
   }
 
   async handleWebsite(website: WebsiteWithHooks) {
