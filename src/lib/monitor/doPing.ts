@@ -96,10 +96,10 @@ async function doPing(rawUrl: string, retries: number): Promise<PingResult> {
     'Accept-Encoding': 'gzip,deflate,br',
     Accept: '*/*',
     Connection: 'close',
-    'Transfer-Encoding': 'chunked',
     'User-Agent': 'node-fetch',
   };
   const reqHeaders = new Headers();
+  reqHeaders.delete('Transfer-Encoding'); // Doesn't work for azure?
   Object.keys(reqHeadersDefault).forEach((key) => reqHeaders.set(key, reqHeadersDefault[key]));
   result.reqHeaders = headersToStrings(reqHeaders);
 
