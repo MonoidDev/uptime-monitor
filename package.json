@@ -1,6 +1,6 @@
 {
   "name": "uptime-monitor",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "postinstall": "husky install && patch-package",
