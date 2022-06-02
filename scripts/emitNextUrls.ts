@@ -5,8 +5,8 @@ import { dirname } from 'path';
 import { debounce } from 'debounce';
 import { NextConfig } from 'next';
 import { createPagesMapping } from 'next/dist/build/entries';
-import { collectPages } from 'next/dist/build/utils';
 import { findPagesDir } from 'next/dist/lib/find-pages-dir';
+import { recursiveReadDir } from 'next/dist/lib/recursive-readdir';
 import loadConfig from 'next/dist/server/config';
 import { getParametrizedRoute } from 'next/dist/shared/lib/router/utils/route-regex';
 import prettier from 'prettier';
@@ -29,11 +29,14 @@ export const main = async (config: EmitNextUrlsConfig = {}) => {
   const pagesDir = findPagesDir(dir);
 
   const emit = async () => {
-    const pagePaths = await collectPages(pagesDir, nextConfig.pageExtensions!);
+    const pagePaths = await recursiveReadDir(
+      pagesDir,
+      new RegExp(`\\.(?:${nextConfig.pageExtensions!.join('|')})$`),
+    );
 
     const mappedPages = createPagesMapping(pagePaths, nextConfig.pageExtensions!, {
-      isDev: true,
       hasConcurrentFeatures: false,
+      isDev: true,
       hasServerComponents: false,
     });
 

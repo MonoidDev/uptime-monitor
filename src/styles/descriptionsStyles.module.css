@@ -1,3 +1,6 @@
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
 .descriptions :global(.ant-descriptions-item-label) {
   @apply text-gray-500;
 }

@@ -1,11 +1,10 @@
-const config = {
-  mode: 'jit', // Workaround typing
-  purge: [
+module.exports = {
+  content: [
     './src/pages/**/*.{js,ts,jsx,tsx}',
     './src/components/**/*.{js,ts,jsx,tsx}',
     './src/data/**/*.{js,ts,jsx,tsx}',
   ],
-  darkMode: false, // or 'media' or 'class'
+  darkMode: 'media',
   theme: {
     extend: {
       colors: {
@@ -20,7 +19,4 @@ const config = {
     extend: {},
   },
   plugins: [],
-} as const;
-
-module.exports = config;
-export default config;
+}

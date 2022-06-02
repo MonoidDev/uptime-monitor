@@ -1,3 +1,6 @@
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
 .layout :global(.ant-menu-sub):global(.ant-menu-inline) {
   @apply bg-[#464650] text-white;
 }

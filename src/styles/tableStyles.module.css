@@ -1,3 +1,6 @@
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
 .simpleTable {
   @apply container text-sm;
 }

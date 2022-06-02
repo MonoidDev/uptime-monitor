@@ -1,3 +1,6 @@
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
 .paper {
   @apply bg-white shadow-lg rounded-md p-6;
 }
