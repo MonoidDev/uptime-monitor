@@ -66,7 +66,7 @@ export class WebhookInvokeService {
         });
       case 'Slack':
         return JSON.stringify({
-          text: `${website.name} SSL certificate expires in ${duration}!`,
+          text: title,
           blocks: [
             {
               type: 'section',

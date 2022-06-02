@@ -28,6 +28,8 @@ export const eventPlugin = (): MonitorPlugin => {
         });
 
         if (source === WebsiteEventSource.NotAvailable) {
+          eventDebug(`${website.url} because it becomes unavailable`);
+
           for (const email of website.emails) {
             eventDebug(`sending email ${website.url} because it becomes not available`);
 
@@ -54,6 +56,8 @@ export const eventPlugin = (): MonitorPlugin => {
         }
 
         if (source === WebsiteEventSource.Available) {
+          eventDebug(`${website.url} because it becomes available`);
+
           for (const email of website.emails) {
             eventDebug(`sending email ${website.url} because it becomes available`);
 

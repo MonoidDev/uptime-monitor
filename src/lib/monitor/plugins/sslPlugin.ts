@@ -20,9 +20,10 @@ export const sslPlugin = (): MonitorPlugin => {
         const shouldAlert = website.httpsCertExpireAlerted === false && isExpiring;
 
         if (shouldAlert) {
+          sslDebug(`sending email ${website.url} because its ssl is expring`);
           for (const email of website.emails) {
             try {
-              sslDebug(`sending email ${website.url} because its ssl is expring`);
+              sslDebug(`sending email to ${email} for ${website.url} because its ssl is expring`);
               await emailService.sendWebsiteHttpsExpireAlert(
                 website,
                 new Date(pingResult.tlsExpiredAt),
@@ -52,14 +53,17 @@ export const sslPlugin = (): MonitorPlugin => {
           }
 
           await monitorService.updateWebsiteHttpsCertExpireAlerted(website.id, true);
+          website.httpsCertExpireAlerted = true;
         } else if (
           website.httpsCertExpiredAt == null ||
           pingResult.tlsExpiredAt !== website.httpsCertExpiredAt.getTime()
         ) {
           await monitorService.updateWebsiteHttpsCertExpireAlerted(website.id, false);
+          website.httpsCertExpireAlerted = false;
         }
 
         await monitorService.updateWebsiteHttpsCertExpiredAt(website.id, pingResult.tlsExpiredAt);
+        website.httpsCertExpiredAt = new Date(pingResult.tlsExpiredAt);
       }
     },
   };
