@@ -117,6 +117,20 @@ export default function Page() {
               {website.data?.website.webhooks.length}
             </Descriptions.Item>
           )}
+
+          <Descriptions.Item label="Badge">
+            <img
+              src={`/api/badge/${website.data?.website?.id}`}
+              alt="The shield"
+              className="cursor-pointer"
+              onClick={async () => {
+                await navigator.clipboard.writeText(
+                  `[![uptime-monitor](${location.origin}/api/badge/${website.data?.website?.id})](${location.origin}/monitoring/websiteStatus/${website.data?.website?.id})`,
+                );
+                alert('Markdown copied!');
+              }}
+            />
+          </Descriptions.Item>
         </Descriptions>
 
         <Link

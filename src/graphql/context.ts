@@ -1,18 +1,18 @@
-import { ServerResponse } from 'http';
-
 import { PrismaClient } from '@prisma/client';
 import { WebhookService } from 'app/services/WebhookService';
+import { NextApiRequest, NextApiResponse } from 'next';
 
 import { prisma } from '../lib/prisma/prisma';
 import { EventService } from '../services/EventService';
 import { TraceService } from '../services/TraceService';
 import { UserService } from '../services/UserService';
 import { WebsiteService } from '../services/WebsiteService';
-import type { NextIncomingMessage, RequestObjectHandler } from '../utils/types';
+import type { RequestObjectHandler } from '../utils/types';
 import { Auth, AuthInfo } from './auth';
 
 export type Context = {
   authInfo?: AuthInfo;
+  exemptAuth?: boolean;
   prisma: PrismaClient;
   isLoggedIn: boolean;
   userService: UserService;
@@ -20,8 +20,8 @@ export type Context = {
   websiteService: WebsiteService;
   traceService: TraceService;
   webhookService: WebhookService;
-  req: NextIncomingMessage;
-  res: ServerResponse;
+  req: NextApiRequest;
+  res: NextApiResponse;
 };
 
 const auth = new Auth();

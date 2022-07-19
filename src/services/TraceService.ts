@@ -243,7 +243,7 @@ export class TraceService extends BaseService {
     const whereWithId = {
       ...cursorWhere,
       ...where,
-      userId: this.ctx.authInfo!.id,
+      userId: this.ctx.exemptAuth ? undefined : this.ctx.authInfo!.id,
     } as const;
 
     const minId = (

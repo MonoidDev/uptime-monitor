@@ -1,20 +1,13 @@
-import { ServerResponse, IncomingMessage } from 'http';
-
 import * as t from 'io-ts';
+import type { NextApiRequest, NextApiResponse } from 'next';
 
 import { NexusGenInputs } from '../../graphql/server/generated';
 
-export type NextIncomingMessage = IncomingMessage & {
-  cookies?: {
-    [key: string]: any;
-  };
-};
-
-export type RequestHandler = (req: NextIncomingMessage, res: ServerResponse) => Promise<void>;
+export type RequestHandler = (req: NextApiRequest, res: NextApiResponse) => Promise<void>;
 
 export type RequestObjectHandler<T = undefined> = (o: {
-  req: NextIncomingMessage;
-  res: ServerResponse;
+  req: NextApiRequest;
+  res: NextApiResponse;
 }) => Promise<T>;
 
 export type InputObjectNames = keyof NexusGenInputs;
