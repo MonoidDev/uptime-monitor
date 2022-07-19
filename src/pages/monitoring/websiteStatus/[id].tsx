@@ -90,6 +90,8 @@ export default function Page() {
   };
 
   const renderWebsiteInfo = () => {
+    const badgeUrl = `${location.origin}/api/badge/${website.data?.website?.id}?rangeTime=${rangeTime}`;
+
     return (
       <div className={classNames(gStyles.paper, descriptionsStyles.descriptions, 'mb-8')}>
         <Descriptions title="Website">
@@ -120,12 +122,12 @@ export default function Page() {
 
           <Descriptions.Item label="Badge">
             <img
-              src={`/api/badge/${website.data?.website?.id}`}
+              src={badgeUrl}
               alt="The shield"
               className="cursor-pointer"
               onClick={async () => {
                 await navigator.clipboard.writeText(
-                  `[![uptime-monitor](${location.origin}/api/badge/${website.data?.website?.id})](${location.origin}/monitoring/websiteStatus/${website.data?.website?.id})`,
+                  `[![uptime-monitor](${badgeUrl})](${location.origin}/monitoring/websiteStatus/${website.data?.website?.id})`,
                 );
                 alert('Markdown copied!');
               }}

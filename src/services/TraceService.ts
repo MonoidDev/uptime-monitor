@@ -199,6 +199,32 @@ export class TraceService extends BaseService {
     return result;
   }
 
+  async getBadgeStatistics(rangeTime: string, websiteId: number) {
+    const oks = await this.ctx.prisma.trace.count({
+      where: {
+        websiteId,
+        createdAt: {
+          gt: getStartFromRangeTime(rangeTime),
+        },
+        status: TraceStatus.OK,
+      },
+    });
+
+    const allTraces = await this.ctx.prisma.trace.count({
+      where: {
+        websiteId,
+        createdAt: {
+          gt: getStartFromRangeTime(rangeTime),
+        },
+      },
+    });
+
+    return {
+      oks,
+      allTraces,
+    };
+  }
+
   async findTraces(query: TraceQuery) {
     const { isError, websiteId, websiteIds, rangeTime, timeAfter, timeBefore, status } = query;
 
