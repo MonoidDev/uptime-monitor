@@ -2272,24 +2272,29 @@
   integrity sha512-7NQmHra/JILCd1QqpSzl8+mJRc8ZHz3uDm8YV1Ks9IhK0epEiTw8aIErbvH9PI+6XbqhyIQy3462nEsn7UVzjQ==
 
 "@types/tailwindcss@^2.2.1":
-  version "2.2.1"
-  resolved "https://registry.yarnpkg.com/@types/tailwindcss/-/tailwindcss-2.2.1.tgz#891349cc71b5a85208ca5796938d91dd48cc0417"
-  integrity sha512-raLwtQF+uul9lsvs7+GUizeNrpxRqbnckIu/va5hzPPwZsImZunkyLFAS/1rwEHhhvFMNiMJmTiP5PPGa0oNJA==
+  version "2.2.4"
+  resolved "https://registry.yarnpkg.com/@types/tailwindcss/-/tailwindcss-2.2.4.tgz#c3bca7d265e608ffc50a6d1a4932b5b53be14553"
+  integrity sha512-8mIk+0BoReKiaBI4e3hjaz9YDQto+rdZ2eEExHf6AfS38FZcALQ6s8mTd+74N8BtBaLnTzLdNe5GbkzObWlSXw==
 
 "@types/trouter@*":
-  version "3.1.1"
-  resolved "https://registry.npmjs.org/@types/trouter/-/trouter-3.1.1.tgz#73383d3c2720d7771d5a66e13498fd5cd0aef21d"
-  integrity sha512-XTpWPg/bsGt2oHRmNFfq6kjXDJgeX14pPVFq/PutOe83OFiwrSNP9pV0V2j5O+L/r2XiXRlOZPJtyaOAX5fCBQ==
+  version "3.1.4"
+  resolved "https://registry.yarnpkg.com/@types/trouter/-/trouter-3.1.4.tgz#3fd8f7afab9701c455731049b22c378fd1bf8c0c"
+  integrity sha512-4YIL/2AvvZqKBWenjvEpxpblT2KGO6793ipr5QS7/6DpQ3O3SwZGgNGWezxf3pzeYZc24a2pJIrR/+Jxh/wYNQ==
 
-"@types/unist@*", "@types/unist@^2.0.0", "@types/unist@^2.0.2":
-  version "2.0.6"
-  resolved "https://registry.yarnpkg.com/@types/unist/-/unist-2.0.6.tgz#250a7b16c3b91f672a24552ec64678eeb1d3a08d"
-  integrity sha512-PBjIUxZHOuj0R15/xuwJYjFi+KZdNFrehocChv4g5hu6aFroHue8m0lBP0POdK2nKzbw0cgV1mws8+V/JAcEkQ==
+"@types/unist@*":
+  version "3.0.3"
+  resolved "https://registry.yarnpkg.com/@types/unist/-/unist-3.0.3.tgz#acaab0f919ce69cce629c2d4ed2eb4adc1b6c20c"
+  integrity sha512-ko/gIFJRv177XgZsZcBwnqJN5x/Gien8qNOn0D5bQU/zAzVf9Zt3BlcUiLqhV9y4ARk0GbT3tnUiPNgnTXzc/Q==
+
+"@types/unist@^2.0.0", "@types/unist@^2.0.2":
+  version "2.0.11"
+  resolved "https://registry.yarnpkg.com/@types/unist/-/unist-2.0.11.tgz#11af57b127e32487774841f7a4e54eab166d03c4"
+  integrity sha512-CmBKiL6NNo/OqgmMn95Fk9Whlp2mtvIv+KNpQKN2F4SjvrEesubTRWGYSg+BnWZOnlCaSTU1sMpsBOzgbYhnsA==
 
 "@types/webpack-bundle-analyzer@^4.4.1":
-  version "4.4.1"
-  resolved "https://registry.yarnpkg.com/@types/webpack-bundle-analyzer/-/webpack-bundle-analyzer-4.4.1.tgz#bcc2501be10c8cdd1d170bc6b7847b3321f20440"
-  integrity sha512-yQAj3l7bIYL+QRRlNJt6gyP+zrXZOlgaR4wsX0WY4yzZIbv41ZibREfZvuYjxY0iVtvQQlbhx0AeokkCuqUAQg==
+  version "4.7.0"
+  resolved "https://registry.yarnpkg.com/@types/webpack-bundle-analyzer/-/webpack-bundle-analyzer-4.7.0.tgz#fe199e724ce3d38705f6f1ba4d62429b7c360541"
+  integrity sha512-c5i2ThslSNSG8W891BRvOd/RoCjI2zwph8maD22b1adtSns20j+0azDDMCK06DiVrzTgnwiDl5Ntmu1YRJw8Sg==
   dependencies:
     "@types/node" "*"
     tapable "^2.2.0"
