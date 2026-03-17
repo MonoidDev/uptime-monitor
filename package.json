@@ -92,7 +92,7 @@
     "webpack-bundle-analyzer": "^4.4.2"
   },
   "devDependencies": {
-    "@graphql-codegen/cli": "2.0.1",
+    "@graphql-codegen/cli": "2.16.5",
     "@graphql-codegen/introspection": "^2.0.0",
     "@graphql-codegen/typescript": "^2.0.0",
     "@graphql-codegen/typescript-operations": "^2.0.1",
