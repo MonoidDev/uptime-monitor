@@ -44,7 +44,7 @@
     "abort-controller": "^3.0.0",
     "antd": "^4.16.13",
     "apollo-server": "^3.1.2",
-    "apollo-server-errors": "^3.1.0",
+    "@apollo/server": "^4.0.0",
     "apollo-server-micro": "^3.3.0",
     "autoprefixer": "^10.3.4",
     "classnames": "^2.3.1",
