@@ -117,7 +117,7 @@
     "apollo-cli": "^0.4.0",
     "chokidar": "^3.5.2",
     "cz-conventional-changelog": "^3.3.0",
-    "debounce": "^1.2.1",
+    "debounce": "^3.0.0",
     "dotenv-cli": "^4.0.0",
     "esbuild": "^0.27.0",
     "eslint": "^7.32.0",
