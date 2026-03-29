@@ -115,7 +115,7 @@
     "@typescript-eslint/eslint-plugin": "^4.29.3",
     "@typescript-eslint/parser": "^4.29.3",
     "apollo-cli": "^0.4.0",
-    "chokidar": "^3.5.2",
+    "chokidar": "^5.0.0",
     "cz-conventional-changelog": "^3.3.0",
     "debounce": "^1.2.1",
     "dotenv-cli": "^4.0.0",
