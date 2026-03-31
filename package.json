@@ -74,7 +74,7 @@
     "node-fetch": "^2.6.7",
     "node-schedule": "^2.0.0",
     "node_extra_ca_certs_mozilla_bundle": "^1.0.4",
-    "nodemailer": "^6.6.5",
+    "nodemailer": "^8.0.0",
     "prisma-query-log": "^3.0.1",
     "prom-client": "^14.0.0",
     "react": "17.0.2",
